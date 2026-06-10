@@ -97,13 +97,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
       },
     ],
     scripts: [
       {
         children:
-          "try{var t=localStorage.getItem('bcf-theme');var d=t?t==='dark':true;document.documentElement.classList.toggle('dark',d);}catch(e){document.documentElement.classList.add('dark');}",
+          "try{var t=localStorage.getItem('bcf-theme');var d=t?t==='dark':false;document.documentElement.classList.toggle('dark',d);}catch(e){}",
       },
     ],
   }),
