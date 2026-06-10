@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Network, Layers, Eye, Rocket } from "lucide-react";
+import { TriangleAlert as AlertTriangle, Network, Layers, Eye, Rocket } from "lucide-react";
 import chip from "@/assets/chip.jpg";
 
 export const Route = createFileRoute("/about")({
@@ -27,99 +27,135 @@ const TEAM = [
 function AboutPage() {
   return (
     <div className="bg-background">
-      <section className="mx-auto max-w-[1280px] px-6 py-20 text-center">
-        <span className="inline-block rounded-full border border-border px-4 py-1 text-label-bold text-muted-foreground">The Onchain Generation</span>
-        <h1 className="mt-8 text-display-lg">Architecting the Future of Web3 in <span className="text-primary">Nigeria.</span></h1>
-        <p className="mx-auto mt-6 max-w-2xl text-body-lg text-muted-foreground">Blockchain Club FUTMINNA is a community of builders, researchers, and pioneers dedicated to driving decentralized innovation from the heart of Minna.</p>
+      <section className="border-b border-border">
+        <div className="mx-auto max-w-[1280px] px-6 py-24 text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
+            The Onchain Generation
+          </span>
+          <h1 className="mt-8 text-display-lg">
+            Architecting the Future of Web3 in<br />
+            <span className="text-primary">Nigeria.</span>
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-body-lg text-muted-foreground">Blockchain Club FUTMINNA is a community of builders, researchers, and pioneers dedicated to driving decentralized innovation from the heart of Minna.</p>
+        </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-6 py-12 grid gap-10 lg:grid-cols-2 lg:items-center">
+      <section className="mx-auto max-w-[1280px] px-6 py-20 grid gap-12 lg:grid-cols-2 lg:items-center">
         <div>
-          <h2 className="text-headline-lg">The Challenge</h2>
-          <p className="mt-4 text-muted-foreground">Despite Africa's rapid crypto adoption, a critical gap remains in technical depth and local application building.</p>
-          <ul className="mt-8 space-y-4 text-sm">
-            <li className="flex gap-3"><AlertTriangle className="h-5 w-5 text-primary flex-none" /> Lack of specialized Web3 engineering curriculum in traditional academia.</li>
-            <li className="flex gap-3"><Network className="h-5 w-5 text-primary flex-none" /> Disconnected talent pools working in isolation without collaborative structures.</li>
-            <li className="flex gap-3"><Layers className="h-5 w-5 text-primary flex-none" /> Barriers to entry for developers navigating complex multi-chain ecosystems.</li>
+          <h2 className="text-headline-lg">THE CHALLENGE</h2>
+          <p className="mt-4 text-muted-foreground leading-relaxed">Despite Africa's rapid crypto adoption, a critical gap remains in technical depth and local application building.</p>
+          <ul className="mt-8 space-y-5">
+            <li className="flex gap-4 items-start">
+              <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-surface-high text-primary">
+                <AlertTriangle className="h-4 w-4" />
+              </span>
+              <p className="text-sm text-muted-foreground leading-relaxed">Lack of specialized Web3 engineering curriculum in traditional academia.</p>
+            </li>
+            <li className="flex gap-4 items-start">
+              <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-surface-high text-primary">
+                <Network className="h-4 w-4" />
+              </span>
+              <p className="text-sm text-muted-foreground leading-relaxed">Disconnected talent pools working in isolation without collaborative structures.</p>
+            </li>
+            <li className="flex gap-4 items-start">
+              <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-surface-high text-primary">
+                <Layers className="h-4 w-4" />
+              </span>
+              <p className="text-sm text-muted-foreground leading-relaxed">Barriers to entry for developers navigating complex multi-chain ecosystems.</p>
+            </li>
           </ul>
         </div>
-        <div className="overflow-hidden rounded-xl border border-border">
+        <div className="overflow-hidden rounded-lg border border-border bg-card">
           <img src={chip} alt="Microprocessor with blockchain etching" width={1024} height={1024} className="w-full h-auto" loading="lazy" />
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-6 py-12 grid gap-6 md:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card p-8">
-          <Eye className="h-6 w-6" />
-          <h3 className="mt-6 text-headline-md">Our Vision</h3>
-          <p className="mt-3 text-muted-foreground">To establish FUTMINNA as the premier hub for blockchain innovation in West Africa, producing world-class talent capable of building resilient decentralized systems.</p>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-8">
-          <Rocket className="h-6 w-6" />
-          <h3 className="mt-6 text-headline-md">Our Mission</h3>
-          <p className="mt-3 text-muted-foreground">To bridge the knowledge gap through structured learning, hands-on development, and direct ecosystem partnerships, empowering students to build in public.</p>
+      <section className="border-y border-border bg-surface-low">
+        <div className="mx-auto max-w-[1280px] px-6 py-20 grid gap-5 md:grid-cols-2">
+          <div className="rounded-lg border border-border bg-card p-8 hover:border-primary/40 transition-colors">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface-high text-primary">
+              <Eye className="h-4 w-4" />
+            </span>
+            <h3 className="mt-5 text-headline-md">Our Vision</h3>
+            <p className="mt-3 text-muted-foreground leading-relaxed">To establish FUTMINNA as the premier hub for blockchain innovation in West Africa, producing world-class talent capable of building resilient decentralized systems.</p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-8 hover:border-primary/40 transition-colors">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface-high text-primary">
+              <Rocket className="h-4 w-4" />
+            </span>
+            <h3 className="mt-5 text-headline-md">Our Mission</h3>
+            <p className="mt-3 text-muted-foreground leading-relaxed">To bridge the knowledge gap through structured learning, hands-on development, and direct ecosystem partnerships, empowering students to build in public.</p>
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-6 py-20 text-center">
-        <h2 className="text-headline-lg">Our Story</h2>
-        <div className="relative mt-10 grid gap-10 md:grid-cols-3">
+      <section className="mx-auto max-w-[1280px] px-6 py-20">
+        <div className="text-center">
+          <h2 className="text-headline-lg">OUR STORY</h2>
+        </div>
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
           {[
-            { y: "2022: THE GENESIS", t: "Founded by a small group of computer science students fascinated by Ethereum's programmable state machine." },
-            { y: "2023: EXPANSION", t: "Secured university recognition and hosted the first University-wide Web3 Summit with 500+ attendees." },
-            { y: "2024: BUILD PHASE", t: "Launching the BCF Lab — a physical space for students to experiment with ZK proofs and L2 scaling solutions." },
+            { y: "2022", l: "THE GENESIS", t: "Founded by a small group of computer science students fascinated by Ethereum's programmable state machine." },
+            { y: "2023", l: "EXPANSION", t: "Secured university recognition and hosted the first University-wide Web3 Summit with 500+ attendees." },
+            { y: "2024", l: "BUILD PHASE", t: "Launching the BCF Lab — a physical space for students to experiment with ZK proofs and L2 scaling solutions." },
           ].map((s) => (
-            <div key={s.y}>
-              <p className="text-label-bold">{s.y}</p>
-              <p className="mt-3 text-sm text-muted-foreground max-w-xs mx-auto">{s.t}</p>
+            <div key={s.y} className="rounded-lg border border-border bg-card p-6 hover:border-primary/40 transition-colors">
+              <span className="font-mono text-3xl font-bold text-muted-foreground/40">{s.y}</span>
+              <p className="mt-3 text-label-bold text-foreground">{s.l}</p>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.t}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-6 pb-20">
-        <div className="rounded-xl border border-border bg-surface-low p-10">
-          <h2 className="text-center text-headline-lg">What Makes Us Different</h2>
-          <div className="mt-10 grid gap-8 md:grid-cols-3 text-sm">
+      <section className="border-y border-border bg-surface-low">
+        <div className="mx-auto max-w-[1280px] px-6 py-20">
+          <h2 className="text-center text-headline-lg">WHAT MAKES US DIFFERENT</h2>
+          <div className="mt-12 grid gap-px bg-border md:grid-cols-3 border border-border overflow-hidden rounded-lg">
             {[
               { t: "MULTI-ECOSYSTEM", d: "We are chain-agnostic. From Ethereum and Solana to Bitcoin Layers and Polkadot, we explore the tech where it shines brightest." },
               { t: "BUILD-IN-PUBLIC", d: "Our code is open-source. We ship weekly updates, host GitHub workshops, and encourage radical transparency in development." },
               { t: "AFRICAN CONTEXT", d: "We don't just build; we build for Africa. Solving local problems like remittance, identity, and supply chain through decentralized tech." },
             ].map((c) => (
-              <div key={c.t} className="border-t border-border pt-5">
-                <p className="text-label-bold">{c.t}</p>
-                <p className="mt-3 text-muted-foreground">{c.d}</p>
+              <div key={c.t} className="bg-card p-7 hover:bg-surface-low transition-colors">
+                <p className="text-label-bold text-outline">{c.t}</p>
+                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{c.d}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-6 pb-20">
-        <h2 className="text-headline-lg">The Lead Builders</h2>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="mx-auto max-w-[1280px] px-6 py-20">
+        <h2 className="text-headline-lg">THE LEAD BUILDERS</h2>
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {TEAM.map((m) => (
-            <div key={m.name} className="rounded-xl border border-border bg-card overflow-hidden">
-              <div className="aspect-[4/5] bg-gradient-to-br from-surface-high to-surface-low flex items-center justify-center text-display-md text-muted-foreground/40">
+            <div key={m.name} className="group rounded-lg border border-border bg-card overflow-hidden transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm">
+              <div className="aspect-[4/5] bg-gradient-to-br from-surface-high to-surface-low flex items-center justify-center font-mono text-4xl font-bold text-muted-foreground/30">
                 {m.name.split(" ").map((p) => p[0]).join("")}
               </div>
-              <div className="p-5">
+              <div className="p-5 border-t border-border">
                 <p className="text-headline-md">{m.name}</p>
-                <p className="text-sm text-muted-foreground">"{m.handle}"</p>
-                <p className="mt-1 text-sm">{m.role}</p>
+                <p className="font-mono text-sm text-primary">@{m.handle}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{m.role}</p>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-6 pb-20">
-        <div className="rounded-2xl border border-border bg-surface-low p-10 text-center">
-          <h2 className="text-headline-lg">Ready to join the next block?</h2>
-          <p className="mt-3 text-muted-foreground">Whether you're a beginner or an experienced dev, there's a place for you in our ecosystem.</p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Button asChild className="uppercase tracking-wider font-bold"><Link to="/join">Apply for Membership</Link></Button>
-            <Button asChild variant="outline" className="uppercase tracking-wider font-bold"><Link to="/learn">Explore Resources</Link></Button>
+      <section className="mx-auto max-w-[1280px] px-6 py-20">
+        <div className="relative overflow-hidden rounded-xl border border-border bg-surface-low p-10 md:p-14 text-center">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+          <h2 className="text-headline-lg">READY TO JOIN THE<br />NEXT BLOCK?</h2>
+          <p className="mt-4 text-muted-foreground">Whether you're a beginner or an experienced dev, there's a place for you in our ecosystem.</p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Button asChild size="lg" className="font-semibold tracking-wide">
+              <Link to="/join">Apply for Membership</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="font-semibold tracking-wide">
+              <Link to="/learn">Explore Resources</Link>
+            </Button>
           </div>
         </div>
       </section>
