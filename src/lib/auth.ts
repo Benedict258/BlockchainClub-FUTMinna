@@ -20,7 +20,7 @@ export async function comparePassword(password: string, hash: string): Promise<b
 }
 
 export function generateAccessToken(userId: string, role: string): string {
-  return jwt.sign({ userId, role }, getAuthSecret(), { expiresIn: '15m' });
+  return jwt.sign({ userId, role }, getAuthSecret(), { expiresIn: '7d' });
 }
 
 export function generateRefreshToken(userId: string): string {
