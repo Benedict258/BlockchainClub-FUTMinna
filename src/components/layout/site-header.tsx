@@ -81,7 +81,7 @@ export function SiteHeader() {
           className="flex items-center gap-2.5 shrink-0 dark:-ml-[max(2.5rem,calc((100vw-80rem)/2+2.5rem))]"
         >
           <img src="/lightlogo.png" alt="BCF" className="h-30 w-auto dark:hidden" />
-          <img src="/darkogo.png" alt="BCF" className="h-30 w-auto hidden dark:block" />
+          <img src="/darklogo.png" alt="BCF" className="h-30 w-auto hidden dark:block" />
         </Link>
 
         {/* Desktop nav */}
