@@ -1,0 +1,510 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  GUEST
+  MEMBER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum Level {
+  L100
+  L200
+  L300
+  L400
+  L500
+  L600
+}
+
+enum EventType {
+  WORKSHOP
+  HACKATHON
+  TALK
+  BOOTCAMP
+  SOCIAL
+  OTHER
+}
+
+enum Ecosystem {
+  EVM
+  SUI_MOVE
+  APTOS_MOVE
+  SOLANA_RUST
+  GENERAL
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ProjectStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum OpportunityType {
+  HACKATHON
+  GRANT
+  BOUNTY
+  JOB
+  INTERNSHIP
+  PROGRAM
+  AMBASSADOR
+}
+
+enum OpportunityStatus {
+  OPEN
+  CLOSING_SOON
+  CLOSED
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum PartnerCategory {
+  ECOSYSTEM
+  COMMUNITY
+  SPONSOR
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role     @default(MEMBER)
+  isActive     Boolean  @default(true) @map("is_active")
+  isApproved   Boolean  @default(false) @map("is_approved")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  profile          Profile?
+  refreshTokens    RefreshToken[]
+  eventRSVPs       EventRSVP[]
+  courseProgress   CourseProgress[]
+  quizAttempts     QuizAttempt[]
+  projectMembers   ProjectMember[]
+  leaderboardEntry LeaderboardEntry?
+  blogPosts        BlogPost[]
+  userBadges       UserBadge[]
+
+  @@map("users")
+}
+
+model Profile {
+  id              String          @id @default(uuid())
+  userId          String          @unique @map("user_id")
+  fullName        String          @map("full_name")
+  nickname        String?
+  avatarUrl       String?         @map("avatar_url")
+  dateOfBirth     DateTime?       @map("date_of_birth")
+  department      String?
+  level           Level?
+  experienceLevel ExperienceLevel @default(BEGINNER) @map("experience_level")
+  funFact         String?         @map("fun_fact")
+  bio             String?
+  xLink           String?         @map("x_link")
+  githubLink      String?         @map("github_link")
+  portfolioLink   String?         @map("portfolio_link")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills  ProfileSkill[]
+
+  @@map("profiles")
+}
+
+model Skill {
+  id   String @id @default(uuid())
+  name String @unique
+
+  profiles ProfileSkill[]
+
+  @@map("skills")
+}
+
+model ProfileSkill {
+  profileId String @map("profile_id")
+  skillId   String @map("skill_id")
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skill   Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, skillId])
+  @@map("profile_skills")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  type        EventType @default(OTHER)
+  location    String?
+  isVirtual   Boolean   @default(false) @map("is_virtual")
+  virtualLink String?   @map("virtual_link")
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime  @map("end_date")
+  coverImage  String?   @map("cover_image")
+  isPublished Boolean   @default(false) @map("is_published")
+  isFeatured  Boolean   @default(false) @map("is_featured")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  rsvps     EventRSVP[]
+  resources EventResource[]
+
+  @@map("events")
+}
+
+model EventRSVP {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  eventId   String   @map("event_id")
+  attended  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@map("event_rsvps")
+}
+
+model EventResource {
+  id      String  @id @default(uuid())
+  eventId String  @map("event_id")
+  title   String
+  url     String
+  type    String?
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("event_resources")
+}
+
+model Track {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  ecosystem   Ecosystem  @default(GENERAL)
+  difficulty  Difficulty @default(BEGINNER)
+  iconUrl     String?    @map("icon_url")
+  isPublished Boolean    @default(false) @map("is_published")
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  modules Module[]
+
+  @@map("tracks")
+}
+
+model Module {
+  id          String   @id @default(uuid())
+  trackId     String   @map("track_id")
+  title       String
+  description String?
+  content     String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  track          Track           @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  quiz           Quiz?
+  courseProgress CourseProgress[]
+
+  @@map("modules")
+}
+
+model Quiz {
+  id        String   @id @default(uuid())
+  moduleId  String   @unique @map("module_id")
+  passMark  Int      @default(70) @map("pass_mark")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  module    Module        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  questions QuizQuestion[]
+  attempts  QuizAttempt[]
+
+  @@map("quizzes")
+}
+
+model QuizQuestion {
+  id           String @id @default(uuid())
+  quizId       String @map("quiz_id")
+  questionText String @map("question_text")
+  order        Int    @default(0)
+
+  quiz    Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options QuizOption[]
+
+  @@map("quiz_questions")
+}
+
+model QuizOption {
+  id         String  @id @default(uuid())
+  questionId String  @map("question_id")
+  optionText String  @map("option_text")
+  isCorrect  Boolean @default(false) @map("is_correct")
+
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_options")
+}
+
+model CourseProgress {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  moduleId    String    @map("module_id")
+  completed   Boolean   @default(false)
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+  @@map("course_progress")
+}
+
+model QuizAttempt {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  quizId    String   @map("quiz_id")
+  score     Int
+  passed    Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_attempts")
+}
+
+model Resource {
+  id          String    @id @default(uuid())
+  title       String
+  url         String
+  type        String?
+  ecosystem   Ecosystem @default(GENERAL)
+  isPublished Boolean   @default(false) @map("is_published")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("resources")
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  coverImage  String?       @map("cover_image")
+  githubUrl   String?       @map("github_url")
+  demoUrl     String?       @map("demo_url")
+  ecosystem   Ecosystem     @default(GENERAL)
+  status      ProjectStatus @default(PENDING)
+  isFeatured  Boolean       @default(false) @map("is_featured")
+  hackathonId String?       @map("hackathon_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  members ProjectMember[]
+  tags    ProjectTag[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  projectId String @map("project_id")
+  userId    String @map("user_id")
+  role      String?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, userId])
+  @@map("project_members")
+}
+
+model Tag {
+  id   String @id @default(uuid())
+  name String @unique
+
+  projects ProjectTag[]
+
+  @@map("tags")
+}
+
+model ProjectTag {
+  projectId String @map("project_id")
+  tagId     String @map("tag_id")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, tagId])
+  @@map("project_tags")
+}
+
+model Opportunity {
+  id          String            @id @default(uuid())
+  title       String
+  organizer   String?
+  type        OpportunityType   @default(HACKATHON)
+  ecosystem   Ecosystem         @default(GENERAL)
+  description String?
+  prize       String?
+  applyUrl    String?           @map("apply_url")
+  deadline    DateTime?
+  status      OpportunityStatus @default(OPEN)
+  isPublished Boolean           @default(false) @map("is_published")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  @@map("opportunities")
+}
+
+model BlogPost {
+  id          String     @id @default(uuid())
+  title       String
+  slug        String     @unique
+  excerpt     String?
+  content     String?
+  coverImage  String?    @map("cover_image")
+  authorId    String     @map("author_id")
+  status      PostStatus @default(DRAFT)
+  category    String?
+  isFeatured  Boolean    @default(false) @map("is_featured")
+  publishedAt DateTime?  @map("published_at")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  author User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  tags   BlogPostTag[]
+
+  @@map("blog_posts")
+}
+
+model BlogTag {
+  id   String @id @default(uuid())
+  name String @unique
+
+  posts BlogPostTag[]
+
+  @@map("blog_tags")
+}
+
+model BlogPostTag {
+  postId String @map("post_id")
+  tagId  String @map("tag_id")
+
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("blog_post_tags")
+}
+
+model Partner {
+  id          String          @id @default(uuid())
+  name        String
+  logoUrl     String?         @map("logo_url")
+  website     String?
+  description String?
+  category    PartnerCategory @default(COMMUNITY)
+  order       Int             @default(0)
+  isActive    Boolean         @default(true) @map("is_active")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  @@map("partners")
+}
+
+model LeaderboardEntry {
+  id              String   @id @default(uuid())
+  userId          String   @unique @map("user_id")
+  totalPoints     Int      @default(0) @map("total_points")
+  eventPoints     Int      @default(0) @map("event_points")
+  learnPoints     Int      @default(0) @map("learn_points")
+  buildPoints     Int      @default(0) @map("build_points")
+  communityPoints Int      @default(0) @map("community_points")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("leaderboard_entries")
+}
+
+model Badge {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  label       String
+  description String?
+  icon        String?
+  color       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  userBadges UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  badgeId   String   @map("badge_id")
+  grantedAt DateTime @default(now()) @map("granted_at")
+  grantedBy String?  @map("granted_by")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+model SiteSettings {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}

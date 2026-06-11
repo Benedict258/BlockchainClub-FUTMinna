@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { generateOrganizationJsonLd } from "../lib/seo";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
@@ -75,38 +76,48 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Blockchain Club FUTMINNA — Home for Web3 Builders" },
-      { name: "description", content: "FUTMinna's premier hub for blockchain innovation, decentralized development, and academic excellence in West Africa." },
-      { name: "author", content: "Blockchain Club FUTMINNA" },
-      { property: "og:title", content: "Blockchain Club FUTMINNA" },
-      { property: "og:description", content: "Home for Web3 builders — empowering the next wave of protocol engineers." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@bcf_futminna" },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
-      },
-    ],
-    scripts: [
-      {
-        children:
-          "try{var t=localStorage.getItem('bcf-theme');var d=t?t==='dark':false;document.documentElement.classList.toggle('dark',d);}catch(e){}",
-      },
-    ],
-  }),
+  head: () => {
+    const orgJsonLd = generateOrganizationJsonLd();
+    return {
+      meta: [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { title: "Blockchain Club FUTMINNA — Home for Web3 Builders" },
+        { name: "description", content: "FUTMinna's premier hub for blockchain innovation, decentralized development, and academic excellence in West Africa." },
+        { name: "author", content: "Blockchain Club FUTMINNA" },
+        { property: "og:title", content: "Blockchain Club FUTMINNA" },
+        { property: "og:description", content: "Home for Web3 builders — empowering the next wave of protocol engineers." },
+        { property: "og:type", content: "website" },
+        { property: "og:site_name", content: "Blockchain Club FUTMINNA" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:site", content: "@bcf_futminna" },
+      ],
+      links: [
+        {
+          rel: "stylesheet",
+          href: appCss,
+        },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
+        },
+        { rel: "canonical", href: "https://futminna.club" },
+        { rel: "sitemap", type: "application/xml", href: "/sitemap.xml" },
+      ],
+      scripts: [
+        {
+          children:
+            "try{var t=localStorage.getItem('bcf-theme');var d=t?t==='dark':true;document.documentElement.classList.toggle('dark',d);}catch(e){}",
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(orgJsonLd),
+        },
+      ],
+    };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as OpportunitiesRouteImport } from './routes/opportunities'
 import { Route as LearnRouteImport } from './routes/learn'
@@ -18,12 +19,35 @@ import { Route as JoinRouteImport } from './routes/join'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LearnIndexRouteImport } from './routes/learn/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as LearnResearchRouteImport } from './routes/learn/research'
+import { Route as LearnMarketingRouteImport } from './routes/learn/marketing'
+import { Route as LearnDesignRouteImport } from './routes/learn/design'
+import { Route as LearnContentCreationRouteImport } from './routes/learn/content-creation'
+import { Route as LearnCommunityManagementRouteImport } from './routes/learn/community-management'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
+import { Route as AdminProjectsRouteImport } from './routes/admin/projects'
+import { Route as AdminPartnersRouteImport } from './routes/admin/partners'
+import { Route as AdminOpportunitiesRouteImport } from './routes/admin/opportunities'
+import { Route as AdminMembersRouteImport } from './routes/admin/members'
+import { Route as AdminLearnRouteImport } from './routes/admin/learn'
+import { Route as AdminLeaderboardRouteImport } from './routes/admin/leaderboard'
+import { Route as AdminEventsRouteImport } from './routes/admin/events'
+import { Route as AdminBlogRouteImport } from './routes/admin/blog'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnersRoute = PartnersRouteImport.update({
@@ -66,6 +90,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -76,19 +105,124 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearnIndexRoute = LearnIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LearnRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const LearnResearchRoute = LearnResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => LearnRoute,
+} as any)
+const LearnMarketingRoute = LearnMarketingRouteImport.update({
+  id: '/marketing',
+  path: '/marketing',
+  getParentRoute: () => LearnRoute,
+} as any)
+const LearnDesignRoute = LearnDesignRouteImport.update({
+  id: '/design',
+  path: '/design',
+  getParentRoute: () => LearnRoute,
+} as any)
+const LearnContentCreationRoute = LearnContentCreationRouteImport.update({
+  id: '/content-creation',
+  path: '/content-creation',
+  getParentRoute: () => LearnRoute,
+} as any)
+const LearnCommunityManagementRoute =
+  LearnCommunityManagementRouteImport.update({
+    id: '/community-management',
+    path: '/community-management',
+    getParentRoute: () => LearnRoute,
+  } as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProjectsRoute = AdminProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPartnersRoute = AdminPartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOpportunitiesRoute = AdminOpportunitiesRouteImport.update({
+  id: '/opportunities',
+  path: '/opportunities',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMembersRoute = AdminMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLearnRoute = AdminLearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLeaderboardRoute = AdminLeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEventsRoute = AdminEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBlogRoute = AdminBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
   '/events': typeof EventsRoute
   '/join': typeof JoinRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/learn': typeof LearnRoute
+  '/learn': typeof LearnRouteWithChildren
   '/opportunities': typeof OpportunitiesRoute
   '/partners': typeof PartnersRoute
+  '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/blog': typeof AdminBlogRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
+  '/admin/learn': typeof AdminLearnRoute
+  '/admin/members': typeof AdminMembersRoute
+  '/admin/opportunities': typeof AdminOpportunitiesRoute
+  '/admin/partners': typeof AdminPartnersRoute
+  '/admin/projects': typeof AdminProjectsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/learn/community-management': typeof LearnCommunityManagementRoute
+  '/learn/content-creation': typeof LearnContentCreationRoute
+  '/learn/design': typeof LearnDesignRoute
+  '/learn/marketing': typeof LearnMarketingRoute
+  '/learn/research': typeof LearnResearchRoute
+  '/admin/': typeof AdminIndexRoute
+  '/learn/': typeof LearnIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -98,30 +232,67 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/join': typeof JoinRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/learn': typeof LearnRoute
   '/opportunities': typeof OpportunitiesRoute
   '/partners': typeof PartnersRoute
+  '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/blog': typeof AdminBlogRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
+  '/admin/learn': typeof AdminLearnRoute
+  '/admin/members': typeof AdminMembersRoute
+  '/admin/opportunities': typeof AdminOpportunitiesRoute
+  '/admin/partners': typeof AdminPartnersRoute
+  '/admin/projects': typeof AdminProjectsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/learn/community-management': typeof LearnCommunityManagementRoute
+  '/learn/content-creation': typeof LearnContentCreationRoute
+  '/learn/design': typeof LearnDesignRoute
+  '/learn/marketing': typeof LearnMarketingRoute
+  '/learn/research': typeof LearnResearchRoute
+  '/admin': typeof AdminIndexRoute
+  '/learn': typeof LearnIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
   '/events': typeof EventsRoute
   '/join': typeof JoinRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/learn': typeof LearnRoute
+  '/learn': typeof LearnRouteWithChildren
   '/opportunities': typeof OpportunitiesRoute
   '/partners': typeof PartnersRoute
+  '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/blog': typeof AdminBlogRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
+  '/admin/learn': typeof AdminLearnRoute
+  '/admin/members': typeof AdminMembersRoute
+  '/admin/opportunities': typeof AdminOpportunitiesRoute
+  '/admin/partners': typeof AdminPartnersRoute
+  '/admin/projects': typeof AdminProjectsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/learn/community-management': typeof LearnCommunityManagementRoute
+  '/learn/content-creation': typeof LearnContentCreationRoute
+  '/learn/design': typeof LearnDesignRoute
+  '/learn/marketing': typeof LearnMarketingRoute
+  '/learn/research': typeof LearnResearchRoute
+  '/admin/': typeof AdminIndexRoute
+  '/learn/': typeof LearnIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/auth'
     | '/blog'
     | '/events'
@@ -130,7 +301,25 @@ export interface FileRouteTypes {
     | '/learn'
     | '/opportunities'
     | '/partners'
+    | '/profile'
     | '/projects'
+    | '/admin/analytics'
+    | '/admin/blog'
+    | '/admin/events'
+    | '/admin/leaderboard'
+    | '/admin/learn'
+    | '/admin/members'
+    | '/admin/opportunities'
+    | '/admin/partners'
+    | '/admin/projects'
+    | '/admin/settings'
+    | '/learn/community-management'
+    | '/learn/content-creation'
+    | '/learn/design'
+    | '/learn/marketing'
+    | '/learn/research'
+    | '/admin/'
+    | '/learn/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,14 +329,32 @@ export interface FileRouteTypes {
     | '/events'
     | '/join'
     | '/leaderboard'
-    | '/learn'
     | '/opportunities'
     | '/partners'
+    | '/profile'
     | '/projects'
+    | '/admin/analytics'
+    | '/admin/blog'
+    | '/admin/events'
+    | '/admin/leaderboard'
+    | '/admin/learn'
+    | '/admin/members'
+    | '/admin/opportunities'
+    | '/admin/partners'
+    | '/admin/projects'
+    | '/admin/settings'
+    | '/learn/community-management'
+    | '/learn/content-creation'
+    | '/learn/design'
+    | '/learn/marketing'
+    | '/learn/research'
+    | '/admin'
+    | '/learn'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/auth'
     | '/blog'
     | '/events'
@@ -156,20 +363,40 @@ export interface FileRouteTypes {
     | '/learn'
     | '/opportunities'
     | '/partners'
+    | '/profile'
     | '/projects'
+    | '/admin/analytics'
+    | '/admin/blog'
+    | '/admin/events'
+    | '/admin/leaderboard'
+    | '/admin/learn'
+    | '/admin/members'
+    | '/admin/opportunities'
+    | '/admin/partners'
+    | '/admin/projects'
+    | '/admin/settings'
+    | '/learn/community-management'
+    | '/learn/content-creation'
+    | '/learn/design'
+    | '/learn/marketing'
+    | '/learn/research'
+    | '/admin/'
+    | '/learn/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   BlogRoute: typeof BlogRoute
   EventsRoute: typeof EventsRoute
   JoinRoute: typeof JoinRoute
   LeaderboardRoute: typeof LeaderboardRoute
-  LearnRoute: typeof LearnRoute
+  LearnRoute: typeof LearnRouteWithChildren
   OpportunitiesRoute: typeof OpportunitiesRoute
   PartnersRoute: typeof PartnersRoute
+  ProfileRoute: typeof ProfileRoute
   ProjectsRoute: typeof ProjectsRoute
 }
 
@@ -180,6 +407,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partners': {
@@ -238,6 +472,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -252,20 +493,191 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/learn/': {
+      id: '/learn/'
+      path: '/'
+      fullPath: '/learn/'
+      preLoaderRoute: typeof LearnIndexRouteImport
+      parentRoute: typeof LearnRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/learn/research': {
+      id: '/learn/research'
+      path: '/research'
+      fullPath: '/learn/research'
+      preLoaderRoute: typeof LearnResearchRouteImport
+      parentRoute: typeof LearnRoute
+    }
+    '/learn/marketing': {
+      id: '/learn/marketing'
+      path: '/marketing'
+      fullPath: '/learn/marketing'
+      preLoaderRoute: typeof LearnMarketingRouteImport
+      parentRoute: typeof LearnRoute
+    }
+    '/learn/design': {
+      id: '/learn/design'
+      path: '/design'
+      fullPath: '/learn/design'
+      preLoaderRoute: typeof LearnDesignRouteImport
+      parentRoute: typeof LearnRoute
+    }
+    '/learn/content-creation': {
+      id: '/learn/content-creation'
+      path: '/content-creation'
+      fullPath: '/learn/content-creation'
+      preLoaderRoute: typeof LearnContentCreationRouteImport
+      parentRoute: typeof LearnRoute
+    }
+    '/learn/community-management': {
+      id: '/learn/community-management'
+      path: '/community-management'
+      fullPath: '/learn/community-management'
+      preLoaderRoute: typeof LearnCommunityManagementRouteImport
+      parentRoute: typeof LearnRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/projects': {
+      id: '/admin/projects'
+      path: '/projects'
+      fullPath: '/admin/projects'
+      preLoaderRoute: typeof AdminProjectsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/partners': {
+      id: '/admin/partners'
+      path: '/partners'
+      fullPath: '/admin/partners'
+      preLoaderRoute: typeof AdminPartnersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/opportunities': {
+      id: '/admin/opportunities'
+      path: '/opportunities'
+      fullPath: '/admin/opportunities'
+      preLoaderRoute: typeof AdminOpportunitiesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/members': {
+      id: '/admin/members'
+      path: '/members'
+      fullPath: '/admin/members'
+      preLoaderRoute: typeof AdminMembersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/learn': {
+      id: '/admin/learn'
+      path: '/learn'
+      fullPath: '/admin/learn'
+      preLoaderRoute: typeof AdminLearnRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/leaderboard': {
+      id: '/admin/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/admin/leaderboard'
+      preLoaderRoute: typeof AdminLeaderboardRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/events': {
+      id: '/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AdminEventsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/blog': {
+      id: '/admin/blog'
+      path: '/blog'
+      fullPath: '/admin/blog'
+      preLoaderRoute: typeof AdminBlogRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminBlogRoute: typeof AdminBlogRoute
+  AdminEventsRoute: typeof AdminEventsRoute
+  AdminLeaderboardRoute: typeof AdminLeaderboardRoute
+  AdminLearnRoute: typeof AdminLearnRoute
+  AdminMembersRoute: typeof AdminMembersRoute
+  AdminOpportunitiesRoute: typeof AdminOpportunitiesRoute
+  AdminPartnersRoute: typeof AdminPartnersRoute
+  AdminProjectsRoute: typeof AdminProjectsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminBlogRoute: AdminBlogRoute,
+  AdminEventsRoute: AdminEventsRoute,
+  AdminLeaderboardRoute: AdminLeaderboardRoute,
+  AdminLearnRoute: AdminLearnRoute,
+  AdminMembersRoute: AdminMembersRoute,
+  AdminOpportunitiesRoute: AdminOpportunitiesRoute,
+  AdminPartnersRoute: AdminPartnersRoute,
+  AdminProjectsRoute: AdminProjectsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface LearnRouteChildren {
+  LearnCommunityManagementRoute: typeof LearnCommunityManagementRoute
+  LearnContentCreationRoute: typeof LearnContentCreationRoute
+  LearnDesignRoute: typeof LearnDesignRoute
+  LearnMarketingRoute: typeof LearnMarketingRoute
+  LearnResearchRoute: typeof LearnResearchRoute
+  LearnIndexRoute: typeof LearnIndexRoute
+}
+
+const LearnRouteChildren: LearnRouteChildren = {
+  LearnCommunityManagementRoute: LearnCommunityManagementRoute,
+  LearnContentCreationRoute: LearnContentCreationRoute,
+  LearnDesignRoute: LearnDesignRoute,
+  LearnMarketingRoute: LearnMarketingRoute,
+  LearnResearchRoute: LearnResearchRoute,
+  LearnIndexRoute: LearnIndexRoute,
+}
+
+const LearnRouteWithChildren = LearnRoute._addFileChildren(LearnRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   BlogRoute: BlogRoute,
   EventsRoute: EventsRoute,
   JoinRoute: JoinRoute,
   LeaderboardRoute: LeaderboardRoute,
-  LearnRoute: LearnRoute,
+  LearnRoute: LearnRouteWithChildren,
   OpportunitiesRoute: OpportunitiesRoute,
   PartnersRoute: PartnersRoute,
+  ProfileRoute: ProfileRoute,
   ProjectsRoute: ProjectsRoute,
 }
 export const routeTree = rootRouteImport

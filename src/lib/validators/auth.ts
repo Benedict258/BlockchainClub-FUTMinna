@@ -1,0 +1,72 @@
+import { z } from "zod";
+
+const skills = [
+  "Solidity",
+  "Move",
+  "Rust",
+  "JavaScript",
+  "Python",
+  "Frontend Dev",
+  "UI/UX Design",
+  "Content Writing",
+  "Marketing",
+  "Community Management",
+  "Research",
+  "Other",
+] as const;
+
+const levels = ["100", "200", "300", "400", "500", "600"] as const;
+const experienceLevels = ["BEGINNER", "INTERMEDIATE", "ADVANCED"] as const;
+
+export const registerSchema = z
+  .object({
+    fullName: z.string().min(2, "Full name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number"),
+    confirmPassword: z.string(),
+    dateOfBirth: z.string().min(1, "Date of birth is required"),
+    department: z.string().min(1, "Department is required"),
+    level: z.enum(levels, { required_error: "Level is required" }),
+    skills: z.array(z.enum(skills)).min(1, "Select at least one skill"),
+    experienceLevel: z.enum(experienceLevels, {
+      required_error: "Experience level is required",
+    }),
+    funFact: z.string().optional(),
+    xLink: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
+    githubLink: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
+    portfolioLink: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type RegisterInput = z.infer<typeof registerSchema>;
+
+export const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export type LoginInput = z.infer<typeof loginSchema>;
+
+export const profileUpdateSchema = z.object({
+  fullName: z.string().min(2).optional(),
+  nickname: z.string().max(30).optional(),
+  department: z.string().min(1).optional(),
+  level: z.enum(levels).optional(),
+  skills: z.array(z.enum(skills)).optional(),
+  experienceLevel: z.enum(experienceLevels).optional(),
+  funFact: z.string().optional(),
+  bio: z.string().max(500).optional(),
+  xLink: z.string().url().optional().or(z.literal("")),
+  githubLink: z.string().url().optional().or(z.literal("")),
+  portfolioLink: z.string().url().optional().or(z.literal("")),
+  avatarUrl: z.string().url().optional().or(z.literal("")),
+});
+
+export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
