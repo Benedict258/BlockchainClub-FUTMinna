@@ -168,12 +168,12 @@ function AdminPartners() {
     setEditItem(partner);
     setForm({
       name: partner.name as string,
-      logoUrl: (partner.logoUrl as string) || '',
+      logoUrl: (partner.logo_url as string) || '',
       website: (partner.website as string) || '',
       description: (partner.description as string) || '',
       category: partner.category as string,
       order: (partner.order as number) || 0,
-      isActive: (partner.isActive as boolean) || false,
+      isActive: (partner.is_active as boolean) || false,
     });
     setDialogOpen(true);
   };

@@ -226,13 +226,13 @@ function AdminProjects() {
                         onClick={() =>
                           featureMutation.mutate({
                             id: project.id as string,
-                            isFeatured: !(project.isFeatured as boolean),
+                            isFeatured: !(project.is_featured as boolean),
                           })
                         }
                       >
                         <Star
                           className={`h-4 w-4 ${
-                            project.isFeatured ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground'
+                            project.is_featured ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground'
                           }`}
                         />
                       </Button>

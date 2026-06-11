@@ -92,10 +92,10 @@ function AdminLeaderboard() {
     setSelectedEntry(entry);
     setForm({
       userId: (entry.user as Record<string, unknown>)?.id as string,
-      eventPoints: (entry.eventPoints as number)?.toString() || '',
-      learnPoints: (entry.learnPoints as number)?.toString() || '',
-      buildPoints: (entry.buildPoints as number)?.toString() || '',
-      communityPoints: (entry.communityPoints as number)?.toString() || '',
+      eventPoints: (entry.event_points as number)?.toString() || '',
+      learnPoints: (entry.learn_points as number)?.toString() || '',
+      buildPoints: (entry.build_points as number)?.toString() || '',
+      communityPoints: (entry.community_points as number)?.toString() || '',
       reason: '',
     });
     setAdjustDialogOpen(true);
