@@ -8,12 +8,8 @@ export function SiteFooter() {
           {/* Brand column */}
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
-                BCF
-              </span>
-              <span className="font-semibold text-sm text-foreground">
-                Blockchain Club <span className="text-primary font-bold">FUTMINNA</span>
-              </span>
+              <img src="/lightlogo.png" alt="BCF" className="h-10 w-auto dark:hidden" />
+              <img src="/darkogo.png" alt="BCF" className="h-10 w-auto hidden dark:block" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               The authoritative hub for decentralized technology research and education at Federal University of Technology, Minna.
