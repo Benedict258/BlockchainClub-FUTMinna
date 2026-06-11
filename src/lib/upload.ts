@@ -1,20 +1,24 @@
 import { v2 as cloudinary } from "cloudinary";
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true,
-});
+function getConfiguredCloudinary() {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true,
+  });
+  return cloudinary;
+}
 
 export async function uploadToCloudinary(
   file: File,
   folder: string
 ): Promise<{ url: string; publicId: string }> {
   const buffer = Buffer.from(await file.arrayBuffer());
+  const client = getConfiguredCloudinary();
 
   return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
+    const uploadStream = client.uploader.upload_stream(
       {
         folder,
         resource_type: "image",
@@ -36,7 +40,8 @@ export async function uploadToCloudinary(
 export async function deleteFromCloudinary(
   publicId: string
 ): Promise<{ result: string }> {
-  const result = await cloudinary.uploader.destroy(publicId);
+  const client = getConfiguredCloudinary();
+  const result = await client.uploader.destroy(publicId);
   return { result: result.result };
 }
 
@@ -45,6 +50,7 @@ export function getOptimizedUrl(
   width?: number,
   height?: number
 ): string {
+  const client = getConfiguredCloudinary();
   const transformations: Record<string, string | number>[] = [
     { quality: "auto", fetch_format: "auto" },
   ];
@@ -53,7 +59,7 @@ export function getOptimizedUrl(
   if (height) transformations.push({ height });
   if (width && height) transformations.push({ crop: "fill" });
 
-  return cloudinary.url(publicId, {
+  return client.url(publicId, {
     transformation: transformations,
     secure: true,
   });

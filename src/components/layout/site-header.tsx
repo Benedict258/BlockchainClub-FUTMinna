@@ -49,8 +49,13 @@ function useTheme() {
 export function SiteHeader() {
   const { isDark, toggle } = useTheme();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const { user, isAuthenticated, accessToken, logout: storeLogout } = useAuthStore();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   function getInitials(name?: string) {
     if (!name) return "U";
@@ -142,7 +147,7 @@ export function SiteHeader() {
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
-          {isAuthenticated && user ? (
+          {mounted && isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-9 w-9 rounded-full">
