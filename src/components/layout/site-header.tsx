@@ -74,11 +74,14 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/80">
-      <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-6 px-6">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 shrink-0">
-          <img src="/lightlogo.png" alt="BCF" className="h-30 w-auto dark:hidden" />
-          <img src="/darkogo.png" alt="BCF" className="h-30 w-auto hidden dark:block" />
+      <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-4 px-4 sm:gap-6 sm:px-6">
+        {/* Logo — flush left in dark mode */}
+        <Link
+          to="/"
+          className="flex items-center gap-2.5 shrink-0 dark:-ml-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]"
+        >
+          <img src="/lightlogo.png" alt="BCF" className="h-20 sm:h-24 md:h-30 w-auto dark:hidden" />
+          <img src="/darkogo.png" alt="BCF" className="h-20 sm:h-24 md:h-30 w-auto hidden dark:block" />
         </Link>
 
         {/* Desktop nav */}

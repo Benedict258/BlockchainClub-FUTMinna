@@ -117,7 +117,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       scripts: [
         {
           children:
-            "try{var t=localStorage.getItem('bcf-theme');var d=t?t==='dark':true;document.documentElement.classList.toggle('dark',d);}catch(e){}",
+            "try{var t=localStorage.getItem('bcf-theme');var d=t?t==='dark':false;document.documentElement.classList.toggle('dark',d);}catch(e){}",
         },
         {
           type: "application/ld+json",
