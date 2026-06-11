@@ -98,7 +98,7 @@ function SignInPage() {
               />
               <div className="flex items-center justify-end">
                 <Link
-                  to="/auth"
+                  to="/auth/forgot-password"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Forgot Password?

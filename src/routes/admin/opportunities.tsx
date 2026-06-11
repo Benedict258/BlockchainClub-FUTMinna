@@ -279,9 +279,9 @@ function AdminOpportunities() {
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2">
                       {opp.title}
-                      {opp.applyUrl && (
+                      {opp.apply_url && (
                         <a
-                          href={opp.applyUrl as string}
+                          href={opp.apply_url as string}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-muted-foreground hover:text-foreground"

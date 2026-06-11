@@ -6,57 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import {
-  Trophy,
-  Medal,
-  Crown,
-  BookOpen,
-  Code,
-  Users,
-  Calendar,
-  ArrowRight,
-  Zap,
-} from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Trophy, Medal, Crown, BookOpen, Code, Users, Calendar, ArrowRight } from "lucide-react";
 import { getLeaderboard } from "@/lib/api/leaderboard.server";
+import { getBadgeConfig } from "@/lib/badges";
 
 type TimeFilter = "all" | "month" | "week";
-type EcosystemFilter =
-  | "all"
-  | "EVM"
-  | "SUI_MOVE"
-  | "APTOS_MOVE"
-  | "SOLANA_RUST";
-
-const BADGE_CONFIG: Record<
-  string,
-  { label: string; icon: typeof Trophy; color: string }
-> = {
-  "Top Builder": {
-    label: "Top Builder",
-    icon: Code,
-    color: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-  },
-  "Top Learner": {
-    label: "Top Learner",
-    icon: BookOpen,
-    color: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  },
-  "Most Active": {
-    label: "Most Active",
-    icon: Zap,
-    color: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  },
-  "Event Champion": {
-    label: "Event Champion",
-    icon: Calendar,
-    color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  },
-};
+type EcosystemFilter = "all" | "EVM" | "SUI_MOVE" | "APTOS_MOVE" | "SOLANA_RUST";
 
 function LeaderboardSkeleton() {
   return (
@@ -94,7 +50,9 @@ function PodiumCard({
       } | null;
     };
     totalPoints: number;
-    badges: string[];
+    user_badges: {
+      badges: { name: string; label: string; color: string; bg_color: string } | null;
+    }[];
   };
   rank: number;
 }) {
@@ -113,11 +71,7 @@ function PodiumCard({
         : "border-amber-700/30";
   const Icon = rank === 1 ? Crown : Medal;
   const iconColor =
-    rank === 1
-      ? "text-primary"
-      : rank === 2
-        ? "text-muted-foreground"
-        : "text-amber-600";
+    rank === 1 ? "text-primary" : rank === 2 ? "text-muted-foreground" : "text-amber-600";
 
   return (
     <div className="flex flex-col items-center">
@@ -140,18 +94,10 @@ function PodiumCard({
           {rank}
         </span>
       </div>
-      <p className="mt-3 text-sm font-semibold text-foreground text-center">
-        {name}
-      </p>
-      {profile?.department && (
-        <p className="text-xs text-muted-foreground">{profile.department}</p>
-      )}
-      <p className="mt-1 text-headline-sm text-primary">
-        {entry.totalPoints.toLocaleString()}
-      </p>
-      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-        Points
-      </p>
+      <p className="mt-3 text-sm font-semibold text-foreground text-center">{name}</p>
+      {profile?.department && <p className="text-xs text-muted-foreground">{profile.department}</p>}
+      <p className="mt-1 text-headline-sm text-primary">{entry.totalPoints.toLocaleString()}</p>
+      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Points</p>
       <div
         className={`mt-3 flex items-center gap-1 rounded-full border px-3 py-1 ${borderColor} ${
           rank === 1 ? "bg-primary/5" : "bg-surface-low"
@@ -221,9 +167,8 @@ function LeaderboardPage() {
             <span className="text-primary">Contributors</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-body-lg text-muted-foreground">
-            Celebrating the most active and impactful members of the BCF
-            community. Points are earned through events, learning, building, and
-            community engagement.
+            Celebrating the most active and impactful members of the BCF community. Points are
+            earned through events, learning, building, and community engagement.
           </p>
         </div>
       </section>
@@ -245,20 +190,14 @@ function LeaderboardPage() {
       <section className="border-b border-border bg-surface-low">
         <div className="mx-auto max-w-[1280px] px-6 py-4">
           <div className="flex flex-wrap items-center gap-4">
-            <Tabs
-              value={timeFilter}
-              onValueChange={(v) => setTimeFilter(v as TimeFilter)}
-            >
+            <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as TimeFilter)}>
               <TabsList className="bg-background/50">
                 <TabsTrigger value="all">All Time</TabsTrigger>
                 <TabsTrigger value="month">This Month</TabsTrigger>
                 <TabsTrigger value="week">This Week</TabsTrigger>
               </TabsList>
             </Tabs>
-            <Tabs
-              value={ecoFilter}
-              onValueChange={(v) => setEcoFilter(v as EcosystemFilter)}
-            >
+            <Tabs value={ecoFilter} onValueChange={(v) => setEcoFilter(v as EcosystemFilter)}>
               <TabsList className="bg-background/50">
                 <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value="EVM">EVM</TabsTrigger>
@@ -278,9 +217,7 @@ function LeaderboardPage() {
         ) : entries.length === 0 ? (
           <div className="text-center py-20">
             <Trophy className="mx-auto h-12 w-12 text-muted-foreground/40" />
-            <p className="mt-4 text-lg text-muted-foreground">
-              No leaderboard entries yet.
-            </p>
+            <p className="mt-4 text-lg text-muted-foreground">No leaderboard entries yet.</p>
             <p className="mt-2 text-sm text-muted-foreground/60">
               Start contributing to earn points!
             </p>
@@ -299,8 +236,7 @@ function LeaderboardPage() {
             <div className="divide-y divide-border">
               {(top3.length >= 3 ? rest : entries).map((entry) => {
                 const profile = entry.user.profile;
-                const name =
-                  profile?.nickname || profile?.fullName || "Anonymous";
+                const name = profile?.nickname || profile?.fullName || "Anonymous";
                 const initials = name
                   .split(" ")
                   .map((p: string) => p[0])
@@ -318,22 +254,18 @@ function LeaderboardPage() {
                       <span className="text-sm font-mono text-muted-foreground md:hidden">
                         #{entry.rank}
                       </span>
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage
-                          src={profile?.avatarUrl || undefined}
-                        />
-                        <AvatarFallback className="text-xs">
-                          {initials}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Link to="/members/$memberId" params={{ memberId: entry.user.id }}>
+                        <Avatar className="h-9 w-9">
+                          <AvatarImage src={profile?.avatarUrl || undefined} />
+                          <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+                        </Avatar>
+                      </Link>
                       <div>
-                        <p className="text-sm font-medium text-foreground">
-                          {name}
-                        </p>
+                        <Link to="/members/$memberId" params={{ memberId: entry.user.id }} className="hover:text-primary transition-colors">
+                          <p className="text-sm font-medium text-foreground">{name}</p>
+                        </Link>
                         {profile?.department && (
-                          <p className="text-xs text-muted-foreground">
-                            {profile.department}
-                          </p>
+                          <p className="text-xs text-muted-foreground">{profile.department}</p>
                         )}
                       </div>
                     </div>
@@ -341,23 +273,23 @@ function LeaderboardPage() {
                       {entry.totalPoints.toLocaleString()}
                     </span>
                     <div className="flex flex-wrap gap-1 justify-end">
-                      {entry.badges
-                        ?.slice(0, 2)
-                        .map((badge: string) => {
-                          const config = BADGE_CONFIG[badge];
-                          if (!config) return null;
-                          const BadgeIcon = config.icon;
-                          return (
-                            <Badge
-                              key={badge}
-                              variant="outline"
-                              className={`text-[9px] ${config.color}`}
-                            >
-                              <BadgeIcon className="mr-0.5 h-2.5 w-2.5" />
-                              {config.label}
-                            </Badge>
-                          );
-                        })}
+                      {entry.user_badges?.slice(0, 2).map((ub) => {
+                        const badge = ub.badges;
+                        if (!badge) return null;
+                        const config = getBadgeConfig(badge.name);
+                        if (!config) return null;
+                        const BadgeIcon = config.icon;
+                        return (
+                          <Badge
+                            key={badge.name}
+                            variant="outline"
+                            className={`text-[9px] ${config.bgColor} ${config.color} border-current/20`}
+                          >
+                            <BadgeIcon className="mr-0.5 h-2.5 w-2.5" />
+                            {config.label}
+                          </Badge>
+                        );
+                      })}
                     </div>
                   </div>
                 );
@@ -370,48 +302,37 @@ function LeaderboardPage() {
       {/* POINTS LEGEND */}
       <section className="border-y border-border bg-surface-low">
         <div className="mx-auto max-w-[1280px] px-6 py-12">
-          <h3 className="text-headline-sm mb-6 text-center">
-            How Points Are Earned
-          </h3>
+          <h3 className="text-headline-sm mb-6 text-center">How Points Are Earned</h3>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
                 icon: Calendar,
                 label: "Event Points",
-                description:
-                  "Attending workshops, hackathons, and meetups.",
+                description: "Attending workshops, hackathons, and meetups.",
                 color: "text-blue-400",
               },
               {
                 icon: BookOpen,
                 label: "Learn Points",
-                description:
-                  "Completing modules, passing quizzes, and finishing tracks.",
+                description: "Completing modules, passing quizzes, and finishing tracks.",
                 color: "text-emerald-400",
               },
               {
                 icon: Code,
                 label: "Build Points",
-                description:
-                  "Submitting projects, shipping features, and code reviews.",
+                description: "Submitting projects, shipping features, and code reviews.",
                 color: "text-purple-400",
               },
               {
                 icon: Users,
                 label: "Community Points",
-                description:
-                  "Mentoring peers, contributing to discussions, and helping out.",
+                description: "Mentoring peers, contributing to discussions, and helping out.",
                 color: "text-amber-400",
               },
             ].map((item) => (
-              <div
-                key={item.label}
-                className="rounded-lg border border-border bg-card p-5"
-              >
+              <div key={item.label} className="rounded-lg border border-border bg-card p-5">
                 <item.icon className={`h-5 w-5 ${item.color}`} />
-                <p className="mt-3 text-sm font-semibold text-foreground">
-                  {item.label}
-                </p>
+                <p className="mt-3 text-sm font-semibold text-foreground">{item.label}</p>
                 <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
                   {item.description}
                 </p>
@@ -426,14 +347,10 @@ function LeaderboardPage() {
         <Trophy className="mx-auto h-10 w-10 text-primary" />
         <h2 className="mt-6 text-headline-lg">CLIMB THE RANKS</h2>
         <p className="mt-3 text-muted-foreground max-w-lg mx-auto">
-          Earn points by attending events, completing learning tracks, shipping
-          projects, and contributing to the community.
+          Earn points by attending events, completing learning tracks, shipping projects, and
+          contributing to the community.
         </p>
-        <Button
-          asChild
-          size="lg"
-          className="mt-8 font-semibold tracking-wide"
-        >
+        <Button asChild size="lg" className="mt-8 font-semibold tracking-wide">
           <Link to="/join">
             Join the Community <ArrowRight className="ml-2 h-4 w-4" />
           </Link>

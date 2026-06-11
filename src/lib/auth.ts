@@ -85,5 +85,33 @@ export async function deleteRefreshToken(token: string): Promise<void> {
 }
 
 export async function deleteAllUserRefreshTokens(userId: string): Promise<void> {
-  await supabase.from('refresh_tokens').delete({ user_id: userId });
+  await supabase.from("refresh_tokens").delete({ user_id: userId });
+}
+
+export function generateVerificationToken(userId: string): string {
+  return jwt.sign({ userId, type: "email_verification" }, getAuthSecret(), { expiresIn: "24h" });
+}
+
+export function verifyVerificationToken(token: string): { userId: string } | null {
+  try {
+    const decoded = jwt.verify(token, getAuthSecret()) as { userId: string; type: string };
+    if (decoded.type !== "email_verification") return null;
+    return { userId: decoded.userId };
+  } catch {
+    return null;
+  }
+}
+
+export function generatePasswordResetToken(userId: string): string {
+  return jwt.sign({ userId, type: "password_reset" }, getAuthSecret(), { expiresIn: "1h" });
+}
+
+export function verifyPasswordResetToken(token: string): { userId: string } | null {
+  try {
+    const decoded = jwt.verify(token, getAuthSecret()) as { userId: string; type: string };
+    if (decoded.type !== "password_reset") return null;
+    return { userId: decoded.userId };
+  } catch {
+    return null;
+  }
 }

@@ -5,6 +5,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
   storeRefreshToken,
+  generateVerificationToken,
 } from "@/lib/auth";
 import { randomUUID } from "crypto";
 
@@ -55,8 +56,8 @@ export async function register(data: {
     email: data.email,
     password_hash: passwordHash,
     role: "MEMBER",
-    is_active: true,
-    is_approved: true,
+    is_active: false,
+    is_approved: false,
     created_at: now,
     updated_at: now,
   });
@@ -129,6 +130,14 @@ export async function register(data: {
   const refreshToken = generateRefreshToken(insertedUser.id);
   await storeRefreshToken(refreshToken, insertedUser.id);
 
+  const verificationToken = generateVerificationToken(insertedUser.id);
+  try {
+    const { sendVerificationEmail } = await import("@/lib/email");
+    await sendVerificationEmail(insertedUser.email, verificationToken);
+  } catch {
+    console.error("Failed to send verification email");
+  }
+
   return {
     user: {
       id: insertedUser.id,
@@ -153,6 +162,7 @@ export async function register(data: {
     },
     accessToken,
     refreshToken,
+    message: "Verification email sent. Please check your inbox.",
   };
 }
 

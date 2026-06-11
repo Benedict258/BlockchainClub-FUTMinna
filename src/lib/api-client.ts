@@ -2,10 +2,24 @@
 // Uses generic /api/supabase/ REST endpoints in server.ts
 // to bypass Seroval serialization issues
 
+function getAuthHeaders(): Record<string, string> {
+  try {
+    const stored = localStorage.getItem("bcp-auth");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const token = parsed?.state?.accessToken;
+      if (token) {
+        return { Authorization: `Bearer ${token}` };
+      }
+    }
+  } catch {}
+  return {};
+}
+
 export async function apiQuery(table: string, opts: Record<string, any> = {}) {
   const res = await fetch(`/api/supabase/query/${table}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(opts),
   });
   const json = await res.json();
@@ -26,7 +40,7 @@ export async function apiQuerySingle(table: string, opts: Record<string, any> = 
 export async function apiInsert(table: string, rows: any) {
   const res = await fetch(`/api/supabase/insert/${table}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(rows),
   });
   const json = await res.json();
@@ -37,7 +51,7 @@ export async function apiInsert(table: string, rows: any) {
 export async function apiUpdate(table: string, data: any, filters: Record<string, any>) {
   const res = await fetch(`/api/supabase/update/${table}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify({ data, filters }),
   });
   const json = await res.json();
@@ -48,7 +62,7 @@ export async function apiUpdate(table: string, data: any, filters: Record<string
 export async function apiDelete(table: string, filters: Record<string, any>) {
   const res = await fetch(`/api/supabase/delete/${table}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify({ filters }),
   });
   const json = await res.json();
@@ -59,7 +73,7 @@ export async function apiDelete(table: string, filters: Record<string, any>) {
 export async function apiRpc(fn: string, params: Record<string, any> = {}) {
   const res = await fetch(`/api/supabase/rpc/${fn}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify({ params }),
   });
   const json = await res.json();
@@ -70,7 +84,7 @@ export async function apiRpc(fn: string, params: Record<string, any> = {}) {
 export async function apiAnalytics() {
   const res = await fetch("/api/supabase/analytics", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: "{}",
   });
   const json = await res.json();
@@ -85,7 +99,7 @@ export async function apiGetSettings() {
 export async function apiUpsertSettings(settings: { key: string; value: string }[]) {
   const res = await fetch("/api/supabase/settings", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify({ settings }),
   });
   const json = await res.json();
@@ -96,7 +110,7 @@ export async function apiUpsertSettings(settings: { key: string; value: string }
 export async function apiAdjustPoints(body: Record<string, any>) {
   const res = await fetch("/api/supabase/adjust-points", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(body),
   });
   const json = await res.json();

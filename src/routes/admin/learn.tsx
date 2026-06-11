@@ -123,8 +123,13 @@ function AdminLearn() {
 
   // Resource state
   const [resourceDialogOpen, setResourceDialogOpen] = useState(false);
+  const [editResource, setEditResource] = useState<Record<string, unknown> | null>(null);
   const [resourceForm, setResourceForm] = useState<ResourceForm>(defaultResourceForm);
   const [deleteResourceItem, setDeleteResourceItem] = useState<Record<string, unknown> | null>(null);
+
+  // Delete states
+  const [deleteTrackItem, setDeleteTrackItem] = useState<Record<string, unknown> | null>(null);
+  const [deleteModuleItem, setDeleteModuleItem] = useState<Record<string, unknown> | null>(null);
 
   // Expanded track
   const [expandedTrack, setExpandedTrack] = useState<string | null>(null);
@@ -268,6 +273,48 @@ function AdminLearn() {
     onError: () => toast.error('Failed to delete resource'),
   });
 
+  const updateResourceMutation = useMutation({
+    mutationFn: () =>
+      apiUpdate('resources', {
+        title: resourceForm.title,
+        url: resourceForm.url,
+        type: resourceForm.type || undefined,
+        ecosystem: resourceForm.ecosystem as Ecosystem,
+        is_published: resourceForm.isPublished,
+      }, { id: editResource?.id as string }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-resources'] });
+      setResourceDialogOpen(false);
+      setEditResource(null);
+      setResourceForm(defaultResourceForm);
+      toast.success('Resource updated');
+    },
+    onError: () => toast.error('Failed to update resource'),
+  });
+
+  const deleteTrackMutation = useMutation({
+    mutationFn: () =>
+      apiDelete('tracks', { id: deleteTrackItem?.id as string }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-tracks'] });
+      setDeleteTrackItem(null);
+      setExpandedTrack(null);
+      toast.success('Track deleted');
+    },
+    onError: () => toast.error('Failed to delete track'),
+  });
+
+  const deleteModuleMutation = useMutation({
+    mutationFn: () =>
+      apiDelete('modules', { id: deleteModuleItem?.id as string }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-track-detail'] });
+      setDeleteModuleItem(null);
+      toast.success('Module deleted');
+    },
+    onError: () => toast.error('Failed to delete module'),
+  });
+
   const openCreateTrack = () => {
     setEditTrack(null);
     setTrackForm(defaultTrackForm);
@@ -281,8 +328,8 @@ function AdminLearn() {
       description: (track.description as string) || '',
       ecosystem: track.ecosystem as string,
       difficulty: track.difficulty as string,
-      iconUrl: (track.iconUrl as string) || '',
-      isPublished: (track.isPublished as boolean) || false,
+      iconUrl: (track.icon_url as string) || '',
+      isPublished: (track.is_published as boolean) || false,
       order: (track.order as number) || 0,
     });
     setTrackDialogOpen(true);
@@ -297,7 +344,7 @@ function AdminLearn() {
   const openEditModule = (mod: Record<string, unknown>) => {
     setEditModule(mod);
     setModuleForm({
-      trackId: (mod.trackId as string) || '',
+      trackId: (mod.track_id as string) || '',
       title: mod.title as string,
       description: (mod.description as string) || '',
       content: (mod.content as string) || '',
@@ -307,7 +354,20 @@ function AdminLearn() {
   };
 
   const openCreateResource = () => {
+    setEditResource(null);
     setResourceForm(defaultResourceForm);
+    setResourceDialogOpen(true);
+  };
+
+  const openEditResource = (resource: Record<string, unknown>) => {
+    setEditResource(resource);
+    setResourceForm({
+      title: resource.title as string,
+      url: resource.url as string,
+      type: (resource.type as string) || '',
+      ecosystem: (resource.ecosystem as string) || 'GENERAL',
+      isPublished: (resource.is_published as boolean) || false,
+    });
     setResourceDialogOpen(true);
   };
 
@@ -376,8 +436,8 @@ function AdminLearn() {
                       <TableCell>{track.difficulty}</TableCell>
                       <TableCell>{track._count?.modules || 0}</TableCell>
                       <TableCell>
-                        <Badge variant={track.isPublished ? 'default' : 'secondary'}>
-                          {track.isPublished ? 'Published' : 'Draft'}
+                        <Badge variant={track.is_published ? 'default' : 'secondary'}>
+                          {track.is_published ? 'Published' : 'Draft'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -391,6 +451,13 @@ function AdminLearn() {
                           </Button>
                           <Button variant="ghost" size="icon" onClick={() => openEditTrack(track)}>
                             <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setDeleteTrackItem(track)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
                       </TableCell>
@@ -426,9 +493,14 @@ function AdminLearn() {
                           <p className="font-medium">{mod.title as string}</p>
                           <p className="text-xs text-muted-foreground">Order: {mod.order as number}</p>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => openEditModule(mod)}>
-                          <Pencil className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => openEditModule(mod)}>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => setDeleteModuleItem(mod)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -477,12 +549,15 @@ function AdminLearn() {
                         <Badge variant="outline">{resource.ecosystem}</Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={resource.isPublished ? 'default' : 'secondary'}>
-                          {resource.isPublished ? 'Published' : 'Draft'}
+                        <Badge variant={resource.is_published ? 'default' : 'secondary'}>
+                          {resource.is_published ? 'Published' : 'Draft'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => openEditResource(resource)}>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
                           <Button variant="ghost" size="icon" onClick={() => setDeleteResourceItem(resource)}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
@@ -729,10 +804,10 @@ function AdminLearn() {
                 Cancel
               </Button>
               <Button
-                onClick={() => createResourceMutation.mutate()}
+                onClick={() => editResource ? updateResourceMutation.mutate() : createResourceMutation.mutate()}
                 disabled={!resourceForm.title || !resourceForm.url}
               >
-                Add
+                {editResource ? 'Update' : 'Add'}
               </Button>
             </div>
           </div>
@@ -751,6 +826,42 @@ function AdminLearn() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={() => deleteResourceMutation.mutate()}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Track Confirmation */}
+      <AlertDialog open={!!deleteTrackItem} onOpenChange={() => setDeleteTrackItem(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Track</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &quot;{deleteTrackItem?.title as string}&quot;? This will also delete all modules in this track.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteTrackMutation.mutate()}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Module Confirmation */}
+      <AlertDialog open={!!deleteModuleItem} onOpenChange={() => setDeleteModuleItem(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Module</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &quot;{deleteModuleItem?.title as string}&quot;?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteModuleMutation.mutate()}>
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

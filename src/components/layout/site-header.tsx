@@ -77,12 +77,8 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-6 px-6">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 shrink-0">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm tracking-tight">
-            BCF
-          </span>
-          <span className="hidden sm:block font-semibold text-sm text-foreground">
-            Blockchain Club <span className="text-primary font-bold">FUTMINNA</span>
-          </span>
+          <img src="/lightlogo.png" alt="BCF" className="h-30 w-auto dark:hidden" />
+          <img src="/darkogo.png" alt="BCF" className="h-30 w-auto hidden dark:block" />
         </Link>
 
         {/* Desktop nav */}

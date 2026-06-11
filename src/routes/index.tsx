@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight, BookOpen, Code as Code2, Users, Briefcase, ShieldCheck, Cpu } from "lucide-react";
 import researchLab from "@/assets/research-lab.jpg";
-import eventHackathon from "@/assets/event-hackathon.jpg";
-import eventNode from "@/assets/event-node.jpg";
-import eventGovernance from "@/assets/event-governance.jpg";
+import { getEvents } from "@/lib/api/events.server";
+import { getProjects } from "@/lib/api/projects.server";
+import { getBlogPosts } from "@/lib/api/blog.server";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,6 +22,29 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const fetchEvents = useServerFn(getEvents);
+  const fetchProjects = useServerFn(getProjects);
+  const fetchPosts = useServerFn(getBlogPosts);
+
+  const { data: eventsData } = useQuery({
+    queryKey: ["home-events"],
+    queryFn: () => fetchEvents({ data: { page: 1, limit: 3, filter: "upcoming" } }),
+  });
+
+  const { data: projectsData } = useQuery({
+    queryKey: ["home-projects"],
+    queryFn: () => fetchProjects({ data: { page: 1, limit: 4 } }),
+  });
+
+  const { data: postsData } = useQuery({
+    queryKey: ["home-posts"],
+    queryFn: () => fetchPosts({ data: { page: 1, limit: 3 } }),
+  });
+
+  const events = eventsData?.events ?? [];
+  const projects = projectsData?.projects ?? [];
+  const posts = postsData?.posts ?? [];
+
   return (
     <div className="bg-background">
       {/* HERO */}
@@ -50,9 +76,9 @@ function Home() {
         <div className="mx-auto max-w-[1280px] px-6 py-10 md:py-12">
           <div className="grid grid-cols-2 divide-x divide-border md:grid-cols-4">
             {[
-              { v: "500+", l: "Active Members" },
-              { v: "20+", l: "BUIDL Projects" },
-              { v: "$50k+", l: "Bounties Won" },
+              { v: projectsData?.total ? `${projectsData.total}+` : "20+", l: "BUIDL Projects" },
+              { v: eventsData?.total ? `${eventsData.total}+` : "12+", l: "Events Hosted" },
+              { v: postsData?.total ? `${postsData.total}+` : "5+", l: "Blog Posts" },
               { v: "12", l: "Protocol Partners" },
             ].map((s) => (
               <div key={s.l} className="text-center px-6 py-4">
@@ -144,35 +170,41 @@ function Home() {
             View All <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
-        <div className="grid gap-5 md:grid-cols-3">
-          {[
-            { img: eventHackathon, date: "AUG 16", title: "Build-A-Thon 2026", desc: "Our flagship annual hackathon with a $4,000 prize pool.", cta: "REGISTER" },
-            { img: eventNode, date: "EVERY SATURDAY", title: "Weekly Build Node", desc: "Co-working and mentorship sessions at the CS Lab.", cta: "JOIN" },
-            { img: eventGovernance, date: "SEPT 05", title: "Governance Night", desc: "Deep-dive into DAO structures and on-chain voting.", cta: "DETAILS" },
-          ].map((e) => (
-            <article
-              key={e.title}
-              className="overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm"
-            >
-              <img
-                src={e.img}
-                alt={e.title}
-                width={800}
-                height={600}
-                className="aspect-[4/3] w-full object-cover"
-                loading="lazy"
-              />
-              <div className="p-5">
-                <p className="text-label-bold text-outline">{e.date}</p>
-                <h3 className="mt-2 text-headline-md">{e.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{e.desc}</p>
-                <Button asChild variant="outline" className="mt-5 w-full font-semibold tracking-wide text-xs">
-                  <Link to="/events">{e.cta}</Link>
-                </Button>
-              </div>
-            </article>
-          ))}
-        </div>
+        {events.length === 0 ? (
+          <div className="text-center py-12 border border-dashed border-border rounded-lg">
+            <p className="text-muted-foreground">No upcoming events. Check back soon!</p>
+          </div>
+        ) : (
+          <div className="grid gap-5 md:grid-cols-3">
+            {events.slice(0, 3).map((event: any) => (
+              <Link
+                key={event.id}
+                to="/events/$eventId"
+                params={{ eventId: event.id }}
+                className="group overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm"
+              >
+                <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
+                  {event.coverImage ? (
+                    <img
+                      src={event.coverImage}
+                      alt={event.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <span className="text-4xl text-primary/30">📅</span>
+                  )}
+                </div>
+                <div className="p-5">
+                  <p className="text-label-bold text-outline">
+                    {new Date(event.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </p>
+                  <h3 className="mt-2 text-headline-md group-hover:text-primary transition-colors">{event.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">{event.description || ""}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* SHIPPED PROTOCOLS */}

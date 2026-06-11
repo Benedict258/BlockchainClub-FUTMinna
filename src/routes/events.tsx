@@ -244,7 +244,7 @@ function EventsPage() {
                             {"rsvps" in event ? event.rsvps.length : 0} RSVPs
                           </span>
                           <Button asChild size="sm" className="ml-auto">
-                            <Link to="/events">View Details</Link>
+                            <Link to="/events/$eventId" params={{ eventId: event.id }}>View Details</Link>
                           </Button>
                         </div>
                       </div>
@@ -317,7 +317,7 @@ function EventsPage() {
                           size="sm"
                           className="text-xs"
                         >
-                          <Link to="/events">RSVP</Link>
+                          <Link to="/events/$eventId" params={{ eventId: event.id }}>RSVP</Link>
                         </Button>
                       )}
                       {filter === "past" && (
@@ -327,7 +327,7 @@ function EventsPage() {
                           size="sm"
                           className="text-xs"
                         >
-                          <Link to="/events">Recap</Link>
+                          <Link to="/events/$eventId" params={{ eventId: event.id }}>Recap</Link>
                         </Button>
                       )}
                     </div>

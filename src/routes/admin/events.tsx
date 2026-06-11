@@ -198,12 +198,12 @@ function AdminEvents() {
       description: (event.description as string) || '',
       type: event.type as string,
       location: (event.location as string) || '',
-      isVirtual: (event.isVirtual as boolean) || false,
-      virtualLink: (event.virtualLink as string) || '',
-      startDate: event.startDate ? new Date(event.startDate as string).toISOString().slice(0, 16) : '',
-      endDate: event.endDate ? new Date(event.endDate as string).toISOString().slice(0, 16) : '',
-      coverImage: (event.coverImage as string) || '',
-      isPublished: (event.isPublished as boolean) || false,
+      isVirtual: (event.is_virtual as boolean) || false,
+      virtualLink: (event.virtual_link as string) || '',
+      startDate: event.start_date ? new Date(event.start_date as string).toISOString().slice(0, 16) : '',
+      endDate: event.end_date ? new Date(event.end_date as string).toISOString().slice(0, 16) : '',
+      coverImage: (event.cover_image as string) || '',
+      isPublished: (event.is_published as boolean) || false,
     });
     setDialogOpen(true);
   };
@@ -293,12 +293,12 @@ function AdminEvents() {
                     <Badge className={getTypeBadge(event.type)}>{event.type}</Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {new Date(event.startDate).toLocaleDateString()}
+                    {new Date(event.start_date).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>{(event.rsvps as unknown[])?.length || 0}</TableCell>
+                  <TableCell>{(event.event_rsvps as unknown[])?.length || 0}</TableCell>
                   <TableCell>
-                    <Badge variant={event.isPublished ? 'default' : 'secondary'}>
-                      {event.isPublished ? 'Published' : 'Draft'}
+                    <Badge variant={event.is_published ? 'default' : 'secondary'}>
+                      {event.is_published ? 'Published' : 'Draft'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">

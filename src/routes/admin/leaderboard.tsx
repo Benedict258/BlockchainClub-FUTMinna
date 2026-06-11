@@ -143,16 +143,16 @@ function AdminLeaderboard() {
               ))
             ) : data && data.length > 0 ? (
               data.map((entry) => {
-                const user = entry.user as Record<string, unknown>;
-                const profile = user?.profile as Record<string, unknown> | undefined;
+                const users = entry.users as Record<string, unknown> | undefined;
+                const profiles = users?.profiles as Record<string, unknown> | undefined;
                 return (
                   <TableRow key={entry.id}>
                     <TableCell>{getRankIcon(entry.rank)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold">
-                          {profile?.fullName
-                            ? (profile.fullName as string)
+                          {profiles?.full_name
+                            ? (profiles.full_name as string)
                                 .split(' ')
                                 .map((n: string) => n[0])
                                 .join('')
@@ -160,30 +160,30 @@ function AdminLeaderboard() {
                         </div>
                         <div>
                           <p className="font-medium">
-                            {(profile?.fullName as string) || 'Unknown'}
+                            {(profiles?.full_name as string) || 'Unknown'}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {user?.email as string}
+                            {users?.email as string}
                           </p>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge className="bg-primary/20 text-primary font-bold">
-                        {entry.totalPoints}
+                        {entry.total_points}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {entry.eventPoints}
+                      {entry.event_points}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {entry.learnPoints}
+                      {entry.learn_points}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {entry.buildPoints}
+                      {entry.build_points}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {entry.communityPoints}
+                      {entry.community_points}
                     </TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" onClick={() => openAdjust(entry)}>

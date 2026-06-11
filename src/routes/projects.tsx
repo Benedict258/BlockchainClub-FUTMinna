@@ -472,7 +472,7 @@ function ProjectsPage() {
             size="lg"
             className="mt-8 font-semibold tracking-wide"
           >
-            <Link to="/join">
+            <Link to="/projects/submit">
               Submit a Project <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

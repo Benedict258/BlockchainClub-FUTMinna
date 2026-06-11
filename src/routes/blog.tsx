@@ -246,7 +246,7 @@ function BlogPage() {
                           size="sm"
                           className="mt-5 self-start text-xs"
                         >
-                          <Link to="/blog">
+                          <Link to="/blog/$slug" params={{ slug: post.slug }}>
                             Read More{" "}
                             <ArrowRight className="ml-1 h-3 w-3" />
                           </Link>
@@ -328,7 +328,7 @@ function BlogPage() {
                         size="sm"
                         className="text-xs"
                       >
-                        <Link to="/blog">Read →</Link>
+                        <Link to="/blog/$slug" params={{ slug: post.slug }}>Read →</Link>
                       </Button>
                     </div>
                   </div>

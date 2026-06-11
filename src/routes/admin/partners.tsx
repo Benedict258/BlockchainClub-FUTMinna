@@ -240,9 +240,9 @@ function AdminPartners() {
                 <TableRow key={partner.id}>
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-3">
-                      {partner.logoUrl ? (
+                      {partner.logo_url ? (
                         <img
-                          src={partner.logoUrl as string}
+                          src={partner.logo_url as string}
                           alt={partner.name}
                           className="h-8 w-8 rounded object-contain bg-muted"
                         />
@@ -267,7 +267,7 @@ function AdminPartners() {
                   <TableCell>{partner.order}</TableCell>
                   <TableCell>
                     <Switch
-                      checked={partner.isActive}
+                      checked={partner.is_active}
                       onCheckedChange={(v) =>
                         toggleActiveMutation.mutate({ id: partner.id, isActive: v })
                       }

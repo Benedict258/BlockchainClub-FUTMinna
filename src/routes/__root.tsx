@@ -83,10 +83,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { title: "Blockchain Club FUTMINNA — Home for Web3 Builders" },
-        { name: "description", content: "FUTMinna's premier hub for blockchain innovation, decentralized development, and academic excellence in West Africa." },
+        {
+          name: "description",
+          content:
+            "FUTMinna's premier hub for blockchain innovation, decentralized development, and academic excellence in West Africa.",
+        },
         { name: "author", content: "Blockchain Club FUTMINNA" },
         { property: "og:title", content: "Blockchain Club FUTMINNA" },
-        { property: "og:description", content: "Home for Web3 builders — empowering the next wave of protocol engineers." },
+        {
+          property: "og:description",
+          content: "Home for Web3 builders — empowering the next wave of protocol engineers.",
+        },
         { property: "og:type", content: "website" },
         { property: "og:site_name", content: "Blockchain Club FUTMINNA" },
         { name: "twitter:card", content: "summary_large_image" },
@@ -97,6 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           rel: "stylesheet",
           href: appCss,
         },
+        { rel: "icon", type: "image/jpeg", href: "/faviconlogo.jpg" },
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
         {

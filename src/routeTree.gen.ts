@@ -24,11 +24,18 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LearnIndexRouteImport } from './routes/learn/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as ProjectsSubmitRouteImport } from './routes/projects/submit'
+import { Route as MembersMemberIdRouteImport } from './routes/members/$memberId'
 import { Route as LearnResearchRouteImport } from './routes/learn/research'
 import { Route as LearnMarketingRouteImport } from './routes/learn/marketing'
 import { Route as LearnDesignRouteImport } from './routes/learn/design'
 import { Route as LearnContentCreationRouteImport } from './routes/learn/content-creation'
 import { Route as LearnCommunityManagementRouteImport } from './routes/learn/community-management'
+import { Route as EventsEventIdRouteImport } from './routes/events/$eventId'
+import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
+import { Route as AuthVerifyRouteImport } from './routes/auth/verify'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
+import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminProjectsRouteImport } from './routes/admin/projects'
 import { Route as AdminPartnersRouteImport } from './routes/admin/partners'
@@ -115,6 +122,16 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const ProjectsSubmitRoute = ProjectsSubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => ProjectsRoute,
+} as any)
+const MembersMemberIdRoute = MembersMemberIdRouteImport.update({
+  id: '/members/$memberId',
+  path: '/members/$memberId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LearnResearchRoute = LearnResearchRouteImport.update({
   id: '/research',
   path: '/research',
@@ -141,6 +158,31 @@ const LearnCommunityManagementRoute =
     path: '/community-management',
     getParentRoute: () => LearnRoute,
   } as any)
+const EventsEventIdRoute = EventsEventIdRouteImport.update({
+  id: '/$eventId',
+  path: '/$eventId',
+  getParentRoute: () => EventsRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
+} as any)
+const AuthVerifyRoute = AuthVerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -196,16 +238,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/blog': typeof BlogRoute
-  '/events': typeof EventsRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/blog': typeof BlogRouteWithChildren
+  '/events': typeof EventsRouteWithChildren
   '/join': typeof JoinRoute
   '/leaderboard': typeof LeaderboardRoute
   '/learn': typeof LearnRouteWithChildren
   '/opportunities': typeof OpportunitiesRoute
   '/partners': typeof PartnersRoute
   '/profile': typeof ProfileRoute
-  '/projects': typeof ProjectsRoute
+  '/projects': typeof ProjectsRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/events': typeof AdminEventsRoute
@@ -216,26 +258,33 @@ export interface FileRoutesByFullPath {
   '/admin/partners': typeof AdminPartnersRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify': typeof AuthVerifyRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/events/$eventId': typeof EventsEventIdRoute
   '/learn/community-management': typeof LearnCommunityManagementRoute
   '/learn/content-creation': typeof LearnContentCreationRoute
   '/learn/design': typeof LearnDesignRoute
   '/learn/marketing': typeof LearnMarketingRoute
   '/learn/research': typeof LearnResearchRoute
+  '/members/$memberId': typeof MembersMemberIdRoute
+  '/projects/submit': typeof ProjectsSubmitRoute
   '/admin/': typeof AdminIndexRoute
   '/learn/': typeof LearnIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/auth': typeof AuthRoute
-  '/blog': typeof BlogRoute
-  '/events': typeof EventsRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/blog': typeof BlogRouteWithChildren
+  '/events': typeof EventsRouteWithChildren
   '/join': typeof JoinRoute
   '/leaderboard': typeof LeaderboardRoute
   '/opportunities': typeof OpportunitiesRoute
   '/partners': typeof PartnersRoute
   '/profile': typeof ProfileRoute
-  '/projects': typeof ProjectsRoute
+  '/projects': typeof ProjectsRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/events': typeof AdminEventsRoute
@@ -246,11 +295,18 @@ export interface FileRoutesByTo {
   '/admin/partners': typeof AdminPartnersRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify': typeof AuthVerifyRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/events/$eventId': typeof EventsEventIdRoute
   '/learn/community-management': typeof LearnCommunityManagementRoute
   '/learn/content-creation': typeof LearnContentCreationRoute
   '/learn/design': typeof LearnDesignRoute
   '/learn/marketing': typeof LearnMarketingRoute
   '/learn/research': typeof LearnResearchRoute
+  '/members/$memberId': typeof MembersMemberIdRoute
+  '/projects/submit': typeof ProjectsSubmitRoute
   '/admin': typeof AdminIndexRoute
   '/learn': typeof LearnIndexRoute
 }
@@ -259,16 +315,16 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/blog': typeof BlogRoute
-  '/events': typeof EventsRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/blog': typeof BlogRouteWithChildren
+  '/events': typeof EventsRouteWithChildren
   '/join': typeof JoinRoute
   '/leaderboard': typeof LeaderboardRoute
   '/learn': typeof LearnRouteWithChildren
   '/opportunities': typeof OpportunitiesRoute
   '/partners': typeof PartnersRoute
   '/profile': typeof ProfileRoute
-  '/projects': typeof ProjectsRoute
+  '/projects': typeof ProjectsRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/events': typeof AdminEventsRoute
@@ -279,11 +335,18 @@ export interface FileRoutesById {
   '/admin/partners': typeof AdminPartnersRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify': typeof AuthVerifyRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/events/$eventId': typeof EventsEventIdRoute
   '/learn/community-management': typeof LearnCommunityManagementRoute
   '/learn/content-creation': typeof LearnContentCreationRoute
   '/learn/design': typeof LearnDesignRoute
   '/learn/marketing': typeof LearnMarketingRoute
   '/learn/research': typeof LearnResearchRoute
+  '/members/$memberId': typeof MembersMemberIdRoute
+  '/projects/submit': typeof ProjectsSubmitRoute
   '/admin/': typeof AdminIndexRoute
   '/learn/': typeof LearnIndexRoute
 }
@@ -313,11 +376,18 @@ export interface FileRouteTypes {
     | '/admin/partners'
     | '/admin/projects'
     | '/admin/settings'
+    | '/auth/forgot-password'
+    | '/auth/reset-password'
+    | '/auth/verify'
+    | '/blog/$slug'
+    | '/events/$eventId'
     | '/learn/community-management'
     | '/learn/content-creation'
     | '/learn/design'
     | '/learn/marketing'
     | '/learn/research'
+    | '/members/$memberId'
+    | '/projects/submit'
     | '/admin/'
     | '/learn/'
   fileRoutesByTo: FileRoutesByTo
@@ -343,11 +413,18 @@ export interface FileRouteTypes {
     | '/admin/partners'
     | '/admin/projects'
     | '/admin/settings'
+    | '/auth/forgot-password'
+    | '/auth/reset-password'
+    | '/auth/verify'
+    | '/blog/$slug'
+    | '/events/$eventId'
     | '/learn/community-management'
     | '/learn/content-creation'
     | '/learn/design'
     | '/learn/marketing'
     | '/learn/research'
+    | '/members/$memberId'
+    | '/projects/submit'
     | '/admin'
     | '/learn'
   id:
@@ -375,11 +452,18 @@ export interface FileRouteTypes {
     | '/admin/partners'
     | '/admin/projects'
     | '/admin/settings'
+    | '/auth/forgot-password'
+    | '/auth/reset-password'
+    | '/auth/verify'
+    | '/blog/$slug'
+    | '/events/$eventId'
     | '/learn/community-management'
     | '/learn/content-creation'
     | '/learn/design'
     | '/learn/marketing'
     | '/learn/research'
+    | '/members/$memberId'
+    | '/projects/submit'
     | '/admin/'
     | '/learn/'
   fileRoutesById: FileRoutesById
@@ -388,16 +472,17 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
-  AuthRoute: typeof AuthRoute
-  BlogRoute: typeof BlogRoute
-  EventsRoute: typeof EventsRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  BlogRoute: typeof BlogRouteWithChildren
+  EventsRoute: typeof EventsRouteWithChildren
   JoinRoute: typeof JoinRoute
   LeaderboardRoute: typeof LeaderboardRoute
   LearnRoute: typeof LearnRouteWithChildren
   OpportunitiesRoute: typeof OpportunitiesRoute
   PartnersRoute: typeof PartnersRoute
   ProfileRoute: typeof ProfileRoute
-  ProjectsRoute: typeof ProjectsRoute
+  ProjectsRoute: typeof ProjectsRouteWithChildren
+  MembersMemberIdRoute: typeof MembersMemberIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -507,6 +592,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/projects/submit': {
+      id: '/projects/submit'
+      path: '/submit'
+      fullPath: '/projects/submit'
+      preLoaderRoute: typeof ProjectsSubmitRouteImport
+      parentRoute: typeof ProjectsRoute
+    }
+    '/members/$memberId': {
+      id: '/members/$memberId'
+      path: '/members/$memberId'
+      fullPath: '/members/$memberId'
+      preLoaderRoute: typeof MembersMemberIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/learn/research': {
       id: '/learn/research'
       path: '/research'
@@ -541,6 +640,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/learn/community-management'
       preLoaderRoute: typeof LearnCommunityManagementRouteImport
       parentRoute: typeof LearnRoute
+    }
+    '/events/$eventId': {
+      id: '/events/$eventId'
+      path: '/$eventId'
+      fullPath: '/events/$eventId'
+      preLoaderRoute: typeof EventsEventIdRouteImport
+      parentRoute: typeof EventsRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
+    }
+    '/auth/verify': {
+      id: '/auth/verify'
+      path: '/verify'
+      fullPath: '/auth/verify'
+      preLoaderRoute: typeof AuthVerifyRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/admin/settings': {
       id: '/admin/settings'
@@ -645,6 +779,41 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface AuthRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthVerifyRoute: typeof AuthVerifyRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthVerifyRoute: AuthVerifyRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
+interface EventsRouteChildren {
+  EventsEventIdRoute: typeof EventsEventIdRoute
+}
+
+const EventsRouteChildren: EventsRouteChildren = {
+  EventsEventIdRoute: EventsEventIdRoute,
+}
+
+const EventsRouteWithChildren =
+  EventsRoute._addFileChildren(EventsRouteChildren)
+
 interface LearnRouteChildren {
   LearnCommunityManagementRoute: typeof LearnCommunityManagementRoute
   LearnContentCreationRoute: typeof LearnContentCreationRoute
@@ -665,20 +834,33 @@ const LearnRouteChildren: LearnRouteChildren = {
 
 const LearnRouteWithChildren = LearnRoute._addFileChildren(LearnRouteChildren)
 
+interface ProjectsRouteChildren {
+  ProjectsSubmitRoute: typeof ProjectsSubmitRoute
+}
+
+const ProjectsRouteChildren: ProjectsRouteChildren = {
+  ProjectsSubmitRoute: ProjectsSubmitRoute,
+}
+
+const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
+  ProjectsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
-  AuthRoute: AuthRoute,
-  BlogRoute: BlogRoute,
-  EventsRoute: EventsRoute,
+  AuthRoute: AuthRouteWithChildren,
+  BlogRoute: BlogRouteWithChildren,
+  EventsRoute: EventsRouteWithChildren,
   JoinRoute: JoinRoute,
   LeaderboardRoute: LeaderboardRoute,
   LearnRoute: LearnRouteWithChildren,
   OpportunitiesRoute: OpportunitiesRoute,
   PartnersRoute: PartnersRoute,
   ProfileRoute: ProfileRoute,
-  ProjectsRoute: ProjectsRoute,
+  ProjectsRoute: ProjectsRouteWithChildren,
+  MembersMemberIdRoute: MembersMemberIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -40,12 +40,24 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 // Direct API handlers that bypass TanStack Start's Seroval serialization
 async function handleAuthRegister(request: Request): Promise<Response> {
   try {
+    const { checkRateLimit, getClientIp, getRateLimitHeaders } = await import("./lib/rate-limit");
+    const ip = getClientIp(request);
+    const rateLimitKey = `register:${ip}`;
+    const headers = getRateLimitHeaders(rateLimitKey, 5, 15 * 60 * 1000);
+
+    if (headers["X-RateLimit-Remaining"] === "0") {
+      return new Response(JSON.stringify({ error: "Too many registration attempts. Please try again later." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...headers },
+      });
+    }
+
     const { register } = await import("./lib/api/auth-direct");
     const body = await request.json();
     const result = await register(body);
     return new Response(JSON.stringify(result), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...headers },
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || "Registration failed" }), {
@@ -57,12 +69,24 @@ async function handleAuthRegister(request: Request): Promise<Response> {
 
 async function handleAuthLogin(request: Request): Promise<Response> {
   try {
+    const { checkRateLimit, getClientIp, getRateLimitHeaders } = await import("./lib/rate-limit");
+    const ip = getClientIp(request);
+    const rateLimitKey = `login:${ip}`;
+    const headers = getRateLimitHeaders(rateLimitKey, 10, 15 * 60 * 1000);
+
+    if (headers["X-RateLimit-Remaining"] === "0") {
+      return new Response(JSON.stringify({ error: "Too many login attempts. Please try again later." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...headers },
+      });
+    }
+
     const { login } = await import("./lib/api/auth-direct");
     const body = await request.json();
     const result = await login(body);
     return new Response(JSON.stringify(result), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...headers },
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || "Login failed" }), {
@@ -76,8 +100,37 @@ async function handleAuthLogin(request: Request): Promise<Response> {
 async function handleSupabaseApi(request: Request, pathname: string): Promise<Response> {
   try {
     const { supabase, query } = await import("./lib/supabase");
+    const { verifyAccessToken } = await import("./lib/auth");
     const method = request.method;
     const body = method !== "GET" ? await request.json().catch(() => ({})) : {};
+
+    const authHeader = request.headers.get("Authorization");
+    const isWriteOp = ["insert", "update", "delete", "rpc", "adjust-points", "settings"].some(
+      (op) => pathname.includes(`/api/supabase/${op}`)
+    );
+
+    if (isWriteOp) {
+      if (!authHeader?.startsWith("Bearer ")) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const token = authHeader.slice(7);
+      const payload = verifyAccessToken(token);
+      if (!payload) {
+        return new Response(JSON.stringify({ error: "Invalid token" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      if (payload.role !== "SUPER_ADMIN" && payload.role !== "ADMIN") {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
 
     const parts = pathname.replace("/api/supabase/", "").split("/");
     const op = parts[0];
@@ -314,6 +367,137 @@ async function handleAuthLogout(request: Request): Promise<Response> {
   } catch {
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleVerifyEmail(request: Request): Promise<Response> {
+  try {
+    const { supabase } = await import("./lib/supabase");
+    const { verifyVerificationToken } = await import("./lib/auth");
+    const body = await request.json();
+    const { token } = body;
+
+    if (!token) {
+      return new Response(JSON.stringify({ error: "Token required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const payload = verifyVerificationToken(token);
+    if (!payload) {
+      return new Response(JSON.stringify({ error: "Invalid or expired token" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const { error } = await supabase
+      .from("users")
+      .update({ is_active: true, is_approved: true, updated_at: new Date().toISOString() }, { id: payload.userId });
+
+    if (error) throw new Error(error.message);
+
+    return new Response(JSON.stringify({ message: "Email verified successfully" }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message || "Verification failed" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleForgotPassword(request: Request): Promise<Response> {
+  try {
+    const { query } = await import("./lib/supabase");
+    const { generatePasswordResetToken } = await import("./lib/auth");
+    const { sendPasswordResetEmail } = await import("./lib/email");
+    const body = await request.json();
+    const { email } = body;
+
+    if (!email) {
+      return new Response(JSON.stringify({ error: "Email required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const { data: user } = await query("users", {
+      select: "id, email",
+      filters: { email },
+      single: true,
+    });
+
+    if (!user) {
+      return new Response(JSON.stringify({ message: "If an account exists, a reset email has been sent" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const resetToken = generatePasswordResetToken(user.id);
+    await sendPasswordResetEmail(user.email, resetToken);
+
+    return new Response(JSON.stringify({ message: "If an account exists, a reset email has been sent" }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message || "Failed to process request" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleResetPassword(request: Request): Promise<Response> {
+  try {
+    const { supabase } = await import("./lib/supabase");
+    const { verifyPasswordResetToken, hashPassword } = await import("./lib/auth");
+    const body = await request.json();
+    const { token, password } = body;
+
+    if (!token || !password) {
+      return new Response(JSON.stringify({ error: "Token and password required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (password.length < 8) {
+      return new Response(JSON.stringify({ error: "Password must be at least 8 characters" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const payload = verifyPasswordResetToken(token);
+    if (!payload) {
+      return new Response(JSON.stringify({ error: "Invalid or expired token" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const passwordHash = await hashPassword(password);
+    const { error } = await supabase
+      .from("users")
+      .update({ password_hash: passwordHash, updated_at: new Date().toISOString() }, { id: payload.userId });
+
+    if (error) throw new Error(error.message);
+
+    return new Response(JSON.stringify({ message: "Password reset successfully" }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message || "Failed to reset password" }), {
+      status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
@@ -594,10 +778,19 @@ export default {
     if (url.pathname === "/api/auth/profile" && request.method === "GET") {
       return handleProfileFetch(request);
     }
-    if (url.pathname === "/api/auth/avatar" && request.method === "POST") {
-      return handleAvatarUpload(request);
-    }
-    if (url.pathname.startsWith("/api/supabase/")) {
+  if (url.pathname === "/api/auth/avatar" && request.method === "POST") {
+    return handleAvatarUpload(request);
+  }
+  if (url.pathname === "/api/auth/verify-email" && request.method === "POST") {
+    return handleVerifyEmail(request);
+  }
+  if (url.pathname === "/api/auth/forgot-password" && request.method === "POST") {
+    return handleForgotPassword(request);
+  }
+  if (url.pathname === "/api/auth/reset-password" && request.method === "POST") {
+    return handleResetPassword(request);
+  }
+  if (url.pathname.startsWith("/api/supabase/")) {
       return handleSupabaseApi(request, url.pathname);
     }
 

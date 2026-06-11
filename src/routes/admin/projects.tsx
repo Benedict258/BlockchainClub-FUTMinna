@@ -162,9 +162,9 @@ function AdminProjects() {
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2">
                       {project.name}
-                      {project.githubUrl && (
+                      {project.github_url && (
                         <a
-                          href={project.githubUrl as string}
+                          href={project.github_url as string}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-muted-foreground hover:text-foreground"
@@ -176,17 +176,17 @@ function AdminProjects() {
                   </TableCell>
                   <TableCell>
                     <div className="flex -space-x-2">
-                      {project.members?.slice(0, 3).map((member: Record<string, unknown>) => {
-                        const user = member.user as Record<string, unknown>;
-                        const profile = user?.profile as Record<string, unknown> | undefined;
+                      {project.project_members?.slice(0, 3).map((member: Record<string, unknown>) => {
+                        const users = member.users as Record<string, unknown>;
+                        const profiles = users?.profiles as Record<string, unknown> | undefined;
                         return (
                           <div
-                            key={user.id as string}
+                            key={users?.id as string}
                             className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold border border-background"
-                            title={(profile?.fullName as string) || 'Unknown'}
+                            title={(profiles?.full_name as string) || 'Unknown'}
                           >
-                            {profile?.fullName
-                              ? (profile.fullName as string).split(' ').map((n: string) => n[0]).join('')
+                            {profiles?.full_name
+                              ? (profiles.full_name as string).split(' ').map((n: string) => n[0]).join('')
                               : '?'}
                           </div>
                         );
@@ -198,7 +198,7 @@ function AdminProjects() {
                   </TableCell>
                   <TableCell>{getStatusBadge(project.status as string)}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    {new Date(project.createdAt).toLocaleDateString()}
+                    {new Date(project.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">

@@ -76,7 +76,7 @@ function AdminBlog() {
     queryKey: ['admin-blog'],
     queryFn: async () => {
       const res = await apiQuery('blog_posts', {
-        select: 'id,title,slug,excerpt,cover_image,category,is_featured,published_at,created_at,author_id,users(id,profiles(full_name,avatar_url)),blog_post_tags(*,tags(id,name))',
+        select: 'id,title,content,slug,excerpt,cover_image,category,is_featured,status,published_at,created_at,author_id,users(id,profiles(full_name,avatar_url)),blog_post_tags(*,tags(id,name))',
         order: { column: 'published_at', ascending: false },
         range: [0, 49],
         count: 'exact',
@@ -171,11 +171,11 @@ function AdminBlog() {
       title: post.title as string,
       slug: post.slug as string,
       excerpt: (post.excerpt as string) || '',
-      content: '',
-      coverImage: (post.coverImage as string) || '',
+      content: (post.content as string) || '',
+      coverImage: (post.cover_image as string) || '',
       category: (post.category as string) || '',
-      isFeatured: (post.isFeatured as boolean) || false,
-      status: 'PUBLISHED',
+      isFeatured: (post.is_featured as boolean) || false,
+      status: (post.status as 'DRAFT' | 'PUBLISHED') || 'DRAFT',
     });
     setDialogOpen(true);
   };
@@ -222,7 +222,7 @@ function AdminBlog() {
                 <TableRow key={post.id}>
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    {post.author?.profile?.fullName || 'Unknown'}
+                    {post.users?.profiles?.full_name || 'Unknown'}
                   </TableCell>
                   <TableCell>
                     {post.category ? (
@@ -232,29 +232,46 @@ function AdminBlog() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="default">
-                      Published
+                    <Badge variant={post.status === 'PUBLISHED' ? 'default' : 'secondary'}>
+                      {post.status || 'DRAFT'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {post.publishedAt
-                      ? new Date(post.publishedAt).toLocaleDateString()
-                      : new Date(post.createdAt).toLocaleDateString()}
+                    {post.published_at
+                      ? new Date(post.published_at).toLocaleDateString()
+                      : post.created_at
+                        ? new Date(post.created_at).toLocaleDateString()
+                        : ''}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() =>
-                          publishMutation.mutate({
-                            id: post.id as string,
-                            publish: false,
-                          })
-                        }
-                      >
-                        <EyeOff className="h-4 w-4 text-yellow-500" />
-                      </Button>
+                      {post.status === 'PUBLISHED' ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() =>
+                            publishMutation.mutate({
+                              id: post.id as string,
+                              publish: false,
+                            })
+                          }
+                        >
+                          <EyeOff className="h-4 w-4 text-yellow-500" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() =>
+                            publishMutation.mutate({
+                              id: post.id as string,
+                              publish: true,
+                            })
+                          }
+                        >
+                          <Eye className="h-4 w-4 text-green-500" />
+                        </Button>
+                      )}
                       <Button variant="ghost" size="icon" onClick={() => openEdit(post)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
