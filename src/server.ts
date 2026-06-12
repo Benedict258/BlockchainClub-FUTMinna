@@ -674,15 +674,16 @@ async function handleAvatarUpload(request: Request): Promise<Response> {
       });
     }
 
-    const { uploadToCloudinary } = await import("./lib/upload");
-    const result = await uploadToCloudinary(file, "bcf-avatars");
+    const { uploadToSupabase } = await import("./lib/upload");
+    const result = await uploadToSupabase(file, "avatars");
 
-    return new Response(JSON.stringify({ url: result.url, publicId: result.publicId }), {
+    return new Response(JSON.stringify({ url: result.url, path: result.path }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message || "Upload failed" }), {
+    console.error("Avatar upload error:", error.message, error.stack);
+    return new Response(JSON.stringify({ error: error.message || "Upload failed", details: error.stack }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
