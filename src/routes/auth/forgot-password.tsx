@@ -18,8 +18,8 @@ type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export const Route = createFileRoute("/auth/forgot-password")({
   head: () => ({
     meta: [
-      { title: "Forgot Password | BCF" },
-      { name: "description", content: "Reset your BCF account password." },
+      { title: "Forgot Password | BlockchainClub FUTMINNA" },
+      { name: "description", content: "Reset your BlockchainClub FUTMINNA account password." },
     ],
   }),
   component: ForgotPasswordPage,

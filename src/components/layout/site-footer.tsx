@@ -8,8 +8,8 @@ export function SiteFooter() {
           {/* Brand column */}
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
-              <img src="/lightlogo.png" alt="BCF" className="h-30 w-auto dark:hidden" />
-              <img src="/darklogo.png" alt="BCF" className="h-30 w-auto hidden dark:block" />
+              <img src="/lightlogo.png" alt="BlockchainClub FUTMINNA" className="h-30 w-auto dark:hidden" />
+              <img src="/darklogo.png" alt="BlockchainClub FUTMINNA" className="h-30 w-auto hidden dark:block" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               The authoritative hub for decentralized technology research and education at Federal University of Technology, Minna.

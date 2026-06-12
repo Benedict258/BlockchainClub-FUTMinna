@@ -57,7 +57,7 @@ function PartnersSkeleton() {
 export const Route = createFileRoute("/partners")({
   head: () => ({
     meta: [
-      { title: "Partners | BCF" },
+      { title: "Partners | BlockchainClub FUTMINNA" },
       {
         name: "description",
         content:
@@ -218,7 +218,7 @@ function PartnersPage() {
                 variant="outline"
                 className="font-semibold tracking-wide"
               >
-                <Link to="/about">Learn More About BCF</Link>
+                <Link to="/about">Learn More About BlockchainClub FUTMINNA</Link>
               </Button>
             </div>
             <p className="mt-6 text-xs text-muted-foreground">

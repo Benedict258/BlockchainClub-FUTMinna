@@ -10,7 +10,7 @@ export const Route = createFileRoute("/auth/verify")({
   }),
   head: () => ({
     meta: [
-      { title: "Verify Email | BCF" },
+      { title: "Verify Email | BlockchainClub FUTMINNA" },
       { name: "description", content: "Verify your email address." },
     ],
   }),

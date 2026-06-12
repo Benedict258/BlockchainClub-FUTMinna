@@ -19,7 +19,7 @@ const EMAIL_wrapper = (content: string) => `
           <tr>
             <td style="text-align:center;padding-bottom:32px;">
               <a href="${SITE_URL}" style="text-decoration:none;">
-                <span style="font-size:24px;font-weight:800;color:#C084FC;letter-spacing:-0.5px;">BCF</span>
+                <span style="font-size:24px;font-weight:800;color:#C084FC;letter-spacing:-0.5px;">BlockchainClub FUTMINNA</span>
                 <span style="font-size:24px;font-weight:800;color:#FFFFFF;letter-spacing:-0.5px;">UTMINNA</span>
               </a>
             </td>

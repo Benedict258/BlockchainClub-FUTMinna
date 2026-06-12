@@ -82,7 +82,7 @@ function BlogSkeleton() {
 export const Route = createFileRoute("/blog")({
   head: () => ({
     meta: [
-      { title: "Blog & Resources | BCF" },
+      { title: "Blog & Resources | BlockchainClub FUTMINNA" },
       {
         name: "description",
         content: "Event recaps, tutorials, and ecosystem deep-dives.",
@@ -131,7 +131,7 @@ function BlogPage() {
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-body-lg text-muted-foreground">
             Event recaps, tutorials, build logs, and ecosystem deep-dives from
-            the BCF community.
+            the BlockchainClub FUTMINNA community.
           </p>
         </div>
       </section>

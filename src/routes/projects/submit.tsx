@@ -39,7 +39,7 @@ type ProjectInput = z.infer<typeof projectSchema>;
 export const Route = createFileRoute("/projects/submit")({
   head: () => ({
     meta: [
-      { title: "Submit Project | BCF" },
+      { title: "Submit Project | BlockchainClub FUTMINNA" },
       { name: "description", content: "Submit your project to Blockchain Club FUTMINNA." },
     ],
   }),
@@ -141,7 +141,7 @@ function SubmitProjectPage() {
       <Card className="w-full max-w-md border-border bg-card">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Submit Project</CardTitle>
-          <CardDescription>Share your project with the BCF community</CardDescription>
+          <CardDescription>Share your project with the BlockchainClub FUTMINNA community</CardDescription>
         </CardHeader>
         <CardContent>
           <Button asChild variant="ghost" className="mb-4 -ml-2">

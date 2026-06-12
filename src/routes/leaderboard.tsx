@@ -113,7 +113,7 @@ export const Route = createFileRoute("/leaderboard")({
   head: () => ({
     meta: [
       {
-        title: "Club Rankings — Leaderboard | BCF",
+        title: "Club Rankings — Leaderboard | BlockchainClub FUTMINNA",
       },
       {
         name: "description",
@@ -122,7 +122,7 @@ export const Route = createFileRoute("/leaderboard")({
       },
       {
         property: "og:title",
-        content: "Club Rankings — BCF Leaderboard",
+        content: "Club Rankings — BlockchainClub FUTMINNA Leaderboard",
       },
       {
         property: "og:description",
@@ -167,7 +167,7 @@ function LeaderboardPage() {
             <span className="text-primary">Contributors</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-body-lg text-muted-foreground">
-            Celebrating the most active and impactful members of the BCF community. Points are
+            Celebrating the most active and impactful members of the BlockchainClub FUTMINNA community. Points are
             earned through events, learning, building, and community engagement.
           </p>
         </div>

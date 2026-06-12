@@ -50,7 +50,7 @@ const ECOSYSTEM_COLORS: Record<string, string> = {
 export const Route = createFileRoute("/projects")({
   head: () => ({
     meta: [
-      { title: "Projects — Build the Future | BCF" },
+      { title: "Projects — Build the Future | BlockchainClub FUTMINNA" },
       {
         name: "description",
         content:
@@ -464,7 +464,7 @@ function ProjectsPage() {
             Show It Off.
           </h2>
           <p className="mt-3 text-muted-foreground max-w-lg mx-auto">
-            Submit your project to the BCF showcase. Get feedback, find
+            Submit your project to the BlockchainClub FUTMINNA showcase. Get feedback, find
             collaborators, and inspire the next wave of builders.
           </p>
           <Button

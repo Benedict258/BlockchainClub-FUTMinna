@@ -27,7 +27,7 @@ import { registerSchema, type RegisterInput } from '@/lib/validators/auth';
 export const Route = createFileRoute('/join')({
   head: () => ({
     meta: [
-      { title: 'Join the Club | BCF' },
+      { title: 'Join the Club | BlockchainClub FUTMINNA' },
       { name: 'description', content: 'Apply for membership to Blockchain Club FUTMINNA.' },
     ],
   }),
@@ -103,7 +103,7 @@ function JoinPage() {
     <div className="flex min-h-[calc(100vh-12rem)] items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md border-border bg-card">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Join BCF</CardTitle>
+          <CardTitle className="text-2xl font-bold">Join BlockchainClub FUTMINNA</CardTitle>
           <CardDescription>Create your member profile to get started</CardDescription>
         </CardHeader>
         <CardContent>

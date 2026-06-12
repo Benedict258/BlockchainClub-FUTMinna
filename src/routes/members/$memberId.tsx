@@ -35,7 +35,7 @@ const LEVEL_LABELS: Record<string, string> = {
 export const Route = createFileRoute("/members/$memberId")({
   head: () => ({
     meta: [
-      { title: "Member Profile | BCF" },
+      { title: "Member Profile | BlockchainClub FUTMINNA" },
       { name: "description", content: "Member profile on Blockchain Club FUTMINNA." },
     ],
   }),

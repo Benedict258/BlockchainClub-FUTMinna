@@ -27,7 +27,7 @@ import {
 export const Route = createFileRoute("/learn/marketing")({
   head: () => ({
     meta: [
-      { title: "Learn Marketing — Growth & Brand Strategy | BCF" },
+      { title: "Learn Marketing — Growth & Brand Strategy | BlockchainClub FUTMINNA" },
       {
         name: "description",
         content:
@@ -350,7 +350,7 @@ function MarketingPage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" className="font-semibold tracking-wide">
-              <Link to="/join">Join BCF</Link>
+              <Link to="/join">Join BlockchainClub FUTMINNA</Link>
             </Button>
             <Button
               asChild

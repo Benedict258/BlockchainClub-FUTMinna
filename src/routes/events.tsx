@@ -40,13 +40,13 @@ const TYPE_COLORS: Record<string, string> = {
 export const Route = createFileRoute("/events")({
   head: () => ({
     meta: [
-      { title: "Events — Workshops, Hackathons & Talks | BCF" },
+      { title: "Events — Workshops, Hackathons & Talks | BlockchainClub FUTMINNA" },
       {
         name: "description",
         content:
           "Upcoming and past events from Blockchain Club FUTMINNA: workshops, hackathons, talks, and bootcamps.",
       },
-      { property: "og:title", content: "BCF Events" },
+      { property: "og:title", content: "BlockchainClub FUTMINNA Events" },
       {
         property: "og:description",
         content: "Workshops, hackathons, talks, and bootcamps.",

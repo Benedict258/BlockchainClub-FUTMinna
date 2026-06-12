@@ -160,7 +160,7 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 export const Route = createFileRoute("/learn/design")({
   head: () => ({
     meta: [
-      { title: "Learn Design — UI/UX for Web3 | BCF" },
+      { title: "Learn Design — UI/UX for Web3 | BlockchainClub FUTMINNA" },
       {
         name: "description",
         content:
@@ -390,7 +390,7 @@ function DesignLearnPage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" className="font-semibold tracking-wide">
-              <Link to="/join">Join BCF</Link>
+              <Link to="/join">Join BlockchainClub FUTMINNA</Link>
             </Button>
             <Button
               asChild
