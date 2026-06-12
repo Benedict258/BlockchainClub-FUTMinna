@@ -131,7 +131,7 @@ function AdminSettings() {
             <Input
               value={form.club_name}
               onChange={(e) => setForm({ ...form, club_name: e.target.value })}
-              placeholder="Blockchain Club FUTMINNA"
+              placeholder="Blockchain Club FUTMinna"
             />
           </div>
           <div>
@@ -139,7 +139,7 @@ function AdminSettings() {
             <Input
               value={form.club_description}
               onChange={(e) => setForm({ ...form, club_description: e.target.value })}
-              placeholder="Building the future of blockchain at FUTMINNA"
+              placeholder="Building the future of blockchain at FUTMinna"
             />
           </div>
           <div>

@@ -37,8 +37,8 @@ const TYPE_COLORS: Record<string, string> = {
 export const Route = createFileRoute("/events/$eventId")({
   head: () => ({
     meta: [
-      { title: "Event Details | BlockchainClub FUTMINNA" },
-      { name: "description", content: "Event details from Blockchain Club FUTMINNA." },
+      { title: "Event Details | BlockchainClub FUTMinna" },
+      { name: "description", content: "Event details from Blockchain Club FUTMinna." },
     ],
   }),
   component: EventDetailPage,

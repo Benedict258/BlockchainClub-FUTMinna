@@ -132,7 +132,7 @@ const RESOURCE_ICONS: Record<string, typeof BookOpen> = {
 export const Route = createFileRoute("/learn/community-management")({
   head: () => ({
     meta: [
-      { title: "Learn — Community Management | BlockchainClub FUTMINNA" },
+      { title: "Learn — Community Management | BlockchainClub FUTMinna" },
       {
         name: "description",
         content:
@@ -140,7 +140,7 @@ export const Route = createFileRoute("/learn/community-management")({
       },
       {
         property: "og:title",
-        content: "Community Management Learning — Blockchain Club FUTMINNA",
+        content: "Community Management Learning — Blockchain Club FUTMinna",
       },
       {
         property: "og:description",
@@ -356,7 +356,7 @@ function CommunityManagementPage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" className="font-semibold tracking-wide">
-              <Link to="/join">Join BlockchainClub FUTMINNA</Link>
+              <Link to="/join">Join BlockchainClub FUTMinna</Link>
             </Button>
             <Button
               asChild

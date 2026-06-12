@@ -27,8 +27,8 @@ export const Route = createFileRoute("/auth/reset-password")({
   }),
   head: () => ({
     meta: [
-      { title: "Reset Password | BlockchainClub FUTMINNA" },
-      { name: "description", content: "Set a new password for your BlockchainClub FUTMINNA account." },
+      { title: "Reset Password | BlockchainClub FUTMinna" },
+      { name: "description", content: "Set a new password for your BlockchainClub FUTMinna account." },
     ],
   }),
   component: ResetPasswordPage,

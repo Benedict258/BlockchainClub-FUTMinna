@@ -156,7 +156,7 @@ const RESOURCE_TYPE_LABELS: Record<string, string> = {
 export const Route = createFileRoute("/learn/content-creation")({
   head: () => ({
     meta: [
-      { title: "Content Creation — Learn | BlockchainClub FUTMINNA" },
+      { title: "Content Creation — Learn | BlockchainClub FUTMinna" },
       {
         name: "description",
         content:
@@ -164,7 +164,7 @@ export const Route = createFileRoute("/learn/content-creation")({
       },
       {
         property: "og:title",
-        content: "Master Content Creation — Blockchain Club FUTMINNA",
+        content: "Master Content Creation — Blockchain Club FUTMinna",
       },
       {
         property: "og:description",
@@ -378,7 +378,7 @@ function ContentCreationPage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" className="font-semibold tracking-wide">
-              <Link to="/join">Join BlockchainClub FUTMINNA</Link>
+              <Link to="/join">Join BlockchainClub FUTMinna</Link>
             </Button>
             <Button
               asChild

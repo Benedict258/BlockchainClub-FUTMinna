@@ -116,7 +116,7 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 export const Route = createFileRoute("/learn/research")({
   head: () => ({
     meta: [
-      { title: "Research — Master Blockchain Research | BlockchainClub FUTMINNA" },
+      { title: "Research — Master Blockchain Research | BlockchainClub FUTMinna" },
       {
         name: "description",
         content:
@@ -124,7 +124,7 @@ export const Route = createFileRoute("/learn/research")({
       },
       {
         property: "og:title",
-        content: "Master Blockchain Research — Blockchain Club FUTMINNA",
+        content: "Master Blockchain Research — Blockchain Club FUTMinna",
       },
       {
         property: "og:description",
@@ -306,7 +306,7 @@ function ResearchPage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" className="font-semibold tracking-wide">
-              <Link to="/join">Join BlockchainClub FUTMINNA</Link>
+              <Link to="/join">Join BlockchainClub FUTMinna</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="font-semibold tracking-wide">
               <Link to="/about">Learn More</Link>

@@ -50,16 +50,16 @@ const ECOSYSTEM_COLORS: Record<string, string> = {
 export const Route = createFileRoute("/projects")({
   head: () => ({
     meta: [
-      { title: "Projects — Build the Future | BlockchainClub FUTMINNA" },
+      { title: "Projects — Build the Future | BlockchainClub FUTMinna" },
       {
         name: "description",
         content:
-          "Showcasing the next generation of decentralized applications, protocols, and tooling built by the FUTMINNA blockchain community.",
+          "Showcasing the next generation of decentralized applications, protocols, and tooling built by the FUTMinna blockchain community.",
       },
       { property: "og:title", content: "Projects — Build the Future" },
       {
         property: "og:description",
-        content: "Decentralized applications built by FUTMINNA members.",
+        content: "Decentralized applications built by FUTMinna members.",
       },
     ],
   }),
@@ -128,7 +128,7 @@ function ProjectsPage() {
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-body-lg text-muted-foreground">
             Showcasing the next generation of decentralized applications,
-            protocols, and tooling built by the FUTMINNA blockchain community.
+            protocols, and tooling built by the FUTMinna blockchain community.
           </p>
         </div>
       </section>
@@ -464,7 +464,7 @@ function ProjectsPage() {
             Show It Off.
           </h2>
           <p className="mt-3 text-muted-foreground max-w-lg mx-auto">
-            Submit your project to the BlockchainClub FUTMINNA showcase. Get feedback, find
+            Submit your project to the BlockchainClub FUTMinna showcase. Get feedback, find
             collaborators, and inspire the next wave of builders.
           </p>
           <Button

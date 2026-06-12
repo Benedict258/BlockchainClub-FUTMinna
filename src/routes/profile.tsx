@@ -35,8 +35,8 @@ import { getBadgeConfig } from "@/lib/badges";
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "My Profile | BlockchainClub FUTMINNA" },
-      { name: "description", content: "View and edit your Blockchain Club FUTMINNA profile." },
+      { title: "My Profile | BlockchainClub FUTMinna" },
+      { name: "description", content: "View and edit your Blockchain Club FUTMinna profile." },
     ],
   }),
   component: ProfilePage,

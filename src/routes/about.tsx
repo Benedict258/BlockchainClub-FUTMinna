@@ -6,9 +6,9 @@ import chip from "@/assets/chip.jpg";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Architecting Web3 in Nigeria | BlockchainClub FUTMINNA" },
-      { name: "description", content: "Blockchain Club FUTMINNA is a community of builders, researchers, and pioneers dedicated to driving decentralized innovation from the heart of Minna." },
-      { property: "og:title", content: "About — Blockchain Club FUTMINNA" },
+      { title: "About — Architecting Web3 in Nigeria | BlockchainClub FUTMinna" },
+      { name: "description", content: "Blockchain Club FUTMinna is a community of builders, researchers, and pioneers dedicated to driving decentralized innovation from the heart of Minna." },
+      { property: "og:title", content: "About — Blockchain Club FUTMinna" },
       { property: "og:description", content: "Architecting the future of Web3 in Nigeria." },
     ],
   }),
@@ -36,7 +36,7 @@ function AboutPage() {
             Architecting the Future of Web3 in<br />
             <span className="text-primary">Nigeria.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-body-lg text-muted-foreground">Blockchain Club FUTMINNA is a community of builders, researchers, and pioneers dedicated to driving decentralized innovation from the heart of Minna.</p>
+          <p className="mx-auto mt-6 max-w-2xl text-body-lg text-muted-foreground">Blockchain Club FUTMinna is a community of builders, researchers, and pioneers dedicated to driving decentralized innovation from the heart of Minna.</p>
         </div>
       </section>
 
@@ -77,7 +77,7 @@ function AboutPage() {
               <Eye className="h-4 w-4" />
             </span>
             <h3 className="mt-5 text-headline-md">Our Vision</h3>
-            <p className="mt-3 text-muted-foreground leading-relaxed">To establish FUTMINNA as the premier hub for blockchain innovation in West Africa, producing world-class talent capable of building resilient decentralized systems.</p>
+            <p className="mt-3 text-muted-foreground leading-relaxed">To establish FUTMinna as the premier hub for blockchain innovation in West Africa, producing world-class talent capable of building resilient decentralized systems.</p>
           </div>
           <div className="rounded-lg border border-border bg-card p-8 hover:border-primary/40 transition-colors">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface-high text-primary">
@@ -97,7 +97,7 @@ function AboutPage() {
           {[
             { y: "2022", l: "THE GENESIS", t: "Founded by a small group of computer science students fascinated by Ethereum's programmable state machine." },
             { y: "2023", l: "EXPANSION", t: "Secured university recognition and hosted the first University-wide Web3 Summit with 500+ attendees." },
-            { y: "2024", l: "BUILD PHASE", t: "Launching the BlockchainClub FUTMINNA Lab — a physical space for students to experiment with ZK proofs and L2 scaling solutions." },
+            { y: "2024", l: "BUILD PHASE", t: "Launching the BlockchainClub FUTMinna Lab — a physical space for students to experiment with ZK proofs and L2 scaling solutions." },
           ].map((s) => (
             <div key={s.y} className="rounded-lg border border-border bg-card p-6 hover:border-primary/40 transition-colors">
               <span className="font-mono text-3xl font-bold text-muted-foreground/40">{s.y}</span>

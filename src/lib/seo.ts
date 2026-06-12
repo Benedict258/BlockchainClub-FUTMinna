@@ -1,5 +1,5 @@
 const SITE_URL = process.env.SITE_URL || "https://futminna.club";
-const SITE_NAME = "Blockchain Club FUTMINNA";
+const SITE_NAME = "Blockchain Club FUTMinna";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
 
 export function generateMetaTags(

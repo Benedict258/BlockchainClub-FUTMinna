@@ -20,8 +20,8 @@ import { useAuthStore } from "@/stores/auth-store";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign In | BlockchainClub FUTMINNA" },
-      { name: "description", content: "Sign in to your Blockchain Club FUTMINNA account." },
+      { title: "Sign In | BlockchainClub FUTMinna" },
+      { name: "description", content: "Sign in to your Blockchain Club FUTMinna account." },
     ],
   }),
   component: SignInPage,
@@ -65,7 +65,7 @@ function SignInPage() {
       <Card className="w-full max-w-md border-border bg-card">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <CardDescription>Sign in to your BlockchainClub FUTMINNA account</CardDescription>
+          <CardDescription>Sign in to your BlockchainClub FUTMinna account</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>

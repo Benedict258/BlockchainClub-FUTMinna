@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Blockchain Club FUTMINNA <noreply@futminna.club>";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Blockchain Club FUTMinna <noreply@futminna.club>";
 const SITE_URL = process.env.SITE_URL || "https://futminna.club";
 
 const EMAIL_wrapper = (content: string) => `
@@ -19,7 +19,7 @@ const EMAIL_wrapper = (content: string) => `
           <tr>
             <td style="text-align:center;padding-bottom:32px;">
               <a href="${SITE_URL}" style="text-decoration:none;">
-                <span style="font-size:24px;font-weight:800;color:#C084FC;letter-spacing:-0.5px;">BlockchainClub FUTMINNA</span>
+                <span style="font-size:24px;font-weight:800;color:#C084FC;letter-spacing:-0.5px;">BlockchainClub FUTMinna</span>
                 <span style="font-size:24px;font-weight:800;color:#FFFFFF;letter-spacing:-0.5px;">UTMINNA</span>
               </a>
             </td>
@@ -32,7 +32,7 @@ const EMAIL_wrapper = (content: string) => `
           <tr>
             <td style="text-align:center;padding:24px 0;">
               <p style="color:rgba(255,255,255,0.3);font-size:12px;line-height:1.6;margin:0;">
-                Blockchain Club FUTMINNA &mdash; FUTMinna's Home for Web3 Builders
+                Blockchain Club FUTMinna &mdash; FUTMinna's Home for Web3 Builders
               </p>
               <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:8px 0 0 0;">
                 <a href="${SITE_URL}" style="color:rgba(192,132,252,0.5);text-decoration:none;">Website</a>
@@ -59,7 +59,7 @@ export async function sendVerificationEmail(
   await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Verify your email — Blockchain Club FUTMINNA",
+    subject: "Verify your email — Blockchain Club FUTMinna",
     html: EMAIL_wrapper(`
       <h1 style="color:#FFFFFF;font-size:22px;font-weight:700;margin:0 0 8px 0;">Verify your email</h1>
       <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.6;margin:0 0 24px 0;">
@@ -82,7 +82,7 @@ export async function sendWelcomeEmail(
   await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Welcome to Blockchain Club FUTMINNA!",
+    subject: "Welcome to Blockchain Club FUTMinna!",
     html: EMAIL_wrapper(`
       <h1 style="color:#FFFFFF;font-size:22px;font-weight:700;margin:0 0 8px 0;">Welcome, ${name}!</h1>
       <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.6;margin:0 0 24px 0;">
@@ -117,7 +117,7 @@ export async function sendPasswordResetEmail(
   await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Reset your password — Blockchain Club FUTMINNA",
+    subject: "Reset your password — Blockchain Club FUTMinna",
     html: EMAIL_wrapper(`
       <h1 style="color:#FFFFFF;font-size:22px;font-weight:700;margin:0 0 8px 0;">Reset your password</h1>
       <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.6;margin:0 0 24px 0;">

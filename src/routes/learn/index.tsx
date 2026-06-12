@@ -62,7 +62,7 @@ const RESOURCE_TYPE_ICONS: Record<string, typeof BookOpen> = {
 export const Route = createFileRoute("/learn/")({
   head: () => ({
     meta: [
-      { title: "Learn — Master Web3 Engineering | BlockchainClub FUTMINNA" },
+      { title: "Learn — Master Web3 Engineering | BlockchainClub FUTMinna" },
       {
         name: "description",
         content:
@@ -70,7 +70,7 @@ export const Route = createFileRoute("/learn/")({
       },
       {
         property: "og:title",
-        content: "Master Web3 Engineering — Blockchain Club FUTMINNA",
+        content: "Master Web3 Engineering — Blockchain Club FUTMinna",
       },
       {
         property: "og:description",
@@ -370,7 +370,7 @@ function LearnPage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" className="font-semibold tracking-wide">
-              <Link to="/join">Join BlockchainClub FUTMINNA</Link>
+              <Link to="/join">Join BlockchainClub FUTMinna</Link>
             </Button>
             <Button
               asChild

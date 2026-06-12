@@ -25,8 +25,8 @@ const CATEGORY_COLORS: Record<string, string> = {
 export const Route = createFileRoute("/blog/$slug")({
   head: () => ({
     meta: [
-      { title: "Blog Post | BlockchainClub FUTMINNA" },
-      { name: "description", content: "Blog post from Blockchain Club FUTMINNA." },
+      { title: "Blog Post | BlockchainClub FUTMinna" },
+      { name: "description", content: "Blog post from Blockchain Club FUTMinna." },
     ],
   }),
   component: BlogPostDetailPage,

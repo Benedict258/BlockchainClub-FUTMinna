@@ -12,9 +12,9 @@ import { getBlogPosts } from "@/lib/api/blog.server";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Blockchain Club FUTMINNA — Home for Web3 Builders" },
+      { title: "Blockchain Club FUTMinna — Home for Web3 Builders" },
       { name: "description", content: "FUTMinna's premier hub for blockchain innovation, decentralized development, and academic excellence in West Africa." },
-      { property: "og:title", content: "Blockchain Club FUTMINNA" },
+      { property: "og:title", content: "Blockchain Club FUTMinna" },
       { property: "og:description", content: "Home for Web3 builders. Empowering the next wave of protocol engineers." },
     ],
   }),
@@ -108,7 +108,7 @@ function Home() {
         <div>
           <h2 className="text-headline-lg">ROOTED IN RESEARCH,<br />DRIVEN BY CODE</h2>
           <p className="mt-5 text-muted-foreground leading-relaxed">
-            Blockchain Club FUTMINNA is more than just a community; it's an incubator for the next generation of decentralized finance and Web3 infrastructure builders.
+            Blockchain Club FUTMinna is more than just a community; it's an incubator for the next generation of decentralized finance and Web3 infrastructure builders.
           </p>
           <ul className="mt-8 space-y-5">
             <li className="flex gap-4 items-start">

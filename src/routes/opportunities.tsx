@@ -134,7 +134,7 @@ export const Route = createFileRoute("/opportunities")({
   head: () => ({
     meta: [
       {
-        title: "Opportunities — Hackathons, Grants & Jobs | BlockchainClub FUTMINNA",
+        title: "Opportunities — Hackathons, Grants & Jobs | BlockchainClub FUTMinna",
       },
       {
         name: "description",
@@ -143,7 +143,7 @@ export const Route = createFileRoute("/opportunities")({
       },
       {
         property: "og:title",
-        content: "Onchain Opportunities — BlockchainClub FUTMINNA",
+        content: "Onchain Opportunities — BlockchainClub FUTMinna",
       },
       {
         property: "og:description",
@@ -357,7 +357,7 @@ function OpportunitiesPage() {
               className="font-semibold tracking-wide"
             >
               <Link to="/join">
-                Join BlockchainClub FUTMINNA <ArrowRight className="ml-2 h-4 w-4" />
+                Join BlockchainClub FUTMinna <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>

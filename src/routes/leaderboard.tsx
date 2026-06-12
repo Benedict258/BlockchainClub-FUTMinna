@@ -113,16 +113,16 @@ export const Route = createFileRoute("/leaderboard")({
   head: () => ({
     meta: [
       {
-        title: "Club Rankings — Leaderboard | BlockchainClub FUTMINNA",
+        title: "Club Rankings — Leaderboard | BlockchainClub FUTMinna",
       },
       {
         name: "description",
         content:
-          "Top contributors and builders of Blockchain Club FUTMINNA. On-chain proof of excellence.",
+          "Top contributors and builders of Blockchain Club FUTMinna. On-chain proof of excellence.",
       },
       {
         property: "og:title",
-        content: "Club Rankings — BlockchainClub FUTMINNA Leaderboard",
+        content: "Club Rankings — BlockchainClub FUTMinna Leaderboard",
       },
       {
         property: "og:description",
@@ -167,7 +167,7 @@ function LeaderboardPage() {
             <span className="text-primary">Contributors</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-body-lg text-muted-foreground">
-            Celebrating the most active and impactful members of the BlockchainClub FUTMINNA community. Points are
+            Celebrating the most active and impactful members of the BlockchainClub FUTMinna community. Points are
             earned through events, learning, building, and community engagement.
           </p>
         </div>
