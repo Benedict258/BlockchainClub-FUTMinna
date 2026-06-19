@@ -118,6 +118,17 @@ export async function apiAdjustPoints(body: Record<string, any>) {
   return json;
 }
 
+export async function apiAward(action: string, targetId: string) {
+  const res = await fetch("/api/awards", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify({ action, targetId }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || "Award failed");
+  return json;
+}
+
 export async function apiLogout(refreshToken: string) {
   const res = await fetch("/api/auth/logout", {
     method: "POST",

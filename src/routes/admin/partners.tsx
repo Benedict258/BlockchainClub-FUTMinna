@@ -42,7 +42,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Plus, Pencil, Trash2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const Route = createFileRoute('/admin/partners')({
@@ -81,8 +82,14 @@ function AdminPartners() {
   const [editItem, setEditItem] = useState<Record<string, unknown> | null>(null);
   const [deleteItem, setDeleteItem] = useState<Record<string, unknown> | null>(null);
   const [form, setForm] = useState<PartnerForm>(defaultForm);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const { data: allPartners, isLoading } = useQuery({
+  const formErrors = {
+    name: touched.name && !form.name ? 'Name is required' : '',
+  };
+  const isFormValid = !!form.name;
+
+  const { data: allPartners, isLoading, isError, refetch } = useQuery({
     queryKey: ['admin-partners'],
     queryFn: () => apiQueryAll('partners', {
       select: '*',
@@ -161,6 +168,7 @@ function AdminPartners() {
   const openCreate = () => {
     setEditItem(null);
     setForm(defaultForm);
+    setTouched({});
     setDialogOpen(true);
   };
 
@@ -235,6 +243,19 @@ function AdminPartners() {
                   ))}
                 </TableRow>
               ))
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={5} className="py-8">
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Failed to load partners</AlertTitle>
+                    <AlertDescription className="flex items-center justify-between">
+                      <span>Could not fetch partners. Please try again.</span>
+                      <Button variant="outline" size="sm" onClick={() => refetch()}>Retry</Button>
+                    </AlertDescription>
+                  </Alert>
+                </TableCell>
+              </TableRow>
             ) : partners && partners.length > 0 ? (
               partners.map((partner) => (
                 <TableRow key={partner.id}>
@@ -311,8 +332,11 @@ function AdminPartners() {
               <Input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onBlur={() => setTouched({ ...touched, name: true })}
                 placeholder="Partner name"
+                className={formErrors.name ? 'border-destructive' : ''}
               />
+              {formErrors.name && <p className="text-xs text-destructive mt-1">{formErrors.name}</p>}
             </div>
             <div>
               <Label>Logo URL</Label>
@@ -379,7 +403,7 @@ function AdminPartners() {
               </Button>
               <Button
                 onClick={() => (editItem ? updateMutation.mutate() : createMutation.mutate())}
-                disabled={!form.name}
+                disabled={!isFormValid}
               >
                 {editItem ? 'Update' : 'Create'}
               </Button>

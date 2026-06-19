@@ -42,7 +42,16 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Pencil, Trash2, Eye, Calendar, MapPin, Link as LinkIcon } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import { Plus, Pencil, Trash2, Eye, Calendar, MapPin, Link as LinkIcon, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const Route = createFileRoute('/admin/events')({
@@ -85,15 +94,24 @@ function AdminEvents() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<'all' | 'upcoming' | 'past'>('all');
   const [typeFilter, setTypeFilter] = useState<string>('');
+  const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState<Record<string, unknown> | null>(null);
   const [deleteItem, setDeleteItem] = useState<Record<string, unknown> | null>(null);
   const [rsvpOpen, setRsvpOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Record<string, unknown> | null>(null);
   const [form, setForm] = useState<EventForm>(defaultForm);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['admin-events', filter, typeFilter],
+  const formErrors = {
+    title: touched.title && !form.title ? 'Title is required' : '',
+    startDate: touched.startDate && !form.startDate ? 'Start date is required' : '',
+    endDate: touched.endDate && !form.endDate ? 'End date is required' : '',
+  };
+  const isFormValid = !!form.title && !!form.startDate && !!form.endDate;
+
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['admin-events', filter, typeFilter, page],
     queryFn: async () => {
       const filters: Record<string, any> = {};
       const now = new Date().toISOString();
@@ -103,14 +121,15 @@ function AdminEvents() {
         filters.start_date = { __op: 'lt', value: now };
       }
       if (typeFilter) filters.type = typeFilter;
+      const from = (page - 1) * 20;
       const res = await apiQuery('events', {
         select: '*,event_rsvps(id,user_id),event_resources(id)',
         filters,
         order: { column: 'start_date', ascending: false },
-        range: [0, 49],
+        range: [from, from + 19],
         count: 'exact',
       });
-      return { events: res.data || [], total: res.count || 0, page: 1, limit: 50, totalPages: Math.ceil((res.count || 0) / 50) };
+      return { events: res.data || [], total: res.count || 0, page, limit: 20, totalPages: Math.ceil((res.count || 0) / 20) };
     },
   });
 
@@ -188,6 +207,7 @@ function AdminEvents() {
   const openCreate = () => {
     setEditItem(null);
     setForm(defaultForm);
+    setTouched({});
     setDialogOpen(true);
   };
 
@@ -285,6 +305,19 @@ function AdminEvents() {
                   ))}
                 </TableRow>
               ))
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={6} className="py-8">
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Failed to load events</AlertTitle>
+                    <AlertDescription className="flex items-center justify-between">
+                      <span>Could not fetch events. Please try again.</span>
+                      <Button variant="outline" size="sm" onClick={() => refetch()}>Retry</Button>
+                    </AlertDescription>
+                  </Alert>
+                </TableCell>
+              </TableRow>
             ) : data?.events && data.events.length > 0 ? (
               data.events.map((event) => (
                 <TableRow key={event.id}>
@@ -338,6 +371,37 @@ function AdminEvents() {
         </Table>
       </div>
 
+      {/* Pagination */}
+      {data && data.totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage(Math.max(1, page - 1))}
+                className={page === 1 ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+            {Array.from({ length: Math.min(5, data.totalPages) }).map((_, i) => {
+              const pageNum = Math.max(1, Math.min(page - 2, data.totalPages - 4)) + i;
+              if (pageNum > data.totalPages) return null;
+              return (
+                <PaginationItem key={pageNum}>
+                  <PaginationLink onClick={() => setPage(pageNum)} isActive={pageNum === page}>
+                    {pageNum}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            })}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setPage(Math.min(data.totalPages, page + 1))}
+                className={page === data.totalPages ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
@@ -353,8 +417,11 @@ function AdminEvents() {
               <Input
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
+                onBlur={() => setTouched({ ...touched, title: true })}
                 placeholder="Event title"
+                className={formErrors.title ? 'border-destructive' : ''}
               />
+              {formErrors.title && <p className="text-xs text-destructive mt-1">{formErrors.title}</p>}
             </div>
             <div>
               <Label>Description</Label>
@@ -416,7 +483,10 @@ function AdminEvents() {
                   type="datetime-local"
                   value={form.startDate}
                   onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+                  onBlur={() => setTouched({ ...touched, startDate: true })}
+                  className={formErrors.startDate ? 'border-destructive' : ''}
                 />
+                {formErrors.startDate && <p className="text-xs text-destructive mt-1">{formErrors.startDate}</p>}
               </div>
               <div>
                 <Label>End Date *</Label>
@@ -424,7 +494,10 @@ function AdminEvents() {
                   type="datetime-local"
                   value={form.endDate}
                   onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+                  onBlur={() => setTouched({ ...touched, endDate: true })}
+                  className={formErrors.endDate ? 'border-destructive' : ''}
                 />
+                {formErrors.endDate && <p className="text-xs text-destructive mt-1">{formErrors.endDate}</p>}
               </div>
             </div>
             <div>
@@ -448,7 +521,7 @@ function AdminEvents() {
               </Button>
               <Button
                 onClick={() => (editItem ? updateMutation.mutate() : createMutation.mutate())}
-                disabled={!form.title || !form.startDate || !form.endDate}
+                disabled={!isFormValid}
               >
                 {editItem ? 'Update' : 'Create'}
               </Button>

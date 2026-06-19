@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
-import { apiQuery, apiInsert, apiUpdate, apiDelete } from '@/lib/api-client';
+import { apiQuery, apiInsert, apiUpdate, apiDelete, apiAward } from '@/lib/api-client';
 import {
   Table,
   TableBody,
@@ -35,7 +35,16 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import { Plus, Pencil, Trash2, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const Route = createFileRoute('/admin/blog')({
@@ -71,17 +80,26 @@ function AdminBlog() {
   const [editItem, setEditItem] = useState<Record<string, unknown> | null>(null);
   const [deleteItem, setDeleteItem] = useState<Record<string, unknown> | null>(null);
   const [form, setForm] = useState<BlogForm>(defaultForm);
+  const [page, setPage] = useState(1);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['admin-blog'],
+  const formErrors = {
+    title: touched.title && !form.title ? 'Title is required' : '',
+    slug: touched.slug && !form.slug ? 'Slug is required' : '',
+  };
+  const isFormValid = !!form.title && !!form.slug;
+
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['admin-blog', page],
     queryFn: async () => {
+      const from = (page - 1) * 20;
       const res = await apiQuery('blog_posts', {
         select: 'id,title,content,slug,excerpt,cover_image,category,is_featured,status,published_at,created_at,author_id,users(id,profiles(full_name,avatar_url)),blog_post_tags(*,tags(id,name))',
         order: { column: 'published_at', ascending: false },
-        range: [0, 49],
+        range: [from, from + 19],
         count: 'exact',
       });
-      return { posts: res.data || [], total: res.count || 0, page: 1, limit: 50, totalPages: Math.ceil((res.count || 0) / 50) };
+      return { posts: res.data || [], total: res.count || 0, page, limit: 20, totalPages: Math.ceil((res.count || 0) / 20) };
     },
   });
 
@@ -134,9 +152,12 @@ function AdminBlog() {
         status: variables.publish ? 'PUBLISHED' : 'DRAFT',
         published_at: variables.publish ? new Date().toISOString() : undefined,
       }, { id: variables.id }),
-    onSuccess: () => {
+    onSuccess: async (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin-blog'] });
       toast.success('Post status updated');
+      if (variables.publish) {
+        try { await apiAward('blog-published', variables.id); } catch {}
+      }
     },
     onError: () => toast.error('Failed to update post status'),
   });
@@ -162,6 +183,7 @@ function AdminBlog() {
   const openCreate = () => {
     setEditItem(null);
     setForm(defaultForm);
+    setTouched({});
     setDialogOpen(true);
   };
 
@@ -217,6 +239,19 @@ function AdminBlog() {
                   ))}
                 </TableRow>
               ))
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={6} className="py-8">
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Failed to load blog posts</AlertTitle>
+                    <AlertDescription className="flex items-center justify-between">
+                      <span>Could not fetch blog posts. Please try again.</span>
+                      <Button variant="outline" size="sm" onClick={() => refetch()}>Retry</Button>
+                    </AlertDescription>
+                  </Alert>
+                </TableCell>
+              </TableRow>
             ) : data?.posts && data.posts.length > 0 ? (
               data.posts.map((post) => (
                 <TableRow key={post.id}>
@@ -293,6 +328,37 @@ function AdminBlog() {
         </Table>
       </div>
 
+      {/* Pagination */}
+      {data && data.totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage(Math.max(1, page - 1))}
+                className={page === 1 ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+            {Array.from({ length: Math.min(5, data.totalPages) }).map((_, i) => {
+              const pageNum = Math.max(1, Math.min(page - 2, data.totalPages - 4)) + i;
+              if (pageNum > data.totalPages) return null;
+              return (
+                <PaginationItem key={pageNum}>
+                  <PaginationLink onClick={() => setPage(pageNum)} isActive={pageNum === page}>
+                    {pageNum}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            })}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setPage(Math.min(data.totalPages, page + 1))}
+                className={page === data.totalPages ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
@@ -315,16 +381,22 @@ function AdminBlog() {
                     slug: editItem ? form.slug : generateSlug(title),
                   });
                 }}
+                onBlur={() => setTouched({ ...touched, title: true })}
                 placeholder="Post title"
+                className={formErrors.title ? 'border-destructive' : ''}
               />
+              {formErrors.title && <p className="text-xs text-destructive mt-1">{formErrors.title}</p>}
             </div>
             <div>
               <Label>Slug *</Label>
               <Input
                 value={form.slug}
                 onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                onBlur={() => setTouched({ ...touched, slug: true })}
                 placeholder="post-slug"
+                className={formErrors.slug ? 'border-destructive' : ''}
               />
+              {formErrors.slug && <p className="text-xs text-destructive mt-1">{formErrors.slug}</p>}
             </div>
             <div>
               <Label>Excerpt</Label>
@@ -384,7 +456,7 @@ function AdminBlog() {
               </Button>
               <Button
                 onClick={() => (editItem ? updateMutation.mutate() : createMutation.mutate())}
-                disabled={!form.title || !form.slug}
+                disabled={!isFormValid}
               >
                 {editItem ? 'Update' : 'Create'}
               </Button>

@@ -38,7 +38,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Eye, Shield, UserCheck, UserX, Award, Check, X } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Search, Eye, Shield, UserCheck, UserX, Award, Check, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/members")({
@@ -56,7 +57,7 @@ function AdminMembers() {
   const [badgeMember, setBadgeMember] = useState<Record<string, unknown> | null>(null);
   const [badgeOpen, setBadgeOpen] = useState(false);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin-members", page, search, roleFilter],
     queryFn: async () => {
       const filters: Record<string, any> = {};
@@ -231,6 +232,19 @@ function AdminMembers() {
                   ))}
                 </TableRow>
               ))
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={8} className="py-8">
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Failed to load members</AlertTitle>
+                    <AlertDescription className="flex items-center justify-between">
+                      <span>Could not fetch members. Please try again.</span>
+                      <Button variant="outline" size="sm" onClick={() => refetch()}>Retry</Button>
+                    </AlertDescription>
+                  </Alert>
+                </TableCell>
+              </TableRow>
             ) : data?.members && data.members.length > 0 ? (
               data.members.map((member) => (
                 <TableRow key={member.id}>

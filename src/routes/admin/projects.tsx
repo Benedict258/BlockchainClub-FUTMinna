@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
-import { apiQuery, apiUpdate, apiDelete } from '@/lib/api-client';
+import { apiQuery, apiUpdate, apiDelete, apiAward } from '@/lib/api-client';
 import {
   Table,
   TableBody,
@@ -24,7 +24,16 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Check, X, Star, Trash2, ExternalLink } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import { Check, X, Star, Trash2, ExternalLink, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const Route = createFileRoute('/admin/projects')({
@@ -38,31 +47,34 @@ function AdminProjects() {
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
   const [deleteItem, setDeleteItem] = useState<Record<string, unknown> | null>(null);
+  const [page, setPage] = useState(1);
 
   const statusParam = statusFilter === 'ALL' ? undefined : statusFilter;
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['admin-projects', statusFilter],
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['admin-projects', statusFilter, page],
     queryFn: async () => {
       const filters: Record<string, any> = {};
       if (statusParam) filters.status = statusParam;
+      const from = (page - 1) * 20;
       const res = await apiQuery('projects', {
         select: '*,project_members(*,users(id,profiles(full_name,avatar_url))),project_tags(*,tags(id,name))',
         filters,
         order: { column: 'created_at', ascending: false },
-        range: [0, 49],
+        range: [from, from + 19],
         count: 'exact',
       });
-      return { projects: res.data || [], total: res.count || 0, page: 1, limit: 50, totalPages: Math.ceil((res.count || 0) / 50) };
+      return { projects: res.data || [], total: res.count || 0, page, limit: 20, totalPages: Math.ceil((res.count || 0) / 20) };
     },
   });
 
   const approveMutation = useMutation({
     mutationFn: (id: string) =>
       apiUpdate('projects', { status: 'APPROVED' }, { id }),
-    onSuccess: () => {
+    onSuccess: async (_, id) => {
       queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
       toast.success('Project approved');
+      try { await apiAward('project-approved', id); } catch {}
     },
     onError: () => toast.error('Failed to approve project'),
   });
@@ -156,6 +168,19 @@ function AdminProjects() {
                   ))}
                 </TableRow>
               ))
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={6} className="py-8">
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Failed to load projects</AlertTitle>
+                    <AlertDescription className="flex items-center justify-between">
+                      <span>Could not fetch projects. Please try again.</span>
+                      <Button variant="outline" size="sm" onClick={() => refetch()}>Retry</Button>
+                    </AlertDescription>
+                  </Alert>
+                </TableCell>
+              </TableRow>
             ) : data?.projects && data.projects.length > 0 ? (
               data.projects.map((project) => (
                 <TableRow key={project.id}>
@@ -257,6 +282,37 @@ function AdminProjects() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination */}
+      {data && data.totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage(Math.max(1, page - 1))}
+                className={page === 1 ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+            {Array.from({ length: Math.min(5, data.totalPages) }).map((_, i) => {
+              const pageNum = Math.max(1, Math.min(page - 2, data.totalPages - 4)) + i;
+              if (pageNum > data.totalPages) return null;
+              return (
+                <PaginationItem key={pageNum}>
+                  <PaginationLink onClick={() => setPage(pageNum)} isActive={pageNum === page}>
+                    {pageNum}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            })}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setPage(Math.min(data.totalPages, page + 1))}
+                className={page === data.totalPages ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteItem} onOpenChange={() => setDeleteItem(null)}>

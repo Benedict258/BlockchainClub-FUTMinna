@@ -355,6 +355,54 @@ async function handleSupabaseApi(request: Request, pathname: string): Promise<Re
   }
 }
 
+async function handleAwards(request: Request): Promise<Response> {
+  try {
+    const body = await request.json();
+    const { action, targetId } = body;
+
+    const { awardProjectPoints, awardEventPoints, awardPoints, checkAndAwardBadges } = await import("./lib/auto-awards");
+    const { query } = await import("./lib/supabase");
+
+    switch (action) {
+      case "project-approved":
+        await awardProjectPoints(targetId);
+        break;
+      case "event-attended":
+        await awardEventPoints(targetId);
+        break;
+      case "blog-published": {
+        const { data: post } = await query("blog_posts", {
+          select: "author_id",
+          filters: { id: targetId },
+          single: true,
+        });
+        if (post?.author_id) {
+          await awardPoints(post.author_id as string, "community", 5);
+        }
+        break;
+      }
+      case "profile-completed":
+        await awardPoints(targetId, "community", 3);
+        break;
+      case "check-badges":
+        await checkAndAwardBadges(targetId);
+        break;
+      default:
+        return new Response(JSON.stringify({ error: "Unknown award action" }), { status: 400 });
+    }
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message || "Award error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
 async function handleAuthLogout(request: Request): Promise<Response> {
   try {
     const { deleteRefreshToken } = await import("./lib/auth");
@@ -794,6 +842,9 @@ export default {
   if (url.pathname.startsWith("/api/supabase/")) {
       return handleSupabaseApi(request, url.pathname);
     }
+  if (url.pathname === "/api/awards" && request.method === "POST") {
+    return handleAwards(request);
+  }
 
     try {
       const handler = await getServerEntry();

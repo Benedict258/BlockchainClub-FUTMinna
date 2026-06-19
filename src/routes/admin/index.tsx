@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import {
   Users,
   Calendar,
@@ -15,6 +16,7 @@ import {
   TrendingUp,
   Clock,
   Briefcase,
+  AlertCircle,
 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 
@@ -54,7 +56,7 @@ function StatCard({
 function AdminOverview() {
   const { accessToken } = useAuthStore();
 
-  const { data: analytics, isLoading } = useQuery({
+  const { data: analytics, isLoading, isError, refetch } = useQuery({
     queryKey: ['admin-analytics'],
     queryFn: () => apiAnalytics(),
     enabled: !!accessToken,
@@ -77,6 +79,25 @@ function AdminOverview() {
             </Card>
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-headline-lg">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome to the admin panel</p>
+        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Failed to load dashboard</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            <span>Could not fetch analytics data. Please try again.</span>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>Retry</Button>
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }
