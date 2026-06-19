@@ -1,5 +1,5 @@
 import { Link, useRouter } from "@tanstack/react-router";
-import { Moon, Sun, Menu, X, LogOut, User, BookOpen } from "lucide-react";
+import { Moon, Sun, Menu, X, LogOut, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/stores/auth-store";
 import {

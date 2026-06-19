@@ -1,4 +1,4 @@
-# Blockchain Club FUTMINNA
+# Blockchain Club FUTMinna
 
 The official platform for FUTMinna's premier Web3 community — managing members, projects, events, and opportunities.
 
@@ -9,7 +9,7 @@ The official platform for FUTMinna's premier Web3 community — managing members
 - **Database:** PostgreSQL (Supabase) + Prisma ORM
 - **Auth:** JWT (access + refresh tokens) + bcryptjs
 - **Email:** Resend
-- **File Upload:** Cloudinary
+- **File Upload:** Supabase Storage
 - **State:** Zustand + TanStack Query
 
 ## Setup
@@ -39,9 +39,7 @@ npm run dev
 | `JWT_SECRET` | Access token secret |
 | `JWT_REFRESH_SECRET` | Refresh token secret |
 | `SUPABASE_URL` | Supabase project URL |
-| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
-| `CLOUDINARY_API_KEY` | Cloudinary API key |
-| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key |
 | `RESEND_API_KEY` | Resend API key |
 | `RESEND_FROM_EMAIL` | Sender email address |
 | `SITE_URL` | Canonical site URL |
@@ -70,7 +68,7 @@ src/
 │   ├── api/          # TanStack server functions
 │   ├── validators/   # Zod validation schemas
 │   ├── email.ts      # Email service (Resend)
-│   ├── upload.ts     # File upload (Cloudinary)
+│   ├── upload.ts     # File upload (Supabase Storage)
 │   └── seo.ts        # SEO utilities
 ├── hooks/            # Custom React hooks
 ├── routes/           # TanStack Router file-based routes
