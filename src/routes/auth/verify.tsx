@@ -1,8 +1,7 @@
-import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { createFileRoute, useSearch, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/auth/verify")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -47,29 +46,50 @@ function VerifyEmailPage() {
   }, [token]);
 
   return (
-    <div className="flex min-h-[calc(100vh-12rem)] items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md border-border bg-card">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">
-            {status === "loading" && "Verifying Email..."}
-            {status === "success" && "Email Verified!"}
-            {status === "error" && "Verification Failed"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <p className="text-muted-foreground">{message}</p>
-          {status === "success" && (
-            <Button asChild className="w-full">
-              <Link to="/auth">Sign In</Link>
-            </Button>
-          )}
-          {status === "error" && (
-            <Button asChild variant="outline" className="w-full">
-              <Link to="/auth">Back to Sign In</Link>
-            </Button>
-          )}
-        </CardContent>
-      </Card>
+    <div className="min-h-[calc(100vh-4rem)]">
+      <div className="grid lg:grid-cols-2 lg:min-h-[calc(100vh-4rem)]">
+        <div className="hidden lg:flex bg-surface-low border-r border-border">
+          <div className="flex flex-col justify-center px-8 py-12 lg:px-16">
+            <Link to="/" className="inline-flex items-center gap-2 mb-12">
+              <img src="/lightlogo.png" alt="BCF" className="h-10 w-auto" />
+            </Link>
+            <h2 className="text-headline-lg text-foreground">
+              {status === "loading" && "Verifying..."}
+              {status === "success" && "Email Verified!"}
+              {status === "error" && "Verification Failed"}
+            </h2>
+            <p className="mt-3 text-muted-foreground leading-relaxed">
+              {status === "loading" && "Hang tight — we're confirming your email address."}
+              {status === "success" && "Your email has been confirmed. Welcome to BlockchainClub FUTMinna."}
+              {status === "error" && "Something went wrong. The verification link may have expired."}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center px-6 py-12 lg:py-16">
+          <Card className="w-full max-w-md border-border bg-card">
+            <CardContent className="pt-8 text-center space-y-4">
+              <div className="lg:hidden mb-4">
+                <h1 className="text-headline-md">
+                  {status === "loading" && "Verifying Email..."}
+                  {status === "success" && "Email Verified!"}
+                  {status === "error" && "Verification Failed"}
+                </h1>
+              </div>
+              <p className="text-muted-foreground">{message}</p>
+              {status === "success" && (
+                <Button asChild className="w-full">
+                  <Link to="/auth">Sign In</Link>
+                </Button>
+              )}
+              {status === "error" && (
+                <Button asChild variant="outline" className="w-full">
+                  <Link to="/auth">Back to Sign In</Link>
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
