@@ -43,7 +43,7 @@ function formatDate(date: Date | string | null) {
 
 function BlogPostSkeleton() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16 space-y-8">
+    <div className="mx-auto max-w-4xl px-6 py-16 space-y-8">
       <Skeleton className="h-8 w-32" />
       <Skeleton className="h-10 w-3/4" />
       <div className="flex items-center gap-4">
@@ -77,7 +77,7 @@ function BlogPostDetailPage() {
 
   if (error || !post) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-16 text-center">
+      <div className="mx-auto max-w-4xl px-6 py-16 text-center">
         <p className="text-muted-foreground">Post not found.</p>
         <Button asChild variant="outline" className="mt-4">
           <Link to="/blog">
@@ -93,7 +93,7 @@ function BlogPostDetailPage() {
 
   return (
     <div className="bg-background">
-      <article className="mx-auto max-w-3xl px-6 py-16">
+      <article className="mx-auto max-w-4xl px-6 py-16">
         <Button asChild variant="ghost" className="mb-6 -ml-2">
           <Link to="/blog">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Blog

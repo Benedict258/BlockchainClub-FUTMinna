@@ -79,7 +79,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/80">
-      <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-4 px-4 sm:gap-6 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between gap-4 px-4 sm:gap-6 sm:px-6">
         {/* Logo — flush left in dark mode */}
         <Link
           to="/"
@@ -220,7 +220,7 @@ export function SiteHeader() {
       {/* Mobile nav drawer */}
       {open && (
         <div className="lg:hidden border-t border-border bg-surface">
-          <nav className="mx-auto flex max-w-[1280px] flex-col gap-1 px-4 py-3">
+          <nav className="mx-auto flex max-w-[1400px] flex-col gap-1 px-4 py-3">
             {NAV.map((n) => (
               <Link
                 key={n.to}

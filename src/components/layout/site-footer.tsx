@@ -2,8 +2,8 @@ import { Link } from "@tanstack/react-router";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border bg-surface-low mt-24">
-      <div className="mx-auto max-w-[1280px] px-6 py-12">
+    <footer className="border-t border-border bg-surface-low mt-16">
+      <div className="mx-auto max-w-[1400px] px-6 py-10">
         <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
           {/* Brand column */}
           <div className="space-y-4">

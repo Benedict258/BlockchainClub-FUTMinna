@@ -49,11 +49,11 @@ function Home() {
     <div className="bg-background">
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-24 md:py-32 text-center">
+         <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             Onchain Generation
           </span>
-          <h1 className="mt-8 text-display-lg md:text-[64px] md:leading-[68px] tracking-tight">
+          <h1 className="mt-6 text-display-lg md:text-[64px] md:leading-[68px] tracking-tight">
             FUTMinna's Home for<br />
             <span className="text-primary">Web3 Builders</span>
           </h1>
@@ -73,7 +73,7 @@ function Home() {
 
       {/* STATS */}
       <section className="border-b border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-10 md:py-12">
+        <div className="mx-auto max-w-[1400px] px-6 py-8 md:py-10">
           <div className="grid grid-cols-2 divide-x divide-border md:grid-cols-4">
             {[
               { v: projectsData?.total ? `${projectsData.total}+` : "20+", l: "BUIDL Projects" },
@@ -91,7 +91,7 @@ function Home() {
       </section>
 
       {/* ROOTED IN RESEARCH */}
-      <section className="mx-auto max-w-[1280px] px-6 py-20 grid gap-12 lg:grid-cols-2 lg:items-center">
+      <section className="mx-auto max-w-[1400px] px-6 py-16 grid gap-12 lg:grid-cols-2 lg:items-center">
         <div className="overflow-hidden rounded-lg border border-border bg-card">
           <img
             src={researchLab}
@@ -135,12 +135,12 @@ function Home() {
 
       {/* CORE PILLARS */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-20">
+        <div className="mx-auto max-w-[1400px] px-6 py-16">
           <div className="text-center">
             <h2 className="text-headline-lg">CORE PILLARS</h2>
             <p className="mt-3 text-muted-foreground">How we accelerate the Web3 adoption curve within the university ecosystem.</p>
           </div>
-          <div className="mt-12 grid gap-px bg-border md:grid-cols-2 lg:grid-cols-4 border border-border overflow-hidden rounded-lg">
+          <div className="mt-10 grid gap-px bg-border md:grid-cols-2 lg:grid-cols-4 border border-border overflow-hidden rounded-lg">
             {[
               { i: BookOpen, t: "Education", d: "Deep dive technical workshops from Solidity foundations to advanced ZK math." },
               { i: Code2, t: "Hackathons", d: "Quarterly intensive build sessions with mainnet ecosystem grant prizes." },
@@ -160,8 +160,8 @@ function Home() {
       </section>
 
       {/* UPCOMING DEPLOYMENTS */}
-      <section className="mx-auto max-w-[1280px] px-6 py-20">
-        <div className="flex items-end justify-between mb-10">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
+        <div className="flex items-end justify-between mb-8">
           <h2 className="text-headline-lg">UPCOMING<br />DEPLOYMENTS</h2>
           <Link
             to="/events"
@@ -209,10 +209,10 @@ function Home() {
 
       {/* SHIPPED PROTOCOLS */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-20">
+        <div className="mx-auto max-w-[1400px] px-6 py-16">
           <h2 className="text-headline-lg">SHIPPED PROTOCOLS</h2>
           <p className="mt-2 text-muted-foreground">High-impact projects developed by our student body.</p>
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
+          <div className="mt-8 grid gap-5 md:grid-cols-2">
             <Link
               to="/projects"
               className="group relative block rounded-lg border border-border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-sm overflow-hidden"
@@ -256,8 +256,8 @@ function Home() {
       </section>
 
       {/* LEARNING TRACKS PREVIEW */}
-      <section className="mx-auto max-w-[1280px] px-6 py-20">
-        <div className="flex flex-wrap items-end justify-between gap-3 mb-8">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
+        <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
           <h2 className="text-headline-lg">LEARNING TRACKS</h2>
           <div className="flex gap-2">
             <span className="rounded-md border border-border bg-surface-low px-3 py-1 text-label-bold text-outline">BEGINNER</span>
@@ -288,7 +288,7 @@ function Home() {
 
       {/* PARTNERS STRIP */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-around gap-6 px-6 py-8">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-around gap-6 px-6 py-8">
           {["ETHEREUM FOUNDATION", "SUI FOUNDATION", "STARKNET", "SOLANA FOUNDATION"].map((p) => (
             <span key={p} className="text-label-bold text-muted-foreground hover:text-foreground transition-colors cursor-default">
               {p}
@@ -298,8 +298,8 @@ function Home() {
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-[1280px] px-6 py-20">
-        <div className="relative overflow-hidden rounded-xl border border-border bg-surface-low p-10 md:p-14 text-center">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
+        <div className="relative overflow-hidden rounded-xl border border-border bg-surface-low p-8 md:p-12 text-center">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
           <h2 className="text-headline-lg">READY TO BUILD THE<br />PERMITTED FUTURE?</h2>
           <p className="mt-4 text-muted-foreground">Join 500+ builders at the forefront of the decentralized revolution.</p>

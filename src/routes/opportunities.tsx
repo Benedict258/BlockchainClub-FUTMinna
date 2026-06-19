@@ -177,7 +177,7 @@ function OpportunitiesPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-24 md:py-32 text-center">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             OPPORTUNITIES
           </span>
@@ -194,7 +194,7 @@ function OpportunitiesPage() {
 
       {/* FILTER TABS */}
       <section className="border-b border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-4">
+        <div className="mx-auto max-w-[1400px] px-6 py-4">
           <Tabs
             value={typeFilter}
             onValueChange={(v) => setTypeFilter(v as TypeFilter)}
@@ -211,11 +211,11 @@ function OpportunitiesPage() {
       </section>
 
       {/* OPPORTUNITIES GRID */}
-      <section className="mx-auto max-w-[1280px] px-6 py-16">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
         {isLoading ? (
           <OpportunitiesSkeleton />
         ) : opportunities.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-16">
             <Briefcase className="mx-auto h-12 w-12 text-muted-foreground/40" />
             <p className="mt-4 text-lg text-muted-foreground">
               No opportunities found.
@@ -343,7 +343,7 @@ function OpportunitiesPage() {
 
       {/* CTA */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-16 text-center">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 text-center">
           <Trophy className="mx-auto h-10 w-10 text-primary" />
           <h2 className="mt-6 text-headline-lg">DON&apos;T MISS OUT</h2>
           <p className="mt-3 text-muted-foreground max-w-lg mx-auto">

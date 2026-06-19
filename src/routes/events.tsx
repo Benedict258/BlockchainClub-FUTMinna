@@ -121,7 +121,7 @@ function EventsPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-24 md:py-32 text-center">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             EVENTS
           </span>
@@ -138,7 +138,7 @@ function EventsPage() {
 
       {/* FILTER TABS */}
       <section className="border-b border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-4">
+        <div className="mx-auto max-w-[1400px] px-6 py-4">
           <Tabs
             value={filter}
             onValueChange={(v) => setFilter(v as EventFilter)}
@@ -153,11 +153,11 @@ function EventsPage() {
       </section>
 
       {/* EVENTS GRID */}
-      <section className="mx-auto max-w-[1280px] px-6 py-16">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
         {isLoading ? (
           <EventsSkeleton />
         ) : events.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-16">
             <Calendar className="mx-auto h-12 w-12 text-muted-foreground/40" />
             <p className="mt-4 text-lg text-muted-foreground">
               No events found.
@@ -341,7 +341,7 @@ function EventsPage() {
 
       {/* CTA */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-16 text-center">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 text-center">
           <div className="mx-auto max-w-xl">
             <Lightbulb className="mx-auto h-10 w-10 text-primary" />
             <h2 className="mt-6 text-headline-lg">Have an Event Idea?</h2>

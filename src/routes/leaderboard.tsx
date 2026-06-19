@@ -158,7 +158,7 @@ function LeaderboardPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-24 md:py-32 text-center">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             LEADERBOARD
           </span>
@@ -176,7 +176,7 @@ function LeaderboardPage() {
       {/* PODIUM */}
       {top3.length >= 3 && (
         <section className="border-b border-border bg-surface-low">
-          <div className="mx-auto max-w-[1280px] px-6 py-16">
+          <div className="mx-auto max-w-[1400px] px-6 py-16">
             <div className="flex items-end justify-center gap-8 md:gap-16">
               <PodiumCard entry={top3[1]} rank={2} />
               <PodiumCard entry={top3[0]} rank={1} />
@@ -188,7 +188,7 @@ function LeaderboardPage() {
 
       {/* FILTERS */}
       <section className="border-b border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-4">
+        <div className="mx-auto max-w-[1400px] px-6 py-4">
           <div className="flex flex-wrap items-center gap-4">
             <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as TimeFilter)}>
               <TabsList className="bg-background/50">
@@ -211,11 +211,11 @@ function LeaderboardPage() {
       </section>
 
       {/* TABLE */}
-      <section className="mx-auto max-w-[1280px] px-6 py-16">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
         {isLoading ? (
           <LeaderboardSkeleton />
         ) : entries.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-16">
             <Trophy className="mx-auto h-12 w-12 text-muted-foreground/40" />
             <p className="mt-4 text-lg text-muted-foreground">No leaderboard entries yet.</p>
             <p className="mt-2 text-sm text-muted-foreground/60">
@@ -301,7 +301,7 @@ function LeaderboardPage() {
 
       {/* POINTS LEGEND */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-12">
+        <div className="mx-auto max-w-[1400px] px-6 py-12">
           <h3 className="text-headline-sm mb-6 text-center">How Points Are Earned</h3>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
@@ -343,7 +343,7 @@ function LeaderboardPage() {
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-[1280px] px-6 py-16 text-center">
+      <section className="mx-auto max-w-[1400px] px-6 py-16 text-center">
         <Trophy className="mx-auto h-10 w-10 text-primary" />
         <h2 className="mt-6 text-headline-lg">CLIMB THE RANKS</h2>
         <p className="mt-3 text-muted-foreground max-w-lg mx-auto">

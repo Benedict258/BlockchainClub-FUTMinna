@@ -62,7 +62,7 @@ function formatTime(date: Date | string) {
 
 function EventDetailSkeleton() {
   return (
-    <div className="mx-auto max-w-4xl px-6 py-16 space-y-8">
+    <div className="mx-auto max-w-5xl px-6 py-16 space-y-8">
       <Skeleton className="h-8 w-32" />
       <Skeleton className="aspect-[2/1] w-full rounded-xl" />
       <div className="space-y-4">
@@ -90,7 +90,7 @@ function EventDetailPage() {
 
   if (error || !event) {
     return (
-      <div className="mx-auto max-w-4xl px-6 py-16 text-center">
+      <div className="mx-auto max-w-5xl px-6 py-16 text-center">
         <p className="text-muted-foreground">Event not found.</p>
         <Button asChild variant="outline" className="mt-4">
           <Link to="/events">
@@ -105,7 +105,7 @@ function EventDetailPage() {
 
   return (
     <div className="bg-background">
-      <div className="mx-auto max-w-4xl px-6 py-16">
+      <div className="mx-auto max-w-5xl px-6 py-16">
         <Button asChild variant="ghost" className="mb-6 -ml-2">
           <Link to="/events">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Events

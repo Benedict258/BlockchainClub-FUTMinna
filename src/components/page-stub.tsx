@@ -10,7 +10,7 @@ export function PageStub({
   blurb: string;
 }) {
   return (
-    <div className="mx-auto max-w-[1280px] px-6 py-24">
+    <div className="mx-auto max-w-[1400px] px-6 py-16">
       <p className="text-label-bold text-primary">{eyebrow}</p>
       <h1 className="mt-3 text-display-lg">{title}</h1>
       <p className="mt-4 max-w-2xl text-body-lg text-muted-foreground">{blurb}</p>

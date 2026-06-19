@@ -187,7 +187,7 @@ function ProfilePage() {
 
   return (
     <AuthGuard>
-      <div className="mx-auto max-w-2xl px-4 py-10">
+      <div className="mx-auto max-w-5xl px-6 py-10">
         <Card className="border-border bg-card">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4 relative group">

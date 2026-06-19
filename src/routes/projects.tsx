@@ -117,7 +117,7 @@ function ProjectsPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-24 md:py-32 text-center">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             PROJECTS
           </span>
@@ -135,7 +135,7 @@ function ProjectsPage() {
 
       {/* STATS */}
       <section className="border-b border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-6">
+        <div className="mx-auto max-w-[1400px] px-6 py-6">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="flex items-center justify-center gap-3">
               <Code className="h-5 w-5 text-primary" />
@@ -184,7 +184,7 @@ function ProjectsPage() {
       </section>
 
       {/* FILTER + GRID */}
-      <section className="mx-auto max-w-[1280px] px-6 py-16">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <h2 className="text-headline-lg">All Projects</h2>
           <Tabs
@@ -204,7 +204,7 @@ function ProjectsPage() {
         {isLoading ? (
           <ProjectsSkeleton />
         ) : projects.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-16">
             <Code className="mx-auto h-12 w-12 text-muted-foreground/40" />
             <p className="mt-4 text-lg text-muted-foreground">
               No projects found.
@@ -456,7 +456,7 @@ function ProjectsPage() {
 
       {/* CTA */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-16 text-center">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 text-center">
           <Rocket className="mx-auto h-10 w-10 text-primary" />
           <h2 className="mt-6 text-headline-lg">
             Built Something?

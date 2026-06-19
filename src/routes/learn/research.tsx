@@ -141,7 +141,7 @@ function ResearchPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-24 md:py-32 text-center">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             LEARN
           </span>
@@ -158,7 +158,7 @@ function ResearchPage() {
 
       {/* STATS BAR */}
       <section className="border-b border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-6">
+        <div className="mx-auto max-w-[1400px] px-6 py-6">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="flex items-center justify-center gap-3">
               <Layers className="h-5 w-5 text-primary" />
@@ -188,7 +188,7 @@ function ResearchPage() {
       </section>
 
       {/* TRACKS */}
-      <section className="mx-auto max-w-[1280px] px-6 py-16">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
         <div className="flex items-end justify-between mb-8">
           <h2 className="text-headline-lg">Research Tracks</h2>
         </div>
@@ -259,7 +259,7 @@ function ResearchPage() {
 
       {/* RESOURCES */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-16">
+        <div className="mx-auto max-w-[1400px] px-6 py-16">
           <h2 className="text-headline-lg mb-8">Research Resources</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {RESOURCES.map((resource) => {
@@ -291,7 +291,7 @@ function ResearchPage() {
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-[1280px] px-6 py-20">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
         <div className="relative overflow-hidden rounded-xl border border-border bg-surface-low p-10 md:p-14 text-center">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
           <CheckCircle2 className="mx-auto h-10 w-10 text-primary" />

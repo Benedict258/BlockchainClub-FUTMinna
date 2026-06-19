@@ -96,7 +96,7 @@ function PartnersPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-24 md:py-32 text-center">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             PARTNERS
           </span>
@@ -120,7 +120,7 @@ function PartnersPage() {
             key={key}
             className="border-b border-border last:border-b-0"
           >
-            <div className="mx-auto max-w-[1280px] px-6 py-16">
+            <div className="mx-auto max-w-[1400px] px-6 py-16">
               <div className="flex items-center gap-3 mb-2">
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface-high text-primary">
                   <Icon className="h-4 w-4" />
@@ -191,7 +191,7 @@ function PartnersPage() {
 
       {/* CTA */}
       <section className="border-t border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-20 text-center">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 text-center">
           <div className="relative overflow-hidden rounded-xl border border-border bg-background p-10 md:p-14">
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
             <Handshake className="mx-auto h-10 w-10 text-primary" />

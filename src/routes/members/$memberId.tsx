@@ -44,7 +44,7 @@ export const Route = createFileRoute("/members/$memberId")({
 
 function MemberSkeleton() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16 space-y-8">
+    <div className="mx-auto max-w-4xl px-6 py-16 space-y-8">
       <Skeleton className="h-8 w-32" />
       <div className="flex items-center gap-6">
         <Skeleton className="h-24 w-24 rounded-full" />
@@ -76,7 +76,7 @@ function MemberProfilePage() {
 
   if (error || !member) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-16 text-center">
+      <div className="mx-auto max-w-4xl px-6 py-16 text-center">
         <p className="text-muted-foreground">Member not found.</p>
         <Button asChild variant="outline" className="mt-4">
           <Link to="/leaderboard">
@@ -93,7 +93,7 @@ function MemberProfilePage() {
 
   return (
     <div className="bg-background">
-      <div className="mx-auto max-w-3xl px-6 py-16">
+      <div className="mx-auto max-w-4xl px-6 py-16">
         <Button asChild variant="ghost" className="mb-6 -ml-2">
           <Link to="/leaderboard">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Leaderboard

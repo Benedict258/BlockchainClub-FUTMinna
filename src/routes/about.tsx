@@ -28,7 +28,7 @@ function AboutPage() {
   return (
     <div className="bg-background">
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-24 text-center">
+        <div className="mx-auto max-w-[1400px] px-6 py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             The Onchain Generation
           </span>
@@ -40,7 +40,7 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-6 py-20 grid gap-12 lg:grid-cols-2 lg:items-center">
+      <section className="mx-auto max-w-[1400px] px-6 py-16 grid gap-12 lg:grid-cols-2 lg:items-center">
         <div>
           <h2 className="text-headline-lg">THE CHALLENGE</h2>
           <p className="mt-4 text-muted-foreground leading-relaxed">Despite Africa's rapid crypto adoption, a critical gap remains in technical depth and local application building.</p>
@@ -71,7 +71,7 @@ function AboutPage() {
       </section>
 
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-20 grid gap-5 md:grid-cols-2">
+        <div className="mx-auto max-w-[1400px] px-6 py-16 grid gap-5 md:grid-cols-2">
           <div className="rounded-lg border border-border bg-card p-8 hover:border-primary/40 transition-colors">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface-high text-primary">
               <Eye className="h-4 w-4" />
@@ -89,7 +89,7 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-6 py-20">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
         <div className="text-center">
           <h2 className="text-headline-lg">OUR STORY</h2>
         </div>
@@ -109,7 +109,7 @@ function AboutPage() {
       </section>
 
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1280px] px-6 py-20">
+        <div className="mx-auto max-w-[1400px] px-6 py-16">
           <h2 className="text-center text-headline-lg">WHAT MAKES US DIFFERENT</h2>
           <div className="mt-12 grid gap-px bg-border md:grid-cols-3 border border-border overflow-hidden rounded-lg">
             {[
@@ -126,7 +126,7 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-6 py-20">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
         <h2 className="text-headline-lg">THE LEAD BUILDERS</h2>
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {TEAM.map((m) => (
@@ -144,7 +144,7 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-6 py-20">
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
         <div className="relative overflow-hidden rounded-xl border border-border bg-surface-low p-10 md:p-14 text-center">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
           <h2 className="text-headline-lg">READY TO JOIN THE<br />NEXT BLOCK?</h2>
