@@ -64,32 +64,9 @@ function JoinBranding() {
         <img src="/lightlogo.png" alt="BCF" className="h-10 w-auto" />
       </Link>
       <h2 className="text-headline-lg text-foreground">Join the Club</h2>
-      <p className="mt-3 text-muted-foreground leading-relaxed">
-        Become part of FUTMinna's premier Web3 community. Learn, build, and connect with blockchain enthusiasts across the university.
+      <p className="mt-3 text-muted-foreground">
+        FUTMinna's premier Web3 community — learn, build, and connect.
       </p>
-      <div className="mt-10 space-y-5">
-        <div className="flex gap-3">
-          <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border border-border bg-surface-high text-xs font-bold text-primary">1</span>
-          <div>
-            <p className="text-sm font-semibold text-foreground">Create your account</p>
-            <p className="text-xs text-muted-foreground">Fill in your details and pick your skills</p>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border border-border bg-surface-high text-xs font-bold text-primary">2</span>
-          <div>
-            <p className="text-sm font-semibold text-foreground">Get approved</p>
-            <p className="text-xs text-muted-foreground">Our admins review applications within 24 hours</p>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border border-border bg-surface-high text-xs font-bold text-primary">3</span>
-          <div>
-            <p className="text-sm font-semibold text-foreground">Start building</p>
-            <p className="text-xs text-muted-foreground">Access tracks, events, and project teams</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

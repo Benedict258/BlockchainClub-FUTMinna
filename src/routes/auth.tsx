@@ -34,23 +34,9 @@ function AuthBranding() {
         <img src="/lightlogo.png" alt="BCF" className="h-10 w-auto" />
       </Link>
       <h2 className="text-headline-lg text-foreground">Welcome Back</h2>
-      <p className="mt-3 text-muted-foreground leading-relaxed">
-        Sign in to access your dashboard, track your learning progress, and connect with fellow Web3 builders at FUTMinna.
+      <p className="mt-3 text-muted-foreground">
+        Sign in to your dashboard, track progress, and connect with builders.
       </p>
-      <div className="mt-10 space-y-4 text-sm text-muted-foreground">
-        <div className="flex gap-3">
-          <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border border-border text-xs font-bold text-primary">1</span>
-          <span>Track your onchain learning journey</span>
-        </div>
-        <div className="flex gap-3">
-          <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border border-border text-xs font-bold text-primary">2</span>
-          <span>Earn badges and climb the leaderboard</span>
-        </div>
-        <div className="flex gap-3">
-          <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border border-border text-xs font-bold text-primary">3</span>
-          <span>Collaborate on open-source protocols</span>
-        </div>
-      </div>
     </div>
   );
 }

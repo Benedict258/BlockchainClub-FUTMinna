@@ -77,8 +77,8 @@ function ResetPasswordPage() {
               <img src="/lightlogo.png" alt="BCF" className="h-10 w-auto" />
             </Link>
             <h2 className="text-headline-lg text-foreground">Reset Password</h2>
-            <p className="mt-3 text-muted-foreground leading-relaxed">
-              Choose a new password for your account. Make it strong and memorable.
+            <p className="mt-3 text-muted-foreground">
+              Choose a new password for your account.
             </p>
           </div>
         </div>

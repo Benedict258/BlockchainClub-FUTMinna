@@ -62,8 +62,8 @@ function ForgotPasswordPage() {
               <img src="/lightlogo.png" alt="BCF" className="h-10 w-auto" />
             </Link>
             <h2 className="text-headline-lg text-foreground">Forgot Password?</h2>
-            <p className="mt-3 text-muted-foreground leading-relaxed">
-              No worries — enter your email and we'll send you a link to reset your password.
+            <p className="mt-3 text-muted-foreground">
+              No worries — enter your email and we'll send you a reset link.
             </p>
           </div>
         </div>
