@@ -68,7 +68,7 @@ function JoinBranding() {
   return (
     <div className="flex flex-col justify-center px-8 py-12 lg:px-16">
       <Link to="/" className="inline-flex items-center gap-2 mb-12">
-        <img src="/lightlogo.png" alt="BCF" className="h-10 w-auto" />
+        <img src="/lightlogo.png" alt="BCF" className="h-[100px] w-auto" />
       </Link>
       <h2 className="text-headline-lg text-foreground">Join the Club</h2>
       <p className="mt-3 text-muted-foreground">

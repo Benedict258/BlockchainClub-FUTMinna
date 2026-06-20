@@ -51,7 +51,7 @@ function VerifyEmailPage() {
         <div className="hidden lg:flex bg-surface-low border-r border-border">
           <div className="flex flex-col justify-center px-8 py-12 lg:px-16">
             <Link to="/" className="inline-flex items-center gap-2 mb-12">
-              <img src="/lightlogo.png" alt="BCF" className="h-10 w-auto" />
+              <img src="/lightlogo.png" alt="BCF" className="h-[100px] w-auto" />
             </Link>
             <h2 className="text-headline-lg text-foreground">
               {status === "loading" && "Verifying..."}
