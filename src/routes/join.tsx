@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { registerSchema, type RegisterInput } from '@/lib/validators/auth';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const Route = createFileRoute('/join')({
   head: () => ({
@@ -57,6 +58,12 @@ const EXPERIENCE_LEVELS = [
   { value: 'ADVANCED', label: 'Advanced' },
 ] as const;
 
+const STEPS = [
+  { title: 'Account', fields: ['fullName', 'email', 'password', 'confirmPassword'] as const },
+  { title: 'Academic', fields: ['dateOfBirth', 'department', 'level', 'experienceLevel'] as const },
+  { title: 'Skills & Social', fields: ['skills', 'funFact', 'xLink', 'githubLink', 'portfolioLink'] as const },
+];
+
 function JoinBranding() {
   return (
     <div className="flex flex-col justify-center px-8 py-12 lg:px-16">
@@ -71,8 +78,36 @@ function JoinBranding() {
   );
 }
 
+function StepIndicator({ step }: { step: number }) {
+  return (
+    <div className="flex items-center gap-2 mb-8">
+      {STEPS.map((s, i) => (
+        <div key={s.title} className="flex items-center gap-2">
+          <div
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
+              i <= step
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-surface-high text-muted-foreground'
+            }`}
+          >
+            {i + 1}
+          </div>
+          <span className={`text-sm font-medium hidden sm:inline ${i <= step ? 'text-foreground' : 'text-muted-foreground'}`}>
+            {s.title}
+          </span>
+          {i < STEPS.length - 1 && (
+            <div className={`hidden sm:block h-px w-8 ${i < step ? 'bg-primary' : 'bg-border'}`} />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function JoinPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState<'forward' | 'back'>('forward');
   const router = useRouter();
 
   const form = useForm<RegisterInput>({
@@ -93,6 +128,20 @@ function JoinPage() {
       portfolioLink: '',
     },
   });
+
+  async function handleNext() {
+    const currentFields = [...STEPS[step].fields];
+    const valid = await form.trigger(currentFields as any);
+    if (valid) {
+      setDirection('forward');
+      setStep(step + 1);
+    }
+  }
+
+  function handleBack() {
+    setDirection('back');
+    setStep(step - 1);
+  }
 
   async function onSubmit(values: RegisterInput) {
     setIsLoading(true);
@@ -126,247 +175,273 @@ function JoinPage() {
                 <h1 className="text-headline-md">Join the Club</h1>
                 <p className="text-sm text-muted-foreground mt-1">Create your member profile</p>
               </div>
+
+              <StepIndicator step={step} />
+
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <fieldset className="space-y-4">
-                    <legend className="text-label-bold text-outline mb-1">Account</legend>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <FormField
-                        control={form.control}
-                        name="fullName"
-                        render={({ field }) => (
-                          <FormItem className="sm:col-span-2">
-                            <FormLabel>Full Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="John Doe" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem className="sm:col-span-2">
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input placeholder="you@futminna.edu.ng" type="email" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Min. 8 characters" type="password" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Confirm Password</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Re-enter password" type="password" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </fieldset>
-
-                  <fieldset className="space-y-4">
-                    <legend className="text-label-bold text-outline mb-1">Academic</legend>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <FormField
-                        control={form.control}
-                        name="dateOfBirth"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Date of Birth</FormLabel>
-                            <FormControl>
-                              <Input type="date" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="department"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Department</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g. Computer Science" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="level"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Level</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                  <div className="overflow-hidden">
+                    <div
+                      className="flex transition-transform duration-300 ease-in-out"
+                      style={{
+                        transform: `translateX(-${step * 100}%)`,
+                      }}
+                    >
+                      {/* Step 0: Account */}
+                      <div className="w-full shrink-0 space-y-4 pr-1">
+                        <FormField
+                          control={form.control}
+                          name="fullName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Full Name</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select level" />
-                                </SelectTrigger>
+                                <Input placeholder="John Doe" {...field} />
                               </FormControl>
-                              <SelectContent>
-                                {LEVELS.map((level) => (
-                                  <SelectItem key={level} value={level}>
-                                    Level {level}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="experienceLevel"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Experience Level</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Email</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select experience" />
-                                </SelectTrigger>
+                                <Input placeholder="you@futminna.edu.ng" type="email" {...field} />
                               </FormControl>
-                              <SelectContent>
-                                {EXPERIENCE_LEVELS.map((exp) => (
-                                  <SelectItem key={exp.value} value={exp.value}>
-                                    {exp.label}
-                                  </SelectItem>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Password</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Min. 8 characters" type="password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Confirm Password</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Re-enter password" type="password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      {/* Step 1: Academic */}
+                      <div className="w-full shrink-0 space-y-4 pr-1">
+                        <FormField
+                          control={form.control}
+                          name="dateOfBirth"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Date of Birth</FormLabel>
+                              <FormControl>
+                                <Input type="date" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="department"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Department</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g. Computer Science" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="level"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Level</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select level" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {LEVELS.map((level) => (
+                                    <SelectItem key={level} value={level}>
+                                      Level {level}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="experienceLevel"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Experience Level</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select experience" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {EXPERIENCE_LEVELS.map((exp) => (
+                                    <SelectItem key={exp.value} value={exp.value}>
+                                      {exp.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      {/* Step 2: Skills & Social */}
+                      <div className="w-full shrink-0 space-y-4 pr-1">
+                        <FormField
+                          control={form.control}
+                          name="skills"
+                          render={() => (
+                            <FormItem>
+                              <FormLabel>Skills</FormLabel>
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                {SKILLS.map((skill) => (
+                                  <FormField
+                                    key={skill}
+                                    control={form.control}
+                                    name="skills"
+                                    render={({ field }) => {
+                                      const checked = field.value?.includes(skill as never);
+                                      return (
+                                        <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                          <Checkbox
+                                            checked={checked}
+                                            onCheckedChange={(isChecked) => {
+                                              const current = field.value || [];
+                                              if (isChecked) {
+                                                field.onChange([...current, skill]);
+                                              } else {
+                                                field.onChange(current.filter((s) => s !== skill));
+                                              }
+                                            }}
+                                          />
+                                          {skill}
+                                        </label>
+                                      );
+                                    }}
+                                  />
                                 ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                              </div>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="funFact"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Fun Fact (optional)</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Tell us something fun about yourself" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="grid gap-4 sm:grid-cols-3">
+                          <FormField
+                            control={form.control}
+                            name="xLink"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>X / Twitter</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="username" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="githubLink"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>GitHub</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="username" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="portfolioLink"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Portfolio</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="yoursite.com" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </fieldset>
+                  </div>
 
-                  <fieldset className="space-y-4">
-                    <legend className="text-label-bold text-outline mb-1">Skills & Social</legend>
-                    <FormField
-                      control={form.control}
-                      name="skills"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel>Skills</FormLabel>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {SKILLS.map((skill) => (
-                              <FormField
-                                key={skill}
-                                control={form.control}
-                                name="skills"
-                                render={({ field }) => {
-                                  const checked = field.value?.includes(skill as never);
-                                  return (
-                                    <label className="flex items-center gap-2 text-sm cursor-pointer">
-                                      <Checkbox
-                                        checked={checked}
-                                        onCheckedChange={(isChecked) => {
-                                          const current = field.value || [];
-                                          if (isChecked) {
-                                            field.onChange([...current, skill]);
-                                          } else {
-                                            field.onChange(current.filter((s) => s !== skill));
-                                          }
-                                        }}
-                                      />
-                                      {skill}
-                                    </label>
-                                  );
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="funFact"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Fun Fact (optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Tell us something fun about yourself" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="grid gap-4 sm:grid-cols-3">
-                      <FormField
-                        control={form.control}
-                        name="xLink"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>X / Twitter</FormLabel>
-                            <FormControl>
-                              <Input placeholder="username" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="githubLink"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>GitHub</FormLabel>
-                            <FormControl>
-                              <Input placeholder="username" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="portfolioLink"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Portfolio</FormLabel>
-                            <FormControl>
-                              <Input placeholder="yoursite.com" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </fieldset>
-
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Creating account...' : 'Create Account'}
-                  </Button>
+                  <div className="mt-8 flex items-center justify-between">
+                    {step > 0 ? (
+                      <Button type="button" variant="outline" onClick={handleBack}>
+                        <ChevronLeft className="mr-1 h-4 w-4" />
+                        Back
+                      </Button>
+                    ) : (
+                      <div />
+                    )}
+                    {step < STEPS.length - 1 ? (
+                      <Button type="button" onClick={handleNext}>
+                        Next
+                        <ChevronRight className="ml-1 h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <Button type="submit" disabled={isLoading}>
+                        {isLoading ? 'Creating account...' : 'Create Account'}
+                      </Button>
+                    )}
+                  </div>
                 </form>
               </Form>
+
               <p className="mt-6 text-center text-sm text-muted-foreground">
                 Already have an account?{' '}
                 <Link to="/auth" className="font-medium text-primary hover:underline">
