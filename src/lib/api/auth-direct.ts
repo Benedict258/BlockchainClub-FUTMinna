@@ -5,7 +5,8 @@ import {
   generateAccessToken,
   generateRefreshToken,
   storeRefreshToken,
-  generateVerificationToken,
+  generateVerificationCode,
+  storeVerificationCode,
 } from "@/lib/auth";
 import { randomUUID } from "crypto";
 
@@ -20,9 +21,11 @@ const levelMap: Record<string, string> = {
 
 export async function register(data: {
   fullName: string;
+  username: string;
   email: string;
   password: string;
   confirmPassword: string;
+  phone: string;
   dateOfBirth?: string;
   department: string;
   level: string;
@@ -75,6 +78,8 @@ export async function register(data: {
     id: profileId,
     user_id: userId,
     full_name: data.fullName,
+    username: data.username,
+    phone: data.phone,
     date_of_birth: data.dateOfBirth ? new Date(data.dateOfBirth).toISOString() : null,
     department: data.department,
     level: levelMap[data.level] || data.level,
@@ -130,10 +135,11 @@ export async function register(data: {
   const refreshToken = generateRefreshToken(insertedUser.id);
   await storeRefreshToken(refreshToken, insertedUser.id);
 
-  const verificationToken = generateVerificationToken(insertedUser.id);
+  const verificationCode = generateVerificationCode();
+  await storeVerificationCode(insertedUser.id, verificationCode);
   try {
     const { sendVerificationEmail } = await import("@/lib/email");
-    await sendVerificationEmail(insertedUser.email, verificationToken);
+    await sendVerificationEmail(insertedUser.email, verificationCode);
   } catch {
     console.error("Failed to send verification email");
   }
@@ -146,6 +152,8 @@ export async function register(data: {
       profile: profile
         ? {
             fullName: profile.full_name,
+            username: profile.username || undefined,
+            phone: profile.phone || undefined,
             nickname: profile.nickname || undefined,
             avatarUrl: profile.avatar_url || undefined,
             department: profile.department || "",
@@ -162,19 +170,42 @@ export async function register(data: {
     },
     accessToken,
     refreshToken,
-    message: "Verification email sent. Please check your inbox.",
+    userId: insertedUser.id,
+    message: "Verification code sent. Please check your inbox.",
   };
 }
 
-export async function login(data: { email: string; password: string }) {
-  const { data: user, error } = await query("users", {
-    select: "*",
-    filters: { email: data.email },
-    single: true,
-  });
+export async function login(data: { identifier: string; password: string }) {
+  const isEmail = data.identifier.includes("@");
 
-  if (error || !user) {
-    throw new Error("Invalid email or password");
+  let userData;
+  if (isEmail) {
+    const { data: found, error } = await query("users", {
+      select: "*",
+      filters: { email: data.identifier },
+      single: true,
+    });
+    if (error) throw new Error(error.message);
+    userData = found;
+  } else {
+    const { data: profile } = await query("profiles", {
+      select: "user_id",
+      filters: { username: data.identifier },
+      single: true,
+    });
+    if (profile) {
+      const { data: found } = await query("users", {
+        select: "*",
+        filters: { id: profile.user_id },
+        single: true,
+      });
+      userData = found;
+    }
+  }
+
+  const user = userData;
+  if (!user) {
+    throw new Error("Invalid email/username or password");
   }
 
   const isValid = await comparePassword(data.password, user.password_hash);
@@ -213,6 +244,8 @@ export async function login(data: { email: string; password: string }) {
       profile: profile
         ? {
             fullName: profile.full_name,
+            username: profile.username || undefined,
+            phone: profile.phone || undefined,
             nickname: profile.nickname || undefined,
             avatarUrl: profile.avatar_url || undefined,
             dateOfBirth: profile.date_of_birth || undefined,
@@ -232,4 +265,27 @@ export async function login(data: { email: string; password: string }) {
     accessToken,
     refreshToken,
   };
+}
+
+export async function resendVerificationEmail(data: { email: string }) {
+  const { data: user } = await query("users", {
+    select: "id, email, is_active",
+    filters: { email: data.email },
+    single: true,
+  });
+
+  if (!user) {
+    throw new Error("No account found with this email");
+  }
+
+  if (user.is_active) {
+    throw new Error("This account is already verified");
+  }
+
+  const verificationCode = generateVerificationCode();
+  await storeVerificationCode(user.id, verificationCode);
+  const { sendVerificationEmail } = await import("@/lib/email");
+  await sendVerificationEmail(user.email, verificationCode);
+
+  return { message: "Verification code resent. Please check your inbox." };
 }

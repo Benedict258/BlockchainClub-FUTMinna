@@ -245,6 +245,32 @@ export const markAttendance = createServerFn({ method: 'POST' })
     return updatedRows?.[0];
   });
 
+export const markAttendanceAndAward = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      accessToken: z.string(),
+      eventId: z.string().uuid(),
+      userId: z.string().uuid(),
+      attended: z.boolean(),
+    })
+  )
+  .handler(async ({ data }) => {
+    const { accessToken, eventId, userId, attended } = data;
+
+    const { data: updatedRows, error } = await supabase
+      .from('event_rsvps')
+      .update({ attended }, { event_id: eventId, user_id: userId });
+
+    if (error) throw error;
+
+    if (attended) {
+      const { awardEventPoints } = await import('@/lib/auto-awards');
+      await awardEventPoints(eventId);
+    }
+
+    return updatedRows?.[0];
+  });
+
 export const addEventResource = createServerFn({ method: 'POST' })
   .inputValidator(
     z.object({

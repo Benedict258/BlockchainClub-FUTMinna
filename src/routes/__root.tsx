@@ -8,12 +8,14 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { useAuthStore } from "@/stores/auth-store";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { generateOrganizationJsonLd } from "../lib/seo";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -148,6 +150,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const hydrate = useAuthStore((s) => s.hydrate);
+
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -157,6 +164,7 @@ function RootComponent() {
           <Outlet />
         </main>
         <SiteFooter />
+        <Toaster />
       </div>
     </QueryClientProvider>
   );

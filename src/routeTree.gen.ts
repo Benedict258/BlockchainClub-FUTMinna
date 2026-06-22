@@ -25,6 +25,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LearnIndexRouteImport } from './routes/learn/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ProjectsSubmitRouteImport } from './routes/projects/submit'
+import { Route as ProjectsProjectIdRouteImport } from './routes/projects/$projectId'
 import { Route as MembersMemberIdRouteImport } from './routes/members/$memberId'
 import { Route as LearnResearchRouteImport } from './routes/learn/research'
 import { Route as LearnMarketingRouteImport } from './routes/learn/marketing'
@@ -125,6 +126,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const ProjectsSubmitRoute = ProjectsSubmitRouteImport.update({
   id: '/submit',
   path: '/submit',
+  getParentRoute: () => ProjectsRoute,
+} as any)
+const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
+  id: '/$projectId',
+  path: '/$projectId',
   getParentRoute: () => ProjectsRoute,
 } as any)
 const MembersMemberIdRoute = MembersMemberIdRouteImport.update({
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/learn/marketing': typeof LearnMarketingRoute
   '/learn/research': typeof LearnResearchRoute
   '/members/$memberId': typeof MembersMemberIdRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/projects/submit': typeof ProjectsSubmitRoute
   '/admin/': typeof AdminIndexRoute
   '/learn/': typeof LearnIndexRoute
@@ -306,6 +313,7 @@ export interface FileRoutesByTo {
   '/learn/marketing': typeof LearnMarketingRoute
   '/learn/research': typeof LearnResearchRoute
   '/members/$memberId': typeof MembersMemberIdRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/projects/submit': typeof ProjectsSubmitRoute
   '/admin': typeof AdminIndexRoute
   '/learn': typeof LearnIndexRoute
@@ -346,6 +354,7 @@ export interface FileRoutesById {
   '/learn/marketing': typeof LearnMarketingRoute
   '/learn/research': typeof LearnResearchRoute
   '/members/$memberId': typeof MembersMemberIdRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/projects/submit': typeof ProjectsSubmitRoute
   '/admin/': typeof AdminIndexRoute
   '/learn/': typeof LearnIndexRoute
@@ -387,6 +396,7 @@ export interface FileRouteTypes {
     | '/learn/marketing'
     | '/learn/research'
     | '/members/$memberId'
+    | '/projects/$projectId'
     | '/projects/submit'
     | '/admin/'
     | '/learn/'
@@ -424,6 +434,7 @@ export interface FileRouteTypes {
     | '/learn/marketing'
     | '/learn/research'
     | '/members/$memberId'
+    | '/projects/$projectId'
     | '/projects/submit'
     | '/admin'
     | '/learn'
@@ -463,6 +474,7 @@ export interface FileRouteTypes {
     | '/learn/marketing'
     | '/learn/research'
     | '/members/$memberId'
+    | '/projects/$projectId'
     | '/projects/submit'
     | '/admin/'
     | '/learn/'
@@ -597,6 +609,13 @@ declare module '@tanstack/react-router' {
       path: '/submit'
       fullPath: '/projects/submit'
       preLoaderRoute: typeof ProjectsSubmitRouteImport
+      parentRoute: typeof ProjectsRoute
+    }
+    '/projects/$projectId': {
+      id: '/projects/$projectId'
+      path: '/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof ProjectsProjectIdRouteImport
       parentRoute: typeof ProjectsRoute
     }
     '/members/$memberId': {
@@ -835,10 +854,12 @@ const LearnRouteChildren: LearnRouteChildren = {
 const LearnRouteWithChildren = LearnRoute._addFileChildren(LearnRouteChildren)
 
 interface ProjectsRouteChildren {
+  ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
   ProjectsSubmitRoute: typeof ProjectsSubmitRoute
 }
 
 const ProjectsRouteChildren: ProjectsRouteChildren = {
+  ProjectsProjectIdRoute: ProjectsProjectIdRoute,
   ProjectsSubmitRoute: ProjectsSubmitRoute,
 }
 

@@ -1,45 +1,42 @@
-'use client';
-
-import { useRouter } from '@tanstack/react-router';
-import { useEffect } from 'react';
-import { useAuthStore } from '@/stores/auth-store';
+import { useRouter } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useAuthStore } from "@/stores/auth-store";
 
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
 export function AuthGuard({ children }: AuthGuardProps) {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, isHydrated } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.navigate({ to: '/auth' });
+    if (isHydrated && !isAuthenticated) {
+      router.navigate({ to: "/auth" });
     }
-  }, [isAuthenticated, router]);
+  }, [isHydrated, isAuthenticated, router]);
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  if (!isHydrated) return null;
+  if (!isAuthenticated) return null;
 
   return <>{children}</>;
 }
 
 export function AdminGuard({ children }: AuthGuardProps) {
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, isHydrated } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (!isAuthenticated) {
-      router.navigate({ to: '/auth' });
-    } else if (user && user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
-      router.navigate({ to: '/' });
+      router.navigate({ to: "/auth" });
+    } else if (user && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") {
+      router.navigate({ to: "/" });
     }
-  }, [isAuthenticated, user, router]);
+  }, [isHydrated, isAuthenticated, user, router]);
 
-  if (!isAuthenticated || !user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
-    return null;
-  }
+  if (!isHydrated) return null;
+  if (!isAuthenticated || !user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) return null;
 
   return <>{children}</>;
 }

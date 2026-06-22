@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
-import { apiQuery, apiInsert, apiUpdate, apiDelete } from '@/lib/api-client';
+import { apiQuery, apiInsert, apiUpdate, apiDelete, apiMarkAttendance } from '@/lib/api-client';
 import {
   Table,
   TableBody,
@@ -202,6 +202,16 @@ function AdminEvents() {
       toast.success('Event deleted');
     },
     onError: () => toast.error('Failed to delete event'),
+  });
+
+  const attendanceMutation = useMutation({
+    mutationFn: ({ userId, attended }: { userId: string; attended: boolean }) =>
+      apiMarkAttendance(selectedEvent?.id as string, userId, attended),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-event-rsvps', selectedEvent?.id] });
+      toast.success('Attendance updated');
+    },
+    onError: () => toast.error('Failed to update attendance'),
   });
 
   const openCreate = () => {
@@ -538,20 +548,34 @@ function AdminEvents() {
             <DialogDescription>{selectedEvent?.title as string}</DialogDescription>
           </DialogHeader>
           <div className="space-y-2 max-h-60 overflow-y-auto">
-            {rsvpData?.rsvps && rsvpData.rsvps.length > 0 ? (
-              rsvpData.rsvps.map((rsvp: Record<string, unknown>) => {
+            {rsvpData?.event_rsvps && rsvpData.event_rsvps.length > 0 ? (
+              rsvpData.event_rsvps.map((rsvp: Record<string, unknown>) => {
                 const user = rsvp.user as Record<string, unknown>;
                 const profile = user?.profile as Record<string, unknown> | undefined;
                 return (
-                  <div key={rsvp.id as string} className="flex items-center gap-3 border-b border-border pb-2">
-                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold">
-                      {profile?.fullName
-                        ? (profile.fullName as string).split(' ').map((n: string) => n[0]).join('')
-                        : '?'}
+                  <div key={rsvp.id as string} className="flex items-center justify-between border-b border-border pb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold">
+                        {profile?.fullName
+                          ? (profile.fullName as string).split(' ').map((n: string) => n[0]).join('')
+                          : '?'}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{(profile?.fullName as string) || 'Unknown'}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {rsvp.attended ? 'Attended' : 'RSVPed'}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium">{(profile?.fullName as string) || 'Unknown'}</p>
-                    </div>
+                    <Switch
+                      checked={!!rsvp.attended}
+                      onCheckedChange={(checked) =>
+                        attendanceMutation.mutate({
+                          userId: (rsvp.user as Record<string, unknown>)?.id as string,
+                          attended: checked,
+                        })
+                      }
+                    />
                   </div>
                 );
               })

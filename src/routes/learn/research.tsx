@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { LoginPrompt } from "@/components/login-prompt";
 import {
   Search,
   ArrowRight,
@@ -14,6 +15,7 @@ import {
   Layers,
   GraduationCap,
 } from "lucide-react";
+import { useAuthStore } from "@/stores/auth-store";
 
 const TRACKS = [
   {
@@ -137,6 +139,9 @@ export const Route = createFileRoute("/learn/research")({
 });
 
 function ResearchPage() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  if (!isAuthenticated) return <LoginPrompt />;
+
   return (
     <div className="bg-background">
       {/* HERO */}

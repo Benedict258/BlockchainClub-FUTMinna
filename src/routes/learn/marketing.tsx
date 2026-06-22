@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { LoginPrompt } from "@/components/login-prompt";
 import {
   TrendingUp,
   Megaphone,
@@ -23,6 +24,7 @@ import {
   FileText,
   Video,
 } from "lucide-react";
+import { useAuthStore } from "@/stores/auth-store";
 
 export const Route = createFileRoute("/learn/marketing")({
   head: () => ({
@@ -165,6 +167,9 @@ const RESOURCE_ICONS: Record<string, typeof BookOpen> = {
 type ResourceFilter = "all" | "ARTICLE" | "VIDEO" | "TOOL";
 
 function MarketingPage() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  if (!isAuthenticated) return <LoginPrompt />;
+
   const [resourceFilter, setResourceFilter] = useState<ResourceFilter>("all");
 
   const filteredResources =

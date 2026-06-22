@@ -115,8 +115,6 @@ export async function query(
   const params = new URLSearchParams();
   const select = opts.select || '*';
   params.set('select', select);
-  if (opts.count) params.set('count', opts.count);
-  if (opts.head) params.set('head', 'true');
 
   if (opts.filters) {
     for (const [key, val] of Object.entries(opts.filters)) {
@@ -143,6 +141,16 @@ export async function query(
   if (qs) url += `?${qs}`;
 
   const h = baseHeaders();
+  const preferParts: string[] = [];
+  if (opts.count) {
+    preferParts.push(`count=${opts.count}`);
+  }
+  if (opts.head) {
+    preferParts.push("return=minimal");
+  }
+  if (preferParts.length > 0) {
+    h.Prefer = preferParts.join(", ");
+  }
   if (opts.range) {
     h.Range = `${opts.range[0]}-${opts.range[1]}`;
   }

@@ -4,13 +4,9 @@
 
 function getAuthHeaders(): Record<string, string> {
   try {
-    const stored = localStorage.getItem("bcp-auth");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      const token = parsed?.state?.accessToken;
-      if (token) {
-        return { Authorization: `Bearer ${token}` };
-      }
+    const token = localStorage.getItem("bcf-token");
+    if (token) {
+      return { Authorization: `Bearer ${token}` };
     }
   } catch {}
   return {};
@@ -126,6 +122,53 @@ export async function apiAward(action: string, targetId: string) {
   });
   const json = await res.json();
   if (!res.ok) throw new Error(json.error || "Award failed");
+  return json;
+}
+
+export async function apiMarkAttendance(eventId: string, userId: string, attended: boolean) {
+  const res = await fetch("/api/events/attend", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify({ eventId, userId, attended }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || "Attendance update failed");
+  return json;
+}
+
+export async function apiCompleteModule(moduleId: string, points?: number) {
+  const res = await fetch("/api/supabase/learn-complete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify({ moduleId, points }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error?.message || json.error || "Complete module failed");
+  return json;
+}
+
+export async function apiLogCommunityActivity(
+  activityType: string,
+  description: string,
+  points: number,
+) {
+  const res = await fetch("/api/supabase/community-log", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify({ activityType, description, points }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || "Community activity log failed");
+  return json;
+}
+
+export async function apiGetWhatsAppStats() {
+  const res = await fetch("/api/whatsapp/stats", {
+    method: "GET",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || "WhatsApp stats failed");
   return json;
 }
 

@@ -295,6 +295,29 @@ async function handleSupabaseApi(request: Request, pathname: string): Promise<Re
         result = results;
         break;
       }
+      // Learn module completion with points
+      case "learn-complete": {
+        const { completeModule } = await import("./lib/api/learn-progress.server");
+        const { verifyAccessToken } = await import("./lib/auth");
+        const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+        const payload = token ? verifyAccessToken(token) : null;
+
+        if (!payload) {
+          result = { error: "Unauthorized" };
+          break;
+        }
+
+        const { moduleId, points } = body;
+
+        if (!moduleId) {
+          result = { error: "moduleId is required" };
+          break;
+        }
+
+        const progressResult = await completeModule(payload.userId, moduleId, points);
+        result = progressResult;
+        break;
+      }
       // Leaderboard adjust points
       case "adjust-points": {
         const { supabase, query } = await import("./lib/supabase");
@@ -349,6 +372,116 @@ async function handleSupabaseApi(request: Request, pathname: string): Promise<Re
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || "API error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleEventAttend(request: Request): Promise<Response> {
+  try {
+    const { supabase, query } = await import("./lib/supabase");
+    const { verifyAccessToken } = await import("./lib/auth");
+    const body = await request.json();
+    const { eventId, userId, attended } = body;
+
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const token = authHeader.slice(7);
+    const payload = verifyAccessToken(token);
+    if (!payload) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!eventId || !userId || attended === undefined) {
+      return new Response(JSON.stringify({ error: "eventId, userId, and attended are required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const { data: updatedRows, error } = await supabase
+      .from("event_rsvps")
+      .update({ attended }, { event_id: eventId, user_id: userId });
+
+    if (error) throw new Error(error.message);
+
+    if (attended) {
+      const { awardEventPoints } = await import("./lib/auto-awards");
+      await awardEventPoints(eventId);
+    }
+
+    return new Response(JSON.stringify({ success: true, rsvp: updatedRows?.[0] ?? null }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message || "Attendance update failed" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleCommunityLog(request: Request): Promise<Response> {
+  try {
+    const { supabase, query } = await import("./lib/supabase");
+    const { verifyAccessToken } = await import("./lib/auth");
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const token = authHeader.slice(7);
+    const payload = verifyAccessToken(token);
+    if (!payload) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const body = await request.json();
+    const { userId, activityType, description, points } = body;
+
+    if (!userId || !activityType || !description || points === undefined) {
+      return new Response(JSON.stringify({ error: "userId, activityType, description, and points are required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const { awardPoints } = await import("./lib/auto-awards");
+    const now = new Date().toISOString();
+
+    const { data: activity, error } = await supabase.from("community_activities").insert({
+      user_id: userId,
+      activity_type: activityType,
+      description,
+      points,
+      created_at: now,
+    });
+
+    if (error) throw new Error(error.message);
+
+    await awardPoints(userId, "community", points);
+
+    return new Response(JSON.stringify(activity[0]), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message || "Community log failed" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
@@ -423,20 +556,20 @@ async function handleAuthLogout(request: Request): Promise<Response> {
 async function handleVerifyEmail(request: Request): Promise<Response> {
   try {
     const { supabase } = await import("./lib/supabase");
-    const { verifyVerificationToken } = await import("./lib/auth");
+    const { verifyCode } = await import("./lib/auth");
     const body = await request.json();
-    const { token } = body;
+    const { userId, code } = body;
 
-    if (!token) {
-      return new Response(JSON.stringify({ error: "Token required" }), {
+    if (!userId || !code) {
+      return new Response(JSON.stringify({ error: "User ID and code required" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    const payload = verifyVerificationToken(token);
-    if (!payload) {
-      return new Response(JSON.stringify({ error: "Invalid or expired token" }), {
+    const isValid = await verifyCode(userId, code);
+    if (!isValid) {
+      return new Response(JSON.stringify({ error: "Invalid or expired code" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
@@ -444,7 +577,7 @@ async function handleVerifyEmail(request: Request): Promise<Response> {
 
     const { error } = await supabase
       .from("users")
-      .update({ is_active: true, is_approved: true, updated_at: new Date().toISOString() }, { id: payload.userId });
+      .update({ is_active: true, is_approved: true, updated_at: new Date().toISOString() }, { id: userId });
 
     if (error) throw new Error(error.message);
 
@@ -455,6 +588,56 @@ async function handleVerifyEmail(request: Request): Promise<Response> {
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || "Verification failed" }), {
       status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleResendVerification(request: Request): Promise<Response> {
+  try {
+    const { query } = await import("./lib/supabase");
+    const { generateVerificationCode, storeVerificationCode } = await import("./lib/auth");
+    const { sendVerificationEmail } = await import("./lib/email");
+    const body = await request.json();
+
+    let email: string;
+    let userId: string;
+
+    if (body.userId) {
+      const { data: user } = await query("users", {
+        select: "id, email, is_active",
+        filters: { id: body.userId },
+        single: true,
+      });
+      if (!user) throw new Error("User not found");
+      if (user.is_active) throw new Error("This account is already verified");
+      email = user.email;
+      userId = user.id;
+    } else if (body.email) {
+      const { data: user } = await query("users", {
+        select: "id, email, is_active",
+        filters: { email: body.email },
+        single: true,
+      });
+      if (!user) throw new Error("No account found with this email");
+      if (user.is_active) throw new Error("This account is already verified");
+      email = user.email;
+      userId = user.id;
+    } else {
+      throw new Error("userId or email required");
+    }
+
+    const code = generateVerificationCode();
+    await storeVerificationCode(userId, code);
+    await sendVerificationEmail(email, code);
+
+    return new Response(JSON.stringify({ message: "Verification code resent. Please check your inbox." }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message || "Failed to resend verification code" }), {
+      status: 400,
       headers: { "Content-Type": "application/json" },
     });
   }
@@ -551,6 +734,97 @@ async function handleResetPassword(request: Request): Promise<Response> {
   }
 }
 
+async function handleWhatsAppWebhook(request: Request): Promise<Response> {
+  try {
+    const text = await request.text();
+    const params = new URLSearchParams(text);
+    const body: Record<string, string> = {};
+    for (const [key, value] of params.entries()) {
+      body[key] = value;
+    }
+
+    const { handleWhatsAppWebhook: processWebhook } = await import("./lib/whatsapp/webhook");
+    const result = await processWebhook(body);
+
+    return new Response(result.twiml, {
+      status: result.status,
+      headers: { "Content-Type": "text/xml" },
+    });
+  } catch (error: any) {
+    console.error("WhatsApp webhook error:", error.message);
+    return new Response(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`, {
+      status: 200,
+      headers: { "Content-Type": "text/xml" },
+    });
+  }
+}
+
+async function handleWhatsAppStats(request: Request): Promise<Response> {
+  try {
+    const { verifyAccessToken } = await import("./lib/auth");
+    const { query } = await import("./lib/supabase");
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const token = authHeader.slice(7);
+    const payload = verifyAccessToken(token);
+    if (!payload || (payload.role !== "SUPER_ADMIN" && payload.role !== "ADMIN")) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const { count: totalInteractions } = await query("whatsapp_interactions", {
+      select: "id",
+      count: "exact",
+      head: true,
+      filters: {},
+    });
+
+    const { data: allInteractions } = await query("whatsapp_interactions", {
+      select: "user_id, phone_number, classification, points",
+      filters: {},
+    });
+
+    const memberMap = new Map<string, { points: number; messages: number; breakdown: Record<string, number> }>();
+    for (const interaction of allInteractions || []) {
+      const key = interaction.user_id || interaction.phone_number;
+      if (!memberMap.has(key)) {
+        memberMap.set(key, { points: 0, messages: 0, breakdown: {} });
+      }
+      const stats = memberMap.get(key)!;
+      stats.points += (interaction.points as number) || 0;
+      stats.messages += 1;
+      const cls = interaction.classification as string;
+      stats.breakdown[cls] = (stats.breakdown[cls] || 0) + 1;
+    }
+
+    const topContributors = Array.from(memberMap.entries())
+      .sort((a, b) => b[1].points - a[1].points)
+      .slice(0, 10)
+      .map(([id, stats]) => ({ userId: id, ...stats }));
+
+    return new Response(
+      JSON.stringify({
+        totalInteractions: totalInteractions || 0,
+        activeMembers: memberMap.size,
+        topContributors,
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    );
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message || "Stats failed" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
 async function handleProfileUpdate(request: Request): Promise<Response> {
   try {
     const { supabase, query } = await import("./lib/supabase");
@@ -576,6 +850,8 @@ async function handleProfileUpdate(request: Request): Promise<Response> {
 
     const profileUpdates: Record<string, any> = {};
     if (profileData.fullName !== undefined) profileUpdates.full_name = profileData.fullName;
+    if (profileData.username !== undefined) profileUpdates.username = profileData.username || null;
+    if (profileData.phone !== undefined) profileUpdates.phone = profileData.phone || null;
     if (profileData.nickname !== undefined) profileUpdates.nickname = profileData.nickname || null;
     if (profileData.avatarUrl !== undefined)
       profileUpdates.avatar_url = profileData.avatarUrl || null;
@@ -651,6 +927,8 @@ async function handleProfileUpdate(request: Request): Promise<Response> {
           id: payload.userId,
           profile: {
             fullName: updatedProfile.full_name,
+            username: updatedProfile.username || undefined,
+            phone: updatedProfile.phone || undefined,
             nickname: updatedProfile.nickname || undefined,
             avatarUrl: updatedProfile.avatar_url || undefined,
             dateOfBirth: updatedProfile.date_of_birth || undefined,
@@ -723,7 +1001,7 @@ async function handleAvatarUpload(request: Request): Promise<Response> {
     }
 
     const { uploadToSupabase } = await import("./lib/upload");
-    const result = await uploadToSupabase(file, "avatars");
+    const result = await uploadToSupabase(file, "avatars", "avatars");
 
     return new Response(JSON.stringify({ url: result.url, path: result.path }), {
       status: 200,
@@ -732,6 +1010,145 @@ async function handleAvatarUpload(request: Request): Promise<Response> {
   } catch (error: any) {
     console.error("Avatar upload error:", error.message, error.stack);
     return new Response(JSON.stringify({ error: error.message || "Upload failed", details: error.stack }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleProjectUpload(request: Request): Promise<Response> {
+  try {
+    const { verifyAccessToken } = await import("./lib/auth");
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const token = authHeader.slice(7);
+    const payload = verifyAccessToken(token);
+    if (!payload) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const formData = await request.formData();
+    const file = formData.get("file") as File | null;
+    const bucket = (formData.get("bucket") as string) || "project-logos";
+
+    if (!file) {
+      return new Response(JSON.stringify({ error: "No file provided" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
+    if (!allowedTypes.includes(file.type)) {
+      return new Response(
+        JSON.stringify({ error: "Only JPEG, PNG, WebP, and SVG images are allowed" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      return new Response(JSON.stringify({ error: "File size must be under 5MB" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const { uploadToSupabase } = await import("./lib/upload");
+    const result = await uploadToSupabase(file, bucket, "");
+
+    return new Response(JSON.stringify({ url: result.url, path: result.path }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    console.error("Project upload error:", error.message, error.stack);
+    return new Response(JSON.stringify({ error: error.message || "Upload failed", details: error.stack }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleProjectSubmit(request: Request): Promise<Response> {
+  try {
+    const { verifyAccessToken } = await import("./lib/auth");
+    const { supabase } = await import("./lib/supabase");
+
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const token = authHeader.slice(7);
+    const payload = verifyAccessToken(token);
+    if (!payload) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const body = await request.json();
+
+    const { error: projectError, data: inserted } = await supabase
+      .from("projects")
+      .insert({
+        id: crypto.randomUUID(),
+        name: body.name,
+        description: body.description || null,
+        headline: body.headline || null,
+        team_name: body.teamName || null,
+        cover_image: body.logoUrl || null,
+        logo_url: body.logoUrl || null,
+        banner_url: body.bannerUrl || null,
+        github_url: body.githubUrl || null,
+        demo_url: body.demoUrl || null,
+        website_url: body.websiteUrl || body.demoUrl || null,
+        x_link: body.xLink || null,
+        ecosystem: body.ecosystem || "GENERAL",
+        hackathon_id: body.hackathonId || null,
+        status: "PENDING",
+        submitted_by: payload.userId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
+    if (projectError) {
+      return new Response(JSON.stringify({ error: projectError.message || "Failed to submit project" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const project = Array.isArray(inserted) ? inserted[0] : inserted;
+
+    if (body.memberIds && body.memberIds.length > 0 && project) {
+      await supabase.from("project_members").insert(
+        body.memberIds.map((userId: string) => ({
+          project_id: project.id,
+          user_id: userId,
+          role: "Member",
+        }))
+      );
+    }
+
+    return new Response(JSON.stringify(project), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    console.error("Project submit error:", error.message, error.stack);
+    return new Response(JSON.stringify({ error: error.message || "Submit failed", details: error.stack }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
@@ -781,6 +1198,8 @@ async function handleProfileFetch(request: Request): Promise<Response> {
         profile: profile
           ? {
               fullName: profile.full_name,
+              username: profile.username || undefined,
+              phone: profile.phone || undefined,
               nickname: profile.nickname || undefined,
               avatarUrl: profile.avatar_url || undefined,
               dateOfBirth: profile.date_of_birth || undefined,
@@ -833,17 +1252,38 @@ export default {
   if (url.pathname === "/api/auth/verify-email" && request.method === "POST") {
     return handleVerifyEmail(request);
   }
+  if (url.pathname === "/api/auth/resend-verification" && request.method === "POST") {
+    return handleResendVerification(request);
+  }
   if (url.pathname === "/api/auth/forgot-password" && request.method === "POST") {
     return handleForgotPassword(request);
   }
   if (url.pathname === "/api/auth/reset-password" && request.method === "POST") {
     return handleResetPassword(request);
   }
+  if (url.pathname === "/api/whatsapp/webhook" && request.method === "POST") {
+    return handleWhatsAppWebhook(request);
+  }
+  if (url.pathname === "/api/whatsapp/stats" && request.method === "GET") {
+    return handleWhatsAppStats(request);
+  }
+  if (url.pathname === "/api/supabase/community-log" && request.method === "POST") {
+    return handleCommunityLog(request);
+  }
+  if (url.pathname === "/api/projects/upload" && request.method === "POST") {
+    return handleProjectUpload(request);
+  }
+  if (url.pathname === "/api/projects/submit" && request.method === "POST") {
+    return handleProjectSubmit(request);
+  }
   if (url.pathname.startsWith("/api/supabase/")) {
       return handleSupabaseApi(request, url.pathname);
     }
   if (url.pathname === "/api/awards" && request.method === "POST") {
     return handleAwards(request);
+  }
+  if (url.pathname === "/api/events/attend" && request.method === "POST") {
+    return handleEventAttend(request);
   }
 
     try {

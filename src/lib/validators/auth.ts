@@ -21,7 +21,12 @@ const experienceLevels = ["BEGINNER", "INTERMEDIATE", "ADVANCED"] as const;
 export const registerSchema = z
   .object({
     fullName: z.string().min(2, "Full name must be at least 2 characters"),
+    username: z.string().min(3, "Username must be at least 3 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
     email: z.string().email("Please enter a valid email address"),
+    phone: z
+      .string()
+      .min(1, "Phone number is required")
+      .regex(/^\+?[1-9]\d{1,14}$/, "Enter a valid phone number (e.g. +2348012345678)"),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
@@ -48,7 +53,16 @@ export const registerSchema = z
 export type RegisterInput = z.infer<typeof registerSchema>;
 
 export const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  identifier: z
+    .string()
+    .min(1, "Email or username is required")
+    .refine(
+      (val) =>
+        val.includes("@")
+          ? z.string().email().safeParse(val).success
+          : /^[a-zA-Z0-9_]{3,}$/.test(val),
+      { message: "Please enter a valid email or username" }
+    ),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -56,6 +70,7 @@ export type LoginInput = z.infer<typeof loginSchema>;
 
 export const profileUpdateSchema = z.object({
   fullName: z.string().min(2).optional(),
+  phone: z.string().min(1).optional().or(z.literal("")),
   nickname: z.string().max(30).optional(),
   department: z.string().min(1).optional(),
   level: z.enum(levels).optional(),
@@ -63,6 +78,7 @@ export const profileUpdateSchema = z.object({
   experienceLevel: z.enum(experienceLevels).optional(),
   funFact: z.string().optional(),
   bio: z.string().max(500).optional(),
+  username: z.string().min(3).regex(/^[a-zA-Z0-9_]+$/).optional().or(z.literal("")),
   xLink: z.string().url().optional().or(z.literal("")),
   githubLink: z.string().url().optional().or(z.literal("")),
   portfolioLink: z.string().url().optional().or(z.literal("")),

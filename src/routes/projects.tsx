@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { useMatchRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -14,8 +15,9 @@ import {
 } from "@/components/ui/avatar";
 import {
   Code,
-  ExternalLink,
   Github,
+  Globe,
+  Twitter,
   ArrowRight,
   Users,
   Layers,
@@ -88,6 +90,9 @@ function ProjectsSkeleton() {
 }
 
 function ProjectsPage() {
+  const matchRoute = useMatchRoute();
+  const isIndex = !matchRoute({ to: "/projects/submit" }) && !matchRoute({ to: "/projects/$projectId" });
+
   const [ecosystemFilter, setEcosystemFilter] =
     useState<EcosystemFilter>("all");
 
@@ -112,6 +117,10 @@ function ProjectsPage() {
   const regular = projects.filter(
     (p: { isFeatured: boolean }) => !p.isFeatured
   );
+
+  if (!isIndex) {
+    return <Outlet />;
+  }
 
   return (
     <div className="bg-background">
@@ -228,7 +237,11 @@ function ProjectsPage() {
                     className="group relative overflow-hidden border-border bg-card p-0"
                   >
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
-                    <div className="p-8">
+                    <div className="p-8 flex gap-6">
+                      {project.logo_url && (
+                        <img src={project.logo_url} alt={project.name} className="h-16 w-16 rounded-xl object-cover shrink-0 bg-surface-high" />
+                      )}
+                      <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-4">
                         <Badge
                           variant="outline"
@@ -256,7 +269,14 @@ function ProjectsPage() {
                           )
                         )}
                       </div>
-                      <h3 className="text-headline-lg">{project.name}</h3>
+                      <h3 className="text-headline-lg">
+                        <Link to="/projects/$projectId" params={{ projectId: project.id }}>
+                          {project.name}
+                        </Link>
+                      </h3>
+                      {project.team_name && (
+                        <p className="mt-1 text-xs text-muted-foreground/70">by {project.team_name}</p>
+                      )}
                       {project.description && (
                         <p className="mt-3 text-muted-foreground leading-relaxed max-w-2xl">
                           {project.description}
@@ -283,24 +303,27 @@ function ProjectsPage() {
                                   },
                                   idx: number
                                 ) => (
-                                  <Avatar
+                                  <Link
                                     key={m.user.id}
-                                    className="h-7 w-7 border-2 border-card"
+                                    to="/members/$memberId"
+                                    params={{ memberId: m.user.id }}
                                   >
-                                    <AvatarImage
-                                      src={
-                                        m.user.profile?.avatarUrl ||
-                                        undefined
-                                      }
-                                    />
-                                    <AvatarFallback className="text-[10px]">
-                                      {m.user.profile?.fullName
-                                        ?.split(" ")
-                                        .map((p: string) => p[0])
-                                        .join("") ||
-                                        `U${idx}`}
-                                    </AvatarFallback>
-                                  </Avatar>
+                                    <Avatar className="h-7 w-7 border-2 border-card">
+                                      <AvatarImage
+                                        src={
+                                          m.user.profile?.avatarUrl ||
+                                          undefined
+                                        }
+                                      />
+                                      <AvatarFallback className="text-[10px]">
+                                        {m.user.profile?.fullName
+                                          ?.split(" ")
+                                          .map((p: string) => p[0])
+                                          .join("") ||
+                                          `U${idx}`}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  </Link>
                                 )
                               )}
                           </div>
@@ -335,14 +358,32 @@ function ProjectsPage() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                                Demo
+                                <Globe className="mr-1.5 h-3.5 w-3.5" />
+                                Website
+                              </a>
+                            </Button>
+                          )}
+                          {project.xLink && (
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="sm"
+                              className="text-xs"
+                            >
+                              <a
+                                href={project.xLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <Twitter className="mr-1.5 h-3.5 w-3.5" />
+                                X
                               </a>
                             </Button>
                           )}
                         </div>
                       </div>
                     </div>
+                  </div>
                   </Card>
                 ))}
               </div>
@@ -357,7 +398,22 @@ function ProjectsPage() {
                 >
                   <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top rounded-r" />
                   <div className="p-6">
-                    <div className="flex flex-wrap items-center gap-1.5">
+                    <div className="flex items-start gap-3">
+                      {project.logo_url && (
+                        <img src={project.logo_url} alt={project.name} className="h-10 w-10 rounded-lg object-cover shrink-0 bg-surface-high" />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-headline-md group-hover:text-primary transition-colors">
+                          <Link to="/projects/$projectId" params={{ projectId: project.id }}>
+                            {project.name}
+                          </Link>
+                        </h3>
+                        {project.team_name && (
+                          <p className="mt-0.5 text-xs text-muted-foreground/70">by {project.team_name}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5 mt-3">
                       <Badge
                         variant="outline"
                         className={`text-[10px] ${ECOSYSTEM_COLORS[project.ecosystem] || ECOSYSTEM_COLORS.GENERAL}`}
@@ -379,11 +435,8 @@ function ProjectsPage() {
                           )
                         )}
                     </div>
-                    <h3 className="mt-3 text-headline-md group-hover:text-primary transition-colors">
-                      {project.name}
-                    </h3>
                     {project.description && (
-                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-3">
                         {project.description}
                       </p>
                     )}
@@ -404,34 +457,38 @@ function ProjectsPage() {
                               },
                               idx: number
                             ) => (
-                              <Avatar
+                              <Link
                                 key={m.user.id}
-                                className="h-6 w-6 border-2 border-card"
+                                to="/members/$memberId"
+                                params={{ memberId: m.user.id }}
                               >
-                                <AvatarImage
-                                  src={
-                                    m.user.profile?.avatarUrl || undefined
-                                  }
-                                />
-                                <AvatarFallback className="text-[9px]">
-                                  {m.user.profile?.fullName
-                                    ?.split(" ")
-                                    .map((p: string) => p[0])
-                                    .join("") || `U${idx}`}
-                                </AvatarFallback>
-                              </Avatar>
+                                <Avatar className="h-6 w-6 border-2 border-card">
+                                  <AvatarImage
+                                    src={
+                                      m.user.profile?.avatarUrl || undefined
+                                    }
+                                  />
+                                  <AvatarFallback className="text-[9px]">
+                                    {m.user.profile?.fullName
+                                      ?.split(" ")
+                                      .map((p: string) => p[0])
+                                      .join("") || `U${idx}`}
+                                  </AvatarFallback>
+                                </Avatar>
+                              </Link>
                             )
                           )}
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-3">
                         {project.githubUrl && (
                           <a
                             href={project.githubUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-muted-foreground hover:text-primary transition-colors"
+                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
                           >
-                            <Github className="h-4 w-4" />
+                            <Github className="h-3.5 w-3.5" />
+                            GitHub
                           </a>
                         )}
                         {project.demoUrl && (
@@ -439,9 +496,21 @@ function ProjectsPage() {
                             href={project.demoUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-muted-foreground hover:text-primary transition-colors"
+                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
                           >
-                            <ExternalLink className="h-4 w-4" />
+                            <Globe className="h-3.5 w-3.5" />
+                            Website
+                          </a>
+                        )}
+                        {project.xLink && (
+                          <a
+                            href={project.xLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                          >
+                            <Twitter className="h-3.5 w-3.5" />
+                            X
                           </a>
                         )}
                       </div>

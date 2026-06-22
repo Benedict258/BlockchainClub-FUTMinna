@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { registerSchema, type RegisterInput } from '@/lib/validators/auth';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Mail, RefreshCw } from 'lucide-react';
 
 export const Route = createFileRoute('/join')({
   head: () => ({
@@ -59,7 +59,7 @@ const EXPERIENCE_LEVELS = [
 ] as const;
 
 const STEPS = [
-  { title: 'Account', fields: ['fullName', 'email', 'password', 'confirmPassword'] as const },
+  { title: 'Account', fields: ['fullName', 'username', 'email', 'phone', 'password', 'confirmPassword'] as const },
   { title: 'Academic', fields: ['dateOfBirth', 'department', 'level', 'experienceLevel'] as const },
   { title: 'Skills & Social', fields: ['skills', 'funFact', 'xLink', 'githubLink', 'portfolioLink'] as const },
 ];
@@ -108,13 +108,18 @@ function JoinPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
-  const router = useRouter();
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
+  const [registeredUserId, setRegisteredUserId] = useState('');
+  const [isResending, setIsResending] = useState(false);
 
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       fullName: '',
+      username: '',
       email: '',
+      phone: '',
       password: '',
       confirmPassword: '',
       dateOfBirth: '',
@@ -152,13 +157,46 @@ function JoinPage() {
         body: JSON.stringify(values),
       });
       const result = await res.json();
-      if (!res.ok) throw new Error(result.error || 'Registration failed');
-      toast.success('Account created! Please sign in.');
-      router.navigate({ to: '/auth' });
+      if (!res.ok) {
+        const msg = result.error || 'Registration failed';
+        if (msg.toLowerCase().includes('email')) {
+          form.setError('email', { message: msg });
+        } else if (msg.toLowerCase().includes('password')) {
+          form.setError('confirmPassword', { message: msg });
+        } else if (msg.toLowerCase().includes('phone')) {
+          form.setError('phone', { message: msg });
+        } else if (msg.toLowerCase().includes('name')) {
+          form.setError('fullName', { message: msg });
+        } else {
+          form.setError('root', { message: msg });
+        }
+        throw new Error(msg);
+      }
+      setRegisteredEmail(values.email);
+      setRegisteredUserId(result.userId || result.user?.id || '');
+      setShowVerificationMessage(true);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Registration failed');
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function resendVerification() {
+    setIsResending(true);
+    try {
+      const res = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: registeredEmail }),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to resend');
+      toast.success('Verification email resent!');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to resend verification email');
+    } finally {
+      setIsResending(false);
     }
   }
 
@@ -171,6 +209,35 @@ function JoinPage() {
         <div className="flex items-start justify-center px-6 py-12 lg:py-16 lg:overflow-y-auto">
           <Card className="w-full max-w-xl border-border bg-card">
             <CardContent className="pt-8">
+              {showVerificationMessage ? (
+                <div className="text-center space-y-6 py-8">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                    <Mail className="h-8 w-8 text-primary" />
+                  </div>
+                  <div className="space-y-2">
+                    <h2 className="text-headline-md">Verify Your Email</h2>
+                    <p className="text-muted-foreground">
+                      Enter the 6-digit code we sent to <span className="font-medium text-foreground">{registeredEmail}</span>.
+                    </p>
+                  </div>
+                  <div className="space-y-3">
+                    <Button asChild className="w-full">
+                      <a href={`/auth/verify?userId=${registeredUserId}`}>Enter Verification Code</a>
+                    </Button>
+                    <Button variant="outline" className="w-full" onClick={resendVerification} disabled={isResending}>
+                      {isResending ? (
+                        <>
+                          <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                          Resending...
+                        </>
+                      ) : (
+                        <>Resend Code</>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
               <div className="mb-6 lg:hidden">
                 <h1 className="text-headline-md">Join the Club</h1>
                 <p className="text-sm text-muted-foreground mt-1">Create your member profile</p>
@@ -204,12 +271,38 @@ function JoinPage() {
                         />
                         <FormField
                           control={form.control}
+                          name="username"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Username</FormLabel>
+                              <FormControl>
+                                <Input placeholder="yourusername" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
                           name="email"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Email</FormLabel>
                               <FormControl>
                                 <Input placeholder="you@futminna.edu.ng" type="email" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="phone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Phone Number</FormLabel>
+                              <FormControl>
+                                <Input placeholder="+2348012345678" type="tel" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -439,6 +532,9 @@ function JoinPage() {
                       </Button>
                     )}
                   </div>
+                  {form.formState.errors.root && (
+                    <p className="mt-4 text-sm text-destructive text-center">{form.formState.errors.root.message}</p>
+                  )}
                 </form>
               </Form>
 
@@ -448,6 +544,8 @@ function JoinPage() {
                   Sign In
                 </Link>
               </p>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>

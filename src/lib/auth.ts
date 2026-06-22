@@ -102,6 +102,43 @@ export function verifyVerificationToken(token: string): { userId: string } | nul
   }
 }
 
+export function generateVerificationCode(): string {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+export async function storeVerificationCode(userId: string, code: string): Promise<void> {
+  const expiresAt = new Date();
+  expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+
+  const { error } = await supabase.from("verification_codes").insert({
+    id: randomUUID(),
+    user_id: userId,
+    code,
+    expires_at: expiresAt.toISOString(),
+    created_at: new Date().toISOString(),
+  });
+
+  if (error) throw new Error(error.message);
+}
+
+export async function verifyCode(userId: string, code: string): Promise<boolean> {
+  const { data } = await query("verification_codes", {
+    select: "*",
+    filters: { user_id: userId, code },
+    single: true,
+  });
+
+  if (!data) return false;
+
+  if (new Date() > new Date(data.expires_at)) {
+    await supabase.from("verification_codes").delete({ id: data.id });
+    return false;
+  }
+
+  await supabase.from("verification_codes").delete({ id: data.id });
+  return true;
+}
+
 export function generatePasswordResetToken(userId: string): string {
   return jwt.sign({ userId, type: "password_reset" }, getAuthSecret(), { expiresIn: "1h" });
 }

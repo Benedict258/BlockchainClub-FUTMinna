@@ -1,20 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Calendar,
-  MapPin,
-  Users,
-  Clock,
-  ArrowLeft,
-  Share2,
-  ExternalLink,
-} from "lucide-react";
-import { getEventById } from "@/lib/api/events.server";
+import { Calendar, MapPin, Users, Clock, ArrowLeft, Share2, ExternalLink } from "lucide-react";
+import { getEventById, rsvpToEvent, cancelRsvp } from "@/lib/api/events.server";
+import { useAuthStore } from "@/stores/auth-store";
 
 const TYPE_LABELS: Record<string, string> = {
   WORKSHOP: "Workshop",
@@ -79,11 +73,37 @@ function EventDetailSkeleton() {
 function EventDetailPage() {
   const params = Route.useParams();
   const eventId = params.eventId;
+  const { user, accessToken } = useAuthStore();
+  const queryClient = useQueryClient();
   const fetchEvent = useServerFn(getEventById);
+  const doRsvp = useServerFn(rsvpToEvent);
+  const doCancelRsvp = useServerFn(cancelRsvp);
+  const [rsvping, setRsvping] = useState(false);
 
-  const { data: event, isLoading, error } = useQuery({
+  const {
+    data: event,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["event", eventId],
     queryFn: () => fetchEvent({ data: { id: eventId } }),
+  });
+
+  const rsvpMutation = useMutation({
+    mutationFn: () => doRsvp({ data: { eventId, userId: user!.id, accessToken: accessToken! } }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+    },
+    onSettled: () => setRsvping(false),
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: () =>
+      doCancelRsvp({ data: { eventId, userId: user!.id, accessToken: accessToken! } }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+    },
+    onSettled: () => setRsvping(false),
   });
 
   if (isLoading) return <EventDetailSkeleton />;
@@ -102,6 +122,21 @@ function EventDetailPage() {
   }
 
   const isPast = new Date(event.startDate) < new Date();
+  const rsvps: Array<{ user_id: string }> = "rsvps" in event ? event.rsvps : [];
+  const hasRsvped = user ? rsvps.some((r) => r.user_id === user.id) : false;
+  const rsvpCount = rsvps.length;
+  const isFull = event.maxAttendees ? rsvpCount >= event.maxAttendees : false;
+  const isMutating = rsvping;
+
+  function handleRsvp() {
+    if (!user || !accessToken) return;
+    setRsvping(true);
+    if (hasRsvped) {
+      cancelMutation.mutate();
+    } else {
+      rsvpMutation.mutate();
+    }
+  }
 
   return (
     <div className="bg-background">
@@ -114,11 +149,7 @@ function EventDetailPage() {
 
         {event.coverImage && (
           <div className="aspect-[2/1] w-full rounded-xl overflow-hidden mb-8">
-            <img
-              src={event.coverImage}
-              alt={event.title}
-              className="w-full h-full object-cover"
-            />
+            <img src={event.coverImage} alt={event.title} className="w-full h-full object-cover" />
           </div>
         )}
 
@@ -138,9 +169,7 @@ function EventDetailPage() {
           )}
         </div>
 
-        <h1 className="text-headline-xl md:text-display-md tracking-tight mb-6">
-          {event.title}
-        </h1>
+        <h1 className="text-headline-xl md:text-display-md tracking-tight mb-6">{event.title}</h1>
 
         <div className="grid md:grid-cols-3 gap-6 mb-10">
           <Card className="md:col-span-2 border-border bg-card">
@@ -205,15 +234,14 @@ function EventDetailPage() {
                   )}
                   <div className="flex items-start gap-3">
                     <Users className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-                    <p className="font-medium">
-                      {"rsvps" in event ? event.rsvps.length : 0} RSVPs
-                    </p>
+                    <p className="font-medium">{"rsvps" in event ? event.rsvps.length : 0} RSVPs</p>
                   </div>
                   {event.maxAttendees && (
                     <div className="flex items-start gap-3">
                       <Clock className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                       <p className="font-medium">
-                        {event.maxAttendees - ("rsvps" in event ? event.rsvps.length : 0)} spots left
+                        {event.maxAttendees - ("rsvps" in event ? event.rsvps.length : 0)} spots
+                        left
                       </p>
                     </div>
                   )}
@@ -222,9 +250,32 @@ function EventDetailPage() {
             </Card>
 
             {!isPast && (
-              <Button className="w-full" size="lg">
-                RSVP Now
-              </Button>
+              <>
+                {!user || !accessToken ? (
+                  <Button asChild className="w-full" size="lg" variant="outline">
+                    <Link to="/auth">Login to RSVP</Link>
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    variant={hasRsvped ? "destructive" : "default"}
+                    disabled={isFull || isMutating}
+                    onClick={handleRsvp}
+                  >
+                    {isMutating
+                      ? "Processing..."
+                      : hasRsvped
+                        ? "Cancel RSVP"
+                        : isFull
+                          ? "Event Full"
+                          : "RSVP Now"}
+                  </Button>
+                )}
+                <Badge variant="secondary" className="w-full justify-center text-sm py-1">
+                  {rsvpCount} RSVP{rsvpCount !== 1 ? "s" : ""}
+                </Badge>
+              </>
             )}
             <Button variant="outline" className="w-full" size="lg">
               <Share2 className="mr-2 h-4 w-4" /> Share Event

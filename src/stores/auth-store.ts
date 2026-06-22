@@ -14,6 +14,8 @@ export interface User {
   role: string;
   profile?: {
     fullName: string;
+    username?: string;
+    phone?: string;
     nickname?: string;
     avatarUrl?: string;
     dateOfBirth?: string;
@@ -34,48 +36,62 @@ interface AuthState {
   user: User | null;
   accessToken: string | null;
   isAuthenticated: boolean;
+  isHydrated: boolean;
   login: (user: User, accessToken: string) => void;
   logout: () => void;
   setUser: (user: User) => void;
   setAccessToken: (token: string) => void;
+  hydrate: () => void;
 }
-
-function getStoredAuth(): { user: User | null; accessToken: string | null } {
-  if (typeof window === "undefined") return { user: null, accessToken: null };
-  try {
-    const storedUser = localStorage.getItem("bcf-user");
-    const storedToken = localStorage.getItem("bcf-token");
-    return {
-      user: storedUser ? JSON.parse(storedUser) : null,
-      accessToken: storedToken,
-    };
-  } catch {
-    return { user: null, accessToken: null };
-  }
-}
-
-const initial = getStoredAuth();
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: initial.user,
-  accessToken: initial.accessToken,
-  isAuthenticated: !!initial.user && !!initial.accessToken,
+  user: null,
+  accessToken: null,
+  isAuthenticated: false,
+  isHydrated: false,
   login: (user, accessToken) => {
-    localStorage.setItem("bcf-user", JSON.stringify(user));
-    localStorage.setItem("bcf-token", accessToken);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("bcf-user", JSON.stringify(user));
+      localStorage.setItem("bcf-token", accessToken);
+    }
     set({ user, accessToken, isAuthenticated: true });
   },
   logout: () => {
-    localStorage.removeItem("bcf-user");
-    localStorage.removeItem("bcf-token");
-    set({ user: null, accessToken: null, isAuthenticated: false });
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("bcf-user");
+      localStorage.removeItem("bcf-token");
+    }
+    set({ user: null, accessToken: null, isAuthenticated: false, isHydrated: false });
   },
   setUser: (user) => {
-    localStorage.setItem("bcf-user", JSON.stringify(user));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("bcf-user", JSON.stringify(user));
+    }
     set({ user });
   },
   setAccessToken: (token) => {
-    localStorage.setItem("bcf-token", token);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("bcf-token", token);
+    }
     set({ accessToken: token });
+  },
+  hydrate: () => {
+    if (typeof window === "undefined") return;
+    try {
+      const storedUser = localStorage.getItem("bcf-user");
+      const storedToken = localStorage.getItem("bcf-token");
+      if (storedUser && storedToken) {
+        set({
+          user: JSON.parse(storedUser),
+          accessToken: storedToken,
+          isAuthenticated: true,
+          isHydrated: true,
+        });
+      } else {
+        set({ isHydrated: true });
+      }
+    } catch {
+      set({ isHydrated: true });
+    }
   },
 }));

@@ -79,6 +79,8 @@ function ProfilePage() {
     resolver: zodResolver(profileUpdateSchema),
     defaultValues: {
       fullName: profile?.fullName || "",
+      username: profile?.username || "",
+      phone: profile?.phone || "",
       nickname: profile?.nickname || "",
       bio: profile?.bio || "",
       department: profile?.department || "",
@@ -220,11 +222,15 @@ function ProfilePage() {
               />
             </div>
             <CardTitle className="text-2xl font-bold">{profile?.fullName || "Member"}</CardTitle>
+            {profile?.username && (
+              <p className="text-sm text-muted-foreground">@{profile.username}</p>
+            )}
             {profile?.nickname && (
               <p className="text-sm text-muted-foreground">&ldquo;{profile.nickname}&rdquo;</p>
             )}
             <CardDescription>{user.email}</CardDescription>
             <div className="flex flex-wrap justify-center gap-2 mt-2">
+              {profile?.phone && <Badge variant="secondary">{profile.phone}</Badge>}
               {profile?.department && <Badge variant="secondary">{profile.department}</Badge>}
               {profile?.level && <Badge variant="outline">Level {profile.level}</Badge>}
               {profile?.experienceLevel && (
@@ -328,6 +334,34 @@ function ProfilePage() {
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
                           <Input placeholder="John Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input placeholder="yourusername" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="+2348012345678" type="tel" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

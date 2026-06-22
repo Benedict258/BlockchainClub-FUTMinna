@@ -49,7 +49,7 @@ function SignInPage() {
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      identifier: "",
       password: "",
     },
   });
@@ -63,10 +63,17 @@ function SignInPage() {
         body: JSON.stringify(values),
       });
       const result = await res.json();
-      if (!res.ok) throw new Error(result.error || "Login failed");
+      if (!res.ok) {
+        const msg = result.error || "Login failed";
+        form.setError("identifier", { message: msg });
+        form.setError("password", { message: msg });
+        throw new Error(msg);
+      }
       authLogin(result.user, result.accessToken);
       toast.success("Welcome back!");
-      window.location.href = "/";
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 300);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Login failed");
     } finally {
@@ -88,15 +95,15 @@ function SignInPage() {
                 <p className="text-sm text-muted-foreground mt-1">Sign in to your account</p>
               </div>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form method="post" onSubmit={(e) => { e.preventDefault(); form.handleSubmit(onSubmit)(e); }} className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="identifier"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Email or Username</FormLabel>
                         <FormControl>
-                          <Input placeholder="you@futminna.edu.ng" type="email" {...field} />
+                          <Input placeholder="you@futminna.edu.ng or yourusername" type="text" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -126,6 +133,9 @@ function SignInPage() {
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Signing in..." : "Sign In"}
                   </Button>
+                  {form.formState.errors.root && (
+                    <p className="text-sm text-destructive text-center">{form.formState.errors.root.message}</p>
+                  )}
                 </form>
               </Form>
               <p className="mt-6 text-center text-sm text-muted-foreground">

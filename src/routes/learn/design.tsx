@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { LoginPrompt } from "@/components/login-prompt";
 import {
   BookOpen,
   ArrowRight,
@@ -20,6 +21,7 @@ import {
   MousePointerClick,
   Monitor,
 } from "lucide-react";
+import { useAuthStore } from "@/stores/auth-store";
 
 type CategoryFilter = "all" | "uiux" | "branding" | "tools";
 
@@ -180,6 +182,9 @@ export const Route = createFileRoute("/learn/design")({
 });
 
 function DesignLearnPage() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  if (!isAuthenticated) return <LoginPrompt />;
+
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
   const [resourceType, setResourceType] = useState<string>("all");
 

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LoginPrompt } from "@/components/login-prompt";
 import {
   Trophy,
   ArrowRight,
@@ -21,6 +22,7 @@ import {
   Gift,
 } from "lucide-react";
 import { getOpportunities } from "@/lib/api/opportunities.server";
+import { useAuthStore } from "@/stores/auth-store";
 
 type TypeFilter =
   | "all"
@@ -155,6 +157,9 @@ export const Route = createFileRoute("/opportunities")({
 });
 
 function OpportunitiesPage() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  if (!isAuthenticated) return <LoginPrompt />;
+
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
 
   const fetchOpportunities = useServerFn(getOpportunities);
