@@ -140,7 +140,7 @@ export async function awardProjectPoints(projectId: string): Promise<void> {
 export async function awardEventPoints(eventId: string): Promise<void> {
   const { data: rsvps } = await query("event_rsvps", {
     select: "user_id",
-    filters: { event_id: eventId },
+    filters: { event_id: eventId, attended: true },
   });
 
   if (!rsvps) return;

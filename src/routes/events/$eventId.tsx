@@ -121,11 +121,11 @@ function EventDetailPage() {
     );
   }
 
-  const isPast = new Date(event.startDate) < new Date();
-  const rsvps: Array<{ user_id: string }> = "rsvps" in event ? event.rsvps : [];
+  const isPast = new Date(event.start_date) < new Date();
+  const rsvps: Array<{ user_id: string }> = event.event_rsvps || [];
   const hasRsvped = user ? rsvps.some((r) => r.user_id === user.id) : false;
   const rsvpCount = rsvps.length;
-  const isFull = event.maxAttendees ? rsvpCount >= event.maxAttendees : false;
+  const isFull = event.max_attendees ? rsvpCount >= event.max_attendees : false;
   const isMutating = rsvping;
 
   function handleRsvp() {
@@ -147,9 +147,9 @@ function EventDetailPage() {
           </Link>
         </Button>
 
-        {event.coverImage && (
+        {event.cover_image && (
           <div className="aspect-[2/1] w-full rounded-xl overflow-hidden mb-8">
-            <img src={event.coverImage} alt={event.title} className="w-full h-full object-cover" />
+            <img               src={event.cover_image} alt={event.title} className="w-full h-full object-cover" />
           </div>
         )}
 
@@ -157,7 +157,7 @@ function EventDetailPage() {
           <Badge variant="outline" className={TYPE_COLORS[event.type] || TYPE_COLORS.OTHER}>
             {TYPE_LABELS[event.type] || event.type}
           </Badge>
-          {event.isFeatured && (
+          {event.is_featured && (
             <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
               Featured
             </Badge>
@@ -213,10 +213,10 @@ function EventDetailPage() {
                   <div className="flex items-start gap-3">
                     <Calendar className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                     <div>
-                      <p className="font-medium">{formatDate(event.startDate)}</p>
+                      <p className="font-medium">                      {formatDate(event.start_date)}</p>
                       <p className="text-muted-foreground">
-                        {formatTime(event.startDate)}
-                        {event.endDate && ` - ${formatTime(event.endDate)}`}
+                        {formatTime(event.start_date)}
+                        {event.end_date && ` - ${formatTime(event.end_date)}`}
                       </p>
                     </div>
                   </div>
@@ -226,7 +226,7 @@ function EventDetailPage() {
                       <p className="font-medium">{event.location}</p>
                     </div>
                   )}
-                  {event.isVirtual && (
+                  {event.is_virtual && (
                     <div className="flex items-start gap-3">
                       <ExternalLink className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                       <p className="font-medium">Virtual Event</p>
@@ -234,14 +234,13 @@ function EventDetailPage() {
                   )}
                   <div className="flex items-start gap-3">
                     <Users className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-                    <p className="font-medium">{"rsvps" in event ? event.rsvps.length : 0} RSVPs</p>
+                    <p className="font-medium">{rsvpCount} RSVPs</p>
                   </div>
-                  {event.maxAttendees && (
+                  {event.max_attendees && (
                     <div className="flex items-start gap-3">
                       <Clock className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                       <p className="font-medium">
-                        {event.maxAttendees - ("rsvps" in event ? event.rsvps.length : 0)} spots
-                        left
+                        {event.max_attendees - rsvpCount} spots
                       </p>
                     </div>
                   )}

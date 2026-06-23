@@ -66,6 +66,7 @@ export const createOpportunity = createServerFn({ method: 'POST' })
       ecosystem: z.enum(['EVM', 'SUI_MOVE', 'APTOS_MOVE', 'SOLANA_RUST', 'GENERAL']).default('GENERAL'),
       description: z.string().optional(),
       prize: z.string().optional(),
+      imageUrl: z.string().optional(),
       applyUrl: z.string().url().optional(),
       deadline: z.string().datetime().optional(),
       status: z.enum(['OPEN', 'CLOSING_SOON', 'CLOSED']).default('OPEN'),
@@ -82,6 +83,7 @@ export const createOpportunity = createServerFn({ method: 'POST' })
       ecosystem: opportunityData.ecosystem,
       description: opportunityData.description,
       prize: opportunityData.prize,
+      image_url: opportunityData.imageUrl,
       apply_url: opportunityData.applyUrl,
       deadline: opportunityData.deadline,
       status: opportunityData.status,
@@ -108,6 +110,7 @@ export const updateOpportunity = createServerFn({ method: 'POST' })
       ecosystem: z.enum(['EVM', 'SUI_MOVE', 'APTOS_MOVE', 'SOLANA_RUST', 'GENERAL']).optional(),
       description: z.string().optional(),
       prize: z.string().optional(),
+      imageUrl: z.string().optional(),
       applyUrl: z.string().url().optional(),
       deadline: z.string().datetime().optional(),
       status: z.enum(['OPEN', 'CLOSING_SOON', 'CLOSED']).optional(),
@@ -124,6 +127,7 @@ export const updateOpportunity = createServerFn({ method: 'POST' })
     if (updateData.ecosystem !== undefined) processed.ecosystem = updateData.ecosystem;
     if (updateData.description !== undefined) processed.description = updateData.description;
     if (updateData.prize !== undefined) processed.prize = updateData.prize;
+    if (updateData.imageUrl !== undefined) processed.image_url = updateData.imageUrl;
     if (updateData.applyUrl !== undefined) processed.apply_url = updateData.applyUrl;
     if (updateData.deadline !== undefined) processed.deadline = updateData.deadline;
     if (updateData.status !== undefined) processed.status = updateData.status;

@@ -308,6 +308,7 @@ export const createModule = createServerFn({ method: 'POST' })
       description: z.string().optional(),
       content: z.string().optional(),
       order: z.number().default(0),
+      isPublished: z.boolean().default(false),
     })
   )
   .handler(async ({ data }) => {
@@ -321,6 +322,7 @@ export const createModule = createServerFn({ method: 'POST' })
         description: moduleData.description,
         content: moduleData.content,
         order: moduleData.order,
+        is_published: moduleData.isPublished,
       });
 
     if (error) throw error;
@@ -337,6 +339,7 @@ export const updateModule = createServerFn({ method: 'POST' })
       description: z.string().optional(),
       content: z.string().optional(),
       order: z.number().optional(),
+      isPublished: z.boolean().optional(),
     })
   )
   .handler(async ({ data }) => {
@@ -347,6 +350,7 @@ export const updateModule = createServerFn({ method: 'POST' })
     if (updateData.description !== undefined) processed.description = updateData.description;
     if (updateData.content !== undefined) processed.content = updateData.content;
     if (updateData.order !== undefined) processed.order = updateData.order;
+    if (updateData.isPublished !== undefined) processed.is_published = updateData.isPublished;
 
     const { data: mod, error } = await supabase
       .from('modules')

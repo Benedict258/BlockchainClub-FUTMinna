@@ -32,6 +32,7 @@ import { Route as LearnMarketingRouteImport } from './routes/learn/marketing'
 import { Route as LearnDesignRouteImport } from './routes/learn/design'
 import { Route as LearnContentCreationRouteImport } from './routes/learn/content-creation'
 import { Route as LearnCommunityManagementRouteImport } from './routes/learn/community-management'
+import { Route as EventsRequestRouteImport } from './routes/events/request'
 import { Route as EventsEventIdRouteImport } from './routes/events/$eventId'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as AuthVerifyRouteImport } from './routes/auth/verify'
@@ -164,6 +165,11 @@ const LearnCommunityManagementRoute =
     path: '/community-management',
     getParentRoute: () => LearnRoute,
   } as any)
+const EventsRequestRoute = EventsRequestRouteImport.update({
+  id: '/request',
+  path: '/request',
+  getParentRoute: () => EventsRoute,
+} as any)
 const EventsEventIdRoute = EventsEventIdRouteImport.update({
   id: '/$eventId',
   path: '/$eventId',
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/auth/verify': typeof AuthVerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/events/$eventId': typeof EventsEventIdRoute
+  '/events/request': typeof EventsRequestRoute
   '/learn/community-management': typeof LearnCommunityManagementRoute
   '/learn/content-creation': typeof LearnContentCreationRoute
   '/learn/design': typeof LearnDesignRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByTo {
   '/auth/verify': typeof AuthVerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/events/$eventId': typeof EventsEventIdRoute
+  '/events/request': typeof EventsRequestRoute
   '/learn/community-management': typeof LearnCommunityManagementRoute
   '/learn/content-creation': typeof LearnContentCreationRoute
   '/learn/design': typeof LearnDesignRoute
@@ -348,6 +356,7 @@ export interface FileRoutesById {
   '/auth/verify': typeof AuthVerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/events/$eventId': typeof EventsEventIdRoute
+  '/events/request': typeof EventsRequestRoute
   '/learn/community-management': typeof LearnCommunityManagementRoute
   '/learn/content-creation': typeof LearnContentCreationRoute
   '/learn/design': typeof LearnDesignRoute
@@ -390,6 +399,7 @@ export interface FileRouteTypes {
     | '/auth/verify'
     | '/blog/$slug'
     | '/events/$eventId'
+    | '/events/request'
     | '/learn/community-management'
     | '/learn/content-creation'
     | '/learn/design'
@@ -428,6 +438,7 @@ export interface FileRouteTypes {
     | '/auth/verify'
     | '/blog/$slug'
     | '/events/$eventId'
+    | '/events/request'
     | '/learn/community-management'
     | '/learn/content-creation'
     | '/learn/design'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/auth/verify'
     | '/blog/$slug'
     | '/events/$eventId'
+    | '/events/request'
     | '/learn/community-management'
     | '/learn/content-creation'
     | '/learn/design'
@@ -660,6 +672,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnCommunityManagementRouteImport
       parentRoute: typeof LearnRoute
     }
+    '/events/request': {
+      id: '/events/request'
+      path: '/request'
+      fullPath: '/events/request'
+      preLoaderRoute: typeof EventsRequestRouteImport
+      parentRoute: typeof EventsRoute
+    }
     '/events/$eventId': {
       id: '/events/$eventId'
       path: '/$eventId'
@@ -824,10 +843,12 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 interface EventsRouteChildren {
   EventsEventIdRoute: typeof EventsEventIdRoute
+  EventsRequestRoute: typeof EventsRequestRoute
 }
 
 const EventsRouteChildren: EventsRouteChildren = {
   EventsEventIdRoute: EventsEventIdRoute,
+  EventsRequestRoute: EventsRequestRoute,
 }
 
 const EventsRouteWithChildren =

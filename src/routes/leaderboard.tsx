@@ -12,7 +12,6 @@ import { getLeaderboard } from "@/lib/api/leaderboard.server";
 import { getBadgeConfig } from "@/lib/badges";
 
 type TimeFilter = "all" | "month" | "week";
-type EcosystemFilter = "all" | "EVM" | "SUI_MOVE" | "APTOS_MOVE" | "SOLANA_RUST";
 
 function LeaderboardSkeleton() {
   return (
@@ -135,17 +134,15 @@ export const Route = createFileRoute("/leaderboard")({
 
 function LeaderboardPage() {
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
-  const [ecoFilter, setEcoFilter] = useState<EcosystemFilter>("all");
 
   const fetchLeaderboard = useServerFn(getLeaderboard);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["leaderboard", timeFilter, ecoFilter],
+    queryKey: ["leaderboard", timeFilter],
     queryFn: () =>
       fetchLeaderboard({
         data: {
           limit: 50,
-          ecosystem: ecoFilter === "all" ? undefined : ecoFilter,
         },
       }),
   });
@@ -189,24 +186,13 @@ function LeaderboardPage() {
       {/* FILTERS */}
       <section className="border-b border-border bg-surface-low">
         <div className="mx-auto max-w-[1400px] px-6 py-4">
-          <div className="flex flex-wrap items-center gap-4">
-            <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as TimeFilter)}>
-              <TabsList className="bg-background/50">
-                <TabsTrigger value="all">All Time</TabsTrigger>
-                <TabsTrigger value="month">This Month</TabsTrigger>
-                <TabsTrigger value="week">This Week</TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <Tabs value={ecoFilter} onValueChange={(v) => setEcoFilter(v as EcosystemFilter)}>
-              <TabsList className="bg-background/50">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="EVM">EVM</TabsTrigger>
-                <TabsTrigger value="SUI_MOVE">Sui</TabsTrigger>
-                <TabsTrigger value="SOLANA_RUST">Solana</TabsTrigger>
-                <TabsTrigger value="APTOS_MOVE">Aptos</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
+          <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as TimeFilter)}>
+            <TabsList className="bg-background/50">
+              <TabsTrigger value="all">All Time</TabsTrigger>
+              <TabsTrigger value="month">This Month</TabsTrigger>
+              <TabsTrigger value="week">This Week</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       </section>
 

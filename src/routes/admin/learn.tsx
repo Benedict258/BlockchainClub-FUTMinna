@@ -82,6 +82,7 @@ interface ModuleForm {
   description: string;
   content: string;
   order: number;
+  isPublished: boolean;
 }
 
 const defaultModuleForm: ModuleForm = {
@@ -90,6 +91,7 @@ const defaultModuleForm: ModuleForm = {
   description: '',
   content: '',
   order: 0,
+  isPublished: false,
 };
 
 interface ResourceForm {
@@ -215,6 +217,7 @@ function AdminLearn() {
         description: moduleForm.description || undefined,
         content: moduleForm.content || undefined,
         order: moduleForm.order,
+        is_published: moduleForm.isPublished,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-track-detail'] });
@@ -232,6 +235,7 @@ function AdminLearn() {
         description: moduleForm.description || undefined,
         content: moduleForm.content || undefined,
         order: moduleForm.order,
+        is_published: moduleForm.isPublished,
       }, { id: editModule?.id as string }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-track-detail'] });
@@ -349,6 +353,7 @@ function AdminLearn() {
       description: (mod.description as string) || '',
       content: (mod.content as string) || '',
       order: (mod.order as number) || 0,
+      isPublished: (mod.is_published as boolean) || false,
     });
     setModuleDialogOpen(true);
   };
@@ -489,9 +494,14 @@ function AdminLearn() {
                   <div className="space-y-2">
                     {trackDetail.modules.map((mod: Record<string, unknown>) => (
                       <div key={mod.id as string} className="flex items-center justify-between rounded border border-border p-3">
-                        <div>
-                          <p className="font-medium">{mod.title as string}</p>
-                          <p className="text-xs text-muted-foreground">Order: {mod.order as number}</p>
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <p className="font-medium">{mod.title as string}</p>
+                            <p className="text-xs text-muted-foreground">Order: {mod.order as number}</p>
+                          </div>
+                          <Badge variant={mod.is_published ? 'default' : 'secondary'}>
+                            {mod.is_published ? 'Published' : 'Draft'}
+                          </Badge>
                         </div>
                         <div className="flex items-center gap-1">
                           <Button variant="ghost" size="icon" onClick={() => openEditModule(mod)}>
@@ -692,6 +702,37 @@ function AdminLearn() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            {!editModule && (
+              <div>
+                <Label>Track</Label>
+                <Select
+                  value={moduleForm.trackId}
+                  onValueChange={(v) => setModuleForm({ ...moduleForm, trackId: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a track" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(tracks || []).map((track) => (
+                      <SelectItem key={track.id} value={track.id}>
+                        {track.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {editModule && (
+              <div>
+                <Label>Track</Label>
+                <Input
+                  value={
+                    (tracks || []).find((t) => t.id === (editModule?.track_id as string || moduleForm.trackId))?.title || moduleForm.trackId
+                  }
+                  disabled
+                />
+              </div>
+            )}
             <div>
               <Label>Title *</Label>
               <Input
@@ -717,13 +758,22 @@ function AdminLearn() {
                 placeholder="Module content..."
               />
             </div>
-            <div>
-              <Label>Order</Label>
-              <Input
-                type="number"
-                value={moduleForm.order}
-                onChange={(e) => setModuleForm({ ...moduleForm, order: parseInt(e.target.value) || 0 })}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Order</Label>
+                <Input
+                  type="number"
+                  value={moduleForm.order}
+                  onChange={(e) => setModuleForm({ ...moduleForm, order: parseInt(e.target.value) || 0 })}
+                />
+              </div>
+              <div className="flex items-center gap-2 pt-6">
+                <Switch
+                  checked={moduleForm.isPublished}
+                  onCheckedChange={(v) => setModuleForm({ ...moduleForm, isPublished: v })}
+                />
+                <Label>Published</Label>
+              </div>
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setModuleDialogOpen(false)}>
@@ -744,8 +794,10 @@ function AdminLearn() {
       <Dialog open={resourceDialogOpen} onOpenChange={setResourceDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Add Resource</DialogTitle>
-            <DialogDescription>Add a learning resource</DialogDescription>
+            <DialogTitle>{editResource ? 'Edit Resource' : 'Add Resource'}</DialogTitle>
+            <DialogDescription>
+              {editResource ? 'Update resource details' : 'Add a learning resource'}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>

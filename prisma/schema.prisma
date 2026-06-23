@@ -238,6 +238,7 @@ model Module {
   description String?
   content     String?
   order       Int      @default(0)
+  isPublished Boolean  @default(false) @map("is_published")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 

@@ -10,7 +10,7 @@ import {
   Calendar,
   MapPin,
   Users,
-  ArrowRight,
+  Send,
   Clock,
   Lightbulb,
   Tag,
@@ -111,10 +111,10 @@ function EventsPage() {
 
   const events = data?.events ?? [];
   const featuredEvents = events.filter(
-    (e: { isFeatured: boolean }) => e.isFeatured
+    (e: any) => e.is_featured
   );
   const regularEvents = events.filter(
-    (e: { isFeatured: boolean }) => !e.isFeatured
+    (e: any) => !e.is_featured
   );
 
   return (
@@ -181,7 +181,7 @@ function EventsPage() {
                       <div className="aspect-[16/10] md:aspect-auto bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                         {event.coverImage ? (
                           <img
-                            src={event.coverImage}
+                            src={event.cover_image}
                             alt={event.title}
                             className="w-full h-full object-cover"
                           />
@@ -219,11 +219,11 @@ function EventsPage() {
                         <div className="mt-5 flex flex-wrap gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1.5">
                             <Calendar className="h-4 w-4" />
-                            {formatDate(event.startDate)}
+                            {formatDate(event.start_date)}
                           </span>
                           <span className="flex items-center gap-1.5">
                             <Clock className="h-4 w-4" />
-                            {formatTime(event.startDate)}
+                            {formatTime(event.start_date)}
                           </span>
                           {event.location && (
                             <span className="flex items-center gap-1.5">
@@ -231,7 +231,7 @@ function EventsPage() {
                               {event.location}
                             </span>
                           )}
-                          {event.isVirtual && (
+                          {event.is_virtual && (
                             <span className="flex items-center gap-1.5">
                               <Tag className="h-4 w-4" />
                               Virtual
@@ -241,7 +241,7 @@ function EventsPage() {
                         <div className="mt-6 flex items-center gap-4">
                           <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
                             <Users className="h-4 w-4" />
-                            {"rsvps" in event ? event.rsvps.length : 0} RSVPs
+                            {event.event_rsvps?.length || 0} RSVPs
                           </span>
                           <Button asChild size="sm" className="ml-auto">
                             <Link to="/events/$eventId" params={{ eventId: event.id }}>View Details</Link>
@@ -271,7 +271,7 @@ function EventsPage() {
                   <div className="aspect-[16/9] bg-gradient-to-br from-surface-high to-surface-low flex items-center justify-center overflow-hidden">
                     {event.coverImage ? (
                       <img
-                        src={event.coverImage}
+                        src={event.cover_image}
                         alt={event.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
@@ -288,7 +288,7 @@ function EventsPage() {
                         {TYPE_LABELS[event.type] || event.type}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
-                        {formatDate(event.startDate)}
+                        {formatDate(event.start_date)}
                       </span>
                     </div>
                     <h3 className="mt-3 text-headline-sm">{event.title}</h3>
@@ -307,7 +307,7 @@ function EventsPage() {
                         )}
                         <span className="flex items-center gap-1">
                           <Users className="h-3 w-3" />
-                          {"rsvps" in event ? event.rsvps.length : 0}
+                          {event.event_rsvps?.length || 0}
                         </span>
                       </div>
                       {filter === "upcoming" && (
@@ -354,8 +354,8 @@ function EventsPage() {
               size="lg"
               className="mt-8 font-semibold tracking-wide"
             >
-              <Link to="/join">
-                Submit Event Idea <ArrowRight className="ml-2 h-4 w-4" />
+              <Link to="/events/request">
+                Submit Event Request <Send className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
 import { apiQuery, apiInsert, apiUpdate, apiDelete, apiMarkAttendance } from '@/lib/api-client';
 import {
@@ -51,7 +51,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { Plus, Pencil, Trash2, Eye, Calendar, MapPin, Link as LinkIcon, AlertCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, Eye, Calendar, MapPin, Link as LinkIcon, AlertCircle, Upload, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const Route = createFileRoute('/admin/events')({
@@ -59,6 +59,7 @@ export const Route = createFileRoute('/admin/events')({
 });
 
 type EventFilter = 'all' | 'upcoming' | 'past';
+type StatusFilter = 'all' | 'requested' | 'published' | 'draft';
 type EventType = 'WORKSHOP' | 'HACKATHON' | 'TALK' | 'BOOTCAMP' | 'SOCIAL' | 'OTHER';
 
 const EVENT_TYPES: EventType[] = ['WORKSHOP', 'HACKATHON', 'TALK', 'BOOTCAMP', 'SOCIAL', 'OTHER'];
@@ -93,6 +94,7 @@ function AdminEvents() {
   const { accessToken } = useAuthStore();
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<'all' | 'upcoming' | 'past'>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -102,6 +104,32 @@ function AdminEvents() {
   const [selectedEvent, setSelectedEvent] = useState<Record<string, unknown> | null>(null);
   const [form, setForm] = useState<EventForm>(defaultForm);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !accessToken) return;
+    setUploadingCover(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", "event-covers");
+      const res = await fetch("/api/projects/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+        body: formData,
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Upload failed");
+      setForm(prev => ({ ...prev, coverImage: result.url }));
+      toast.success("Cover image uploaded");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploadingCover(false);
+    }
+  }
 
   const formErrors = {
     title: touched.title && !form.title ? 'Title is required' : '',
@@ -111,7 +139,7 @@ function AdminEvents() {
   const isFormValid = !!form.title && !!form.startDate && !!form.endDate;
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['admin-events', filter, typeFilter, page],
+    queryKey: ['admin-events', filter, statusFilter, typeFilter, page],
     queryFn: async () => {
       const filters: Record<string, any> = {};
       const now = new Date().toISOString();
@@ -119,6 +147,13 @@ function AdminEvents() {
         filters.start_date = { __op: 'gte', value: now };
       } else if (filter === 'past') {
         filters.start_date = { __op: 'lt', value: now };
+      }
+      if (statusFilter === 'requested') {
+        filters.status = 'REQUESTED';
+      } else if (statusFilter === 'published') {
+        filters.is_published = true;
+      } else if (statusFilter === 'draft') {
+        filters.is_published = false;
       }
       if (typeFilter) filters.type = typeFilter;
       const from = (page - 1) * 20;
@@ -275,6 +310,17 @@ function AdminEvents() {
               {f.charAt(0).toUpperCase() + f.slice(1)}
             </Button>
           ))}
+          <span className="w-px bg-border mx-1" />
+          {(['all', 'requested', 'published', 'draft'] as const).map((f) => (
+            <Button
+              key={f}
+              variant={statusFilter === f ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setStatusFilter(f)}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </Button>
+          ))}
         </div>
         <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v === 'all' ? '' : v)}>
           <SelectTrigger className="w-[160px]">
@@ -341,7 +387,7 @@ function AdminEvents() {
                   <TableCell>{(event.event_rsvps as unknown[])?.length || 0}</TableCell>
                   <TableCell>
                     <Badge variant={event.is_published ? 'default' : 'secondary'}>
-                      {event.is_published ? 'Published' : 'Draft'}
+                      {event.status === 'REQUESTED' ? 'Requested' : event.is_published ? 'Published' : 'Draft'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -511,12 +557,22 @@ function AdminEvents() {
               </div>
             </div>
             <div>
-              <Label>Cover Image URL</Label>
-              <Input
-                value={form.coverImage}
-                onChange={(e) => setForm({ ...form, coverImage: e.target.value })}
-                placeholder="https://..."
-              />
+              <Label>Cover Image</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={form.coverImage}
+                  onChange={(e) => setForm({ ...form, coverImage: e.target.value })}
+                  placeholder="https://... or upload below"
+                  className="flex-1"
+                />
+                <Button type="button" variant="outline" size="icon" disabled={uploadingCover} onClick={() => fileInputRef.current?.click()}>
+                  {uploadingCover ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                </Button>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+              </div>
+              {form.coverImage && (
+                <img src={form.coverImage} alt="Cover preview" className="mt-2 h-20 w-full object-cover rounded-md border border-border" />
+              )}
             </div>
             <div className="flex items-center gap-2">
               <Switch
@@ -551,17 +607,18 @@ function AdminEvents() {
             {rsvpData?.event_rsvps && rsvpData.event_rsvps.length > 0 ? (
               rsvpData.event_rsvps.map((rsvp: Record<string, unknown>) => {
                 const user = rsvp.user as Record<string, unknown>;
-                const profile = user?.profile as Record<string, unknown> | undefined;
+                const profiles = (user?.profile as any[]) || [];
+                const profile = profiles[0] as Record<string, unknown> | undefined;
                 return (
                   <div key={rsvp.id as string} className="flex items-center justify-between border-b border-border pb-2">
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold">
-                        {profile?.fullName
-                          ? (profile.fullName as string).split(' ').map((n: string) => n[0]).join('')
+                        {profile?.full_name
+                          ? (profile.full_name as string).split(' ').map((n: string) => n[0]).join('')
                           : '?'}
                       </div>
                       <div>
-                        <p className="text-sm font-medium">{(profile?.fullName as string) || 'Unknown'}</p>
+                        <p className="text-sm font-medium">{(profile?.full_name as string) || 'Unknown'}</p>
                         <p className="text-xs text-muted-foreground">
                           {rsvp.attended ? 'Attended' : 'RSVPed'}
                         </p>

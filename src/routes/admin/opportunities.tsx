@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
 import { apiQuery, apiInsert, apiUpdate, apiDelete } from '@/lib/api-client';
 import {
@@ -42,7 +42,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Pencil, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, Pencil, Trash2, ExternalLink, Upload, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const Route = createFileRoute('/admin/opportunities')({
@@ -67,6 +67,7 @@ interface OpportunityForm {
   applyUrl: string;
   deadline: string;
   status: string;
+  imageUrl: string;
   isPublished: boolean;
 }
 
@@ -80,6 +81,7 @@ const defaultForm: OpportunityForm = {
   applyUrl: '',
   deadline: '',
   status: 'OPEN',
+  imageUrl: '',
   isPublished: false,
 };
 
@@ -92,6 +94,32 @@ function AdminOpportunities() {
   const [editItem, setEditItem] = useState<Record<string, unknown> | null>(null);
   const [deleteItem, setDeleteItem] = useState<Record<string, unknown> | null>(null);
   const [form, setForm] = useState<OpportunityForm>(defaultForm);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !accessToken) return;
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", "opportunity-images");
+      const res = await fetch("/api/projects/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+        body: formData,
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Upload failed");
+      setForm(prev => ({ ...prev, imageUrl: result.url }));
+      toast.success("Image uploaded");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploadingImage(false);
+    }
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-opportunities', typeFilter, statusFilter],
@@ -122,6 +150,7 @@ function AdminOpportunities() {
         apply_url: form.applyUrl || undefined,
         deadline: form.deadline ? new Date(form.deadline).toISOString() : undefined,
         status: form.status as OppStatus,
+        image_url: form.imageUrl || undefined,
         is_published: form.isPublished,
       }),
     onSuccess: () => {
@@ -145,6 +174,7 @@ function AdminOpportunities() {
         apply_url: form.applyUrl || undefined,
         deadline: form.deadline ? new Date(form.deadline).toISOString() : undefined,
         status: form.status as OppStatus,
+        image_url: form.imageUrl || undefined,
         is_published: form.isPublished,
       }, { id: editItem?.id as string }),
     onSuccess: () => {
@@ -183,12 +213,13 @@ function AdminOpportunities() {
       ecosystem: item.ecosystem as string,
       description: (item.description as string) || '',
       prize: (item.prize as string) || '',
-      applyUrl: (item.applyUrl as string) || '',
+      applyUrl: (item.apply_url as string) || '',
       deadline: item.deadline
         ? new Date(item.deadline as string).toISOString().slice(0, 16)
         : '',
       status: item.status as string,
-      isPublished: (item.isPublished as boolean) || false,
+      imageUrl: (item.image_url as string) || '',
+      isPublished: (item.is_published as boolean) || false,
     });
     setDialogOpen(true);
   };
@@ -258,6 +289,7 @@ function AdminOpportunities() {
               <TableHead>Organizer</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Image</TableHead>
               <TableHead>Deadline</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -266,7 +298,7 @@ function AdminOpportunities() {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 6 }).map((_, j) => (
+                  {Array.from({ length: 7 }).map((_, j) => (
                     <TableCell key={j}>
                       <Skeleton className="h-4 w-20" />
                     </TableCell>
@@ -298,6 +330,13 @@ function AdminOpportunities() {
                     <Badge variant="outline">{opp.type}</Badge>
                   </TableCell>
                   <TableCell>{getStatusBadge(opp.status as string)}</TableCell>
+                  <TableCell>
+                    {opp.image_url ? (
+                      <img src={opp.image_url as string} alt="" className="h-8 w-8 rounded object-cover border border-border" />
+                    ) : (
+                      <span className="text-muted-foreground text-xs">--</span>
+                    )}
+                  </TableCell>
                   <TableCell className="text-muted-foreground">
                     {opp.deadline
                       ? new Date(opp.deadline).toLocaleDateString()
@@ -317,7 +356,7 @@ function AdminOpportunities() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                   No opportunities found
                 </TableCell>
               </TableRow>
@@ -438,6 +477,24 @@ function AdminOpportunities() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            <div>
+              <Label>Image</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={form.imageUrl}
+                  onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+                  placeholder="https://... or upload below"
+                  className="flex-1"
+                />
+                <Button type="button" variant="outline" size="icon" disabled={uploadingImage} onClick={() => fileInputRef.current?.click()}>
+                  {uploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                </Button>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+              </div>
+              {form.imageUrl && (
+                <img src={form.imageUrl} alt="Preview" className="mt-2 h-20 w-full object-cover rounded-md border border-border" />
+              )}
             </div>
             <div className="flex items-center gap-2">
               <Switch

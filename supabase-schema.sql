@@ -165,6 +165,7 @@ CREATE TABLE "modules" (
     "description" TEXT,
     "content" TEXT,
     "order" INTEGER NOT NULL DEFAULT 0,
+    "is_published" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 

@@ -311,7 +311,7 @@ function OpportunitiesPage() {
                           </span>
                         )}
                       </div>
-                      {opp.applyUrl ? (
+                      {opp.apply_url ? (
                         <Button
                           asChild
                           variant="outline"
@@ -319,7 +319,7 @@ function OpportunitiesPage() {
                           className="text-xs"
                         >
                           <a
-                            href={opp.applyUrl}
+                            href={opp.apply_url}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
