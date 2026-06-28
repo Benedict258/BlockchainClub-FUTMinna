@@ -6,6 +6,10 @@ export default defineConfig({
       port: 5176,
       host: "0.0.0.0",
     },
+    ssr: {
+      noExternal: [],
+      external: ["@mysten/sui"],
+    },
   },
   tanstackStart: {
     server: { entry: "server" },
