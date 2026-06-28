@@ -374,6 +374,10 @@ ALTER TABLE leaderboard_entries ADD COLUMN IF NOT EXISTS sui_entry_object_id tex
 | 10 | `/admin/students` | `admin/students.tsx` | Admin only | Medium |
 | 11 | `/admin/students/$userId` | `admin/students/$userId.tsx` | Admin only | Medium |
 | 12 | `/profile/progress` | `profile/progress.tsx` | Login required | Medium |
+| 13 | `/arena` | `arena.tsx` | Public (view), Login (create/join) | Medium |
+| 14 | `/arena/$challengeId` | `arena/$challengeId.tsx` | Public | Medium |
+| 15 | `/arena/create` | `arena/create.tsx` | Login required | Medium |
+| 16 | `/admin/challenges` | `admin/challenges.tsx` | Admin only | Low |
 
 ---
 
@@ -984,53 +988,305 @@ ALTER TABLE leaderboard_entries ADD COLUMN IF NOT EXISTS longest_streak integer 
 
 ---
 
-## 11. Files Inventory
+## 11. Multiplayer & Collaboration
 
-### New Files (18)
-```
-src/routes/learn/$slug.tsx                      — Track detail page
-src/routes/intake.tsx                           — Intake assessment
-src/routes/profile/devlog.tsx                   — My DEVLOG
-src/routes/profile/progress.tsx                 — My progress dashboard
-src/routes/members/$memberId/devlog.tsx         — Public DEVLOG
-src/routes/alumni.tsx                           — Alumni directory
-src/routes/admin/cohorts.tsx                    — Cohort list
-src/routes/admin/cohorts/$id.tsx                — Cohort dashboard
-src/routes/admin/gate-checks.tsx                — Gate review
-src/routes/admin/certifications.tsx             — Certificate issuance
-src/routes/admin/students.tsx                   — Student list (searchable)
-src/routes/admin/students/$userId.tsx           — Student drill-down (5 tabs)
-src/components/phase-bar.tsx                    — Phase indicator
-src/components/markdown-content.tsx             — Markdown renderer
-src/components/progress-pipeline.tsx            — Visual phase pipeline
-src/lib/sui-client.ts                           — Sui blockchain client
-contracts/sui/Move.toml                         — Sui package config
-contracts/sui/sources/club_registry.move        — Sui Move contract
+Beyond solo learning, the platform supports team-based features that mirror real Web3 development — where every project is built by squads, not individuals.
+
+### 11.1 Study Squads
+
+Small groups (3-5 students) that progress through a track together.
+
+**Features:**
+- Squad creation: any student can create a squad, invite members by username
+- Squad dashboard: shared progress view — all members' module completion, gate status
+- Squad chat: lightweight messaging within the squad page (no Discord dependency)
+- Squad leaderboard: internal ranking by points within the squad
+- Squad goals: set a target (e.g., "Complete Phase 1 together by Week 4")
+- Squad achievements: unlock when all members pass a gate simultaneously
+
+**Gamification:** Squad completion bonus: when all members pass a gate in the same week, each earns +10 bonus points.
+
+### 11.2 Peer Code Review
+
+Every student submission gets reviewed by another student before a track lead sees it.
+
+**Flow:**
+1. Student A submits a PR / design / content piece
+2. Another student in the same track (Student B) is auto-assigned as reviewer
+3. Student B reviews, leaves feedback (must include: 1 suggestion, 1 thing done well)
+4. Track lead gives final approval
+5. Student B earns +5 community points for reviewing
+
+**Assignment:** Round-robin within the track. Priority to students who haven't reviewed recently.
+
+**Dashboard:** "Pending Reviews" section on profile — shows what you need to review. "Awaiting Review" shows what you submitted.
+
+### 11.3 Pair Programming Sessions
+
+Live collaborative coding sessions within the platform.
+
+**Features:**
+- "Find a Partner" button: matches students at similar phase/progress
+- Session timer: 30, 45, or 60-minute blocks
+- Shared problem: both students work on the same challenge repo
+- Post-session: each rates the session, logs what they built/learned
+- Points: +5 community points per completed pair session
+
+**Implementation:** Iframe embed of a shared Replit/CodeSandbox, or use the club's own web-based editor.
+
+### 11.4 Hackathon Teams
+
+Dedicated team management for internal and external hackathons.
+
+**Features:**
+- Team creation: captain creates team, sets team name, invites members (2-4 total)
+- Team profile: name, members, project repo, demo link, status
+- Role assignment: captain, dev, designer, presenter
+- Hackathon registration: team applies to a hackathon (internal or external)
+- Post-hackathon: submit project, earn +50 points per member
+- Team history: all past hackathons, projects, awards
+
+**Admin:** Approve teams. Assign mentors. Track external hackathon results.
+
+### 11.5 Multi-Track Collaboration
+
+Cross-track project teams — technical, design, marketing, and content students collaborate.
+
+**Example:** A DeFi project team has:
+- 2 Technical students (smart contracts, frontend)
+- 1 Design student (UI/UX, branding)
+- 1 Marketing student (GTM strategy, pitch deck)
+- 1 Content student (documentation, demo video script)
+
+This mirrors real Web3 teams and makes the club's cross-disciplinary nature an asset.
+
+**Features:**
+- "Looking for team" board: students post roles they need
+- Cross-track matching: filter by track, phase, skills
+- Team dashboard: progress per discipline
+- Multi-track scoring: each member earns points in their category
+
+---
+
+## 12. Challenges & Battles
+
+Competitive, time-bound events where students compete, vote, and earn recognition.
+
+### 12.1 Challenge Types
+
+| Type | Description | Duration | Participants | Winner Determination |
+|------|-------------|----------|-------------|---------------------|
+| **Code Duel** | 1v1 fix-a-bug race: both get the same broken contract, first to pass tests wins | 30 min | 2 | Automated (test pass) |
+| **Team Clash** | 3v3 build sprint: teams build a mini-dApp from a prompt | 3 hours | 6 (2 teams) | Peer vote + mentor judge |
+| **Open Challenge** | Weekly prompt: "Build an ERC-20 token with a twist". Anyone submits. | 1 week | Unlimited | Community vote (upvotes) |
+| **Security CTF** | Capture the Flag: find and exploit vulnerabilities in deliberately buggy contracts | 2 hours | Individual | Points per flag captured |
+| **Design Duel** | 1v1 redesign: both redesign a bad dApp UI, community votes | 24 hours | 2 | Community vote |
+| **Content Clash** | Best explainer thread on a given topic. Most engagement wins. | 48 hours | Individual | Likes + RTs + judge score |
+| **Research Rush** | Analyze a protocol, submit findings. Judges score on depth. | 72 hours | Individual | Mentor panel |
+| **Speed Sprint** | "Who can complete 3 modules fastest?" Automated tracking. | 1 day | Individual | Automated (completion time) |
+
+### 12.2 Battle Creation
+
+**Any student can create a challenge.** Admin approval required for points-awarding challenges.
+
+**Creation Form:**
+- Challenge type (dropdown)
+- Title + description
+- Start time + duration
+- Max participants
+- Points at stake (from creator's own points — wager-style)
+- Public or invite-only
+- Judging criteria (for non-automated challenges)
+
+**Wager System:**
+- Creator stakes their own points
+- Participants also stake points to enter
+- Winner takes pool (minus 10% club tax)
+- Minimum stake: 5 points
+- Maximum stake: 50 points
+- All wager transactions recorded on Supabase + Sui (immutable)
+
+### 12.3 Challenge Arena (`/arena`)
+
+Dedicated page for all active and upcoming challenges.
+
+**Layout:**
+- **Live Now** — currently active duels and sprints (with real-time countdown)
+- **Upcoming** — scheduled challenges (with registration count)
+- **Leaderboard** — challenge winners, most duels won, highest wager earnings
+- **My Challenges** — challenges I created, joined, or need to vote on
+
+**Challenge Card:**
+- Type badge (Code Duel, Open Challenge, etc.)
+- Title, description snippet
+- Creator name + avatar
+- Points pool (total at stake)
+- Participant count / max
+- Countdown timer or "Ends in..."
+- Join / Spectate / Vote button
+
+### 12.4 Voting & Judging
+
+For non-automated challenges, the community determines winners.
+
+**Voting System:**
+- Upvote-only (no downvotes — prevents negativity)
+- Weighted votes: higher-level students' votes count more (Level 1 = 1x, Level 5 = 2x)
+- Blind voting: submissions shown without creator names until voting ends
+- Judge override: mentor/track lead can override community vote (for quality control)
+- Vote audit: all votes recorded, visible after challenge ends
+
+**Auto-judged challenges:**
+- Code Duels: test suite passes → instant winner
+- Speed Sprints: completion timestamps → fastest wins
+- Security CTFs: flag submission → auto-scored by contract
+
+### 12.5 Challenge Rewards
+
+| Outcome | Creator | Winner | Participants |
+|---------|---------|--------|-------------|
+| Win a duel | - | Wager pool (90%) | - |
+| Lose a duel | - | - | Lose stake |
+| Win open challenge | Club reward: +30 pts | Community recognition + badge eligibility | - |
+| Win team clash | - | +20 pts per member | - |
+| Win CTF | - | +15 pts per flag | +5 pts per flag found |
+| Win speed sprint | - | +10 pts | +2 pts for completing |
+
+### 12.6 Challenge Badges
+
+New badge types for competitive achievements:
+
+| Badge | Criteria |
+|-------|----------|
+| **Duelist** | Won 5 Code Duels |
+| **Gladiator** | Won 10 Code Duels |
+| **Challenger** | Created 5 public challenges |
+| **Speed Demon** | Won 3 Speed Sprints |
+| **CTF Hunter** | Captured 10 flags in CTFs |
+| **Crowd Favorite** | Won 3 community-voted challenges |
+| **High Roller** | Earned 100+ points from wagers |
+| **Versatile** | Won a challenge in 3 different categories |
+
+### 12.7 Challenge Database Tables
+
+```sql
+CREATE TABLE IF NOT EXISTS challenges (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  creator_id text REFERENCES users(id),
+  type text NOT NULL,          -- code_duel, open_challenge, team_clash, ctf, design_duel, speed_sprint
+  title text NOT NULL,
+  description text,
+  rules text,                  -- Markdown rules/instructions
+  start_time timestamptz NOT NULL,
+  end_time timestamptz NOT NULL,
+  max_participants integer,
+  stake_points integer DEFAULT 0,
+  total_pool integer DEFAULT 0,
+  status text DEFAULT 'pending', -- pending, active, voting, completed, cancelled
+  winner_id text REFERENCES users(id),
+  is_public boolean DEFAULT true,
+  requires_approval boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS challenge_participants (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  challenge_id uuid REFERENCES challenges(id),
+  user_id text REFERENCES users(id),
+  submission_url text,        -- PR, design file, content link
+  staked_points integer DEFAULT 0,
+  status text DEFAULT 'registered', -- registered, submitted, disqualified
+  joined_at timestamptz DEFAULT now(),
+  UNIQUE(challenge_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS challenge_votes (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  challenge_id uuid REFERENCES challenges(id),
+  voter_id text REFERENCES users(id),
+  participant_id uuid REFERENCES challenge_participants(id),
+  weight integer DEFAULT 1,   -- based on voter's level
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(challenge_id, voter_id)
+);
+
+-- Challenge badges
+INSERT INTO badges (id, name, label, description, icon, color, bg_color) VALUES
+  ('duelist', 'Duelist', 'Duelist', 'Won 5 Code Duels', 'Swords', 'text-red-400', 'bg-red-500/10'),
+  ('gladiator', 'Gladiator', 'Gladiator', 'Won 10 Code Duels', 'Swords', 'text-red-400', 'bg-red-500/10'),
+  ('challenger', 'Challenger', 'Challenger', 'Created 5 public challenges', 'Flag', 'text-amber-400', 'bg-amber-500/10'),
+  ('speed-demon', 'Speed Demon', 'Speed Demon', 'Won 3 Speed Sprints', 'Zap', 'text-yellow-400', 'bg-yellow-500/10')
+ON CONFLICT (id) DO NOTHING;
 ```
 
-### Modified Files (8)
+### 12.8 Challenge Routes
+
+| Route | File | Auth | Priority |
+|-------|------|------|----------|
+| `/arena` | `arena.tsx` | Public (view), Login (participate) | Medium |
+| `/arena/$challengeId` | `arena/$challengeId.tsx` | Public | Medium |
+| `/arena/create` | `arena/create.tsx` | Login required | Medium |
+| `/admin/challenges` | `admin/challenges.tsx` | Admin only | Low |
+
+---
+
+## 13. Files Inventory
+
+### New Files (24)
 ```
-src/routes/learn/index.tsx                      — Phase bars + new links
-src/routes/profile.tsx                          — DEVLOG tab + progress tab + gate status
-src/lib/api/learn.server.ts                     — New server functions
-src/lib/auto-awards.ts                          — DEVLOG + badge mint triggers
-src/server.ts                                   — Sui RPC endpoints + cache optimization
-src/stores/auth-store.ts                        — Add sui_address to profile
-.env                                            — SUI_ADMIN_PRIVATE_KEY, SUI_PACKAGE_ID
-src/lib/supabase.ts                             — Materialized view queries for leaderboard
+src/routes/learn/$slug.tsx                          — Track detail page
+src/routes/intake.tsx                               — Intake assessment
+src/routes/profile/devlog.tsx                       — My DEVLOG
+src/routes/profile/progress.tsx                     — My progress dashboard
+src/routes/members/$memberId/devlog.tsx             — Public DEVLOG
+src/routes/alumni.tsx                               — Alumni directory
+src/routes/arena.tsx                                — Challenge arena (live/upcoming/past)
+src/routes/arena/$challengeId.tsx                   — Challenge detail + submissions + voting
+src/routes/arena/create.tsx                         — Create challenge (wager-style)
+src/routes/admin/cohorts.tsx                        — Cohort list
+src/routes/admin/cohorts/$id.tsx                    — Cohort dashboard
+src/routes/admin/gate-checks.tsx                    — Gate review
+src/routes/admin/certifications.tsx                 — Certificate issuance
+src/routes/admin/students.tsx                       — Student list (searchable)
+src/routes/admin/students/$userId.tsx               — Student drill-down (5 tabs)
+src/routes/admin/challenges.tsx                     — Approve/reject challenges
+src/components/phase-bar.tsx                        — Phase indicator
+src/components/markdown-content.tsx                 — Markdown renderer
+src/components/progress-pipeline.tsx                — Visual phase pipeline
+src/components/challenge-card.tsx                   — Challenge card (countdown, pool, type)
+src/components/wager-pool.tsx                       — Points wager display + stake button
+src/lib/sui-client.ts                               — Sui blockchain client
+contracts/sui/Move.toml                             — Sui package config
+contracts/sui/sources/club_registry.move            — Sui Move contract
 ```
 
-### New Database Objects (8 tables + 8 indexes + 1 materialized view)
+### Modified Files (9)
+```
+src/routes/learn/index.tsx                          — Phase bars + new links
+src/routes/profile.tsx                              — DEVLOG tab + progress tab + gate status
+src/routes/admin/index.tsx                          — Quick actions updated
+src/lib/api/learn.server.ts                         — New server functions
+src/lib/auto-awards.ts                              — DEVLOG + badge + wager triggers
+src/server.ts                                       — Sui RPC + challenge endpoints
+src/stores/auth-store.ts                            — Add sui_address to profile
+.env                                                — SUI_ADMIN_PRIVATE_KEY, SUI_PACKAGE_ID
+src/lib/supabase.ts                                 — Materialized view queries
+```
+
+### New Database Objects (11 tables + 8 indexes + 8 badges + 1 view)
 ```
 Tables:    curriculum_tracks, intake_assessments, devlog_entries,
-           gate_checks, cohorts, certifications, sui_badge_registry
-Indexes:   8 indexes for query performance (see §9)
+           gate_checks, cohorts, certifications, badge_mints,
+           streaks, point_events, challenges, challenge_participants,
+           challenge_votes
+Badges:    8 new challenge badges (Duelist, Gladiator, Challenger, etc.)
+Indexes:   8 indexes for query performance
 View:      leaderboard_cache (materialized, 5-min refresh)
 ```
 
 ---
 
-## 12. Content Template — All Tracks
+## 14. Content Template — All Tracks
 
 Every module across all 6 tracks follows this structure:
 
@@ -1064,7 +1320,7 @@ Links to further reading, tools, templates.
 
 ---
 
-## 13. Weekly Session Format — All Tracks
+## 15. Weekly Session Format — All Tracks
 
 | Time | Segment | Description |
 |------|---------|-------------|
