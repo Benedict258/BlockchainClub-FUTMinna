@@ -758,9 +758,123 @@ CREATE INDEX IF NOT EXISTS idx_users_email
 
 ---
 
-## 10. Gamification System
+## 10. Gamification System — THE CORE LOOP
 
-### 10.1 Point Economy
+The platform is a **game engine**. Every click, every module, every PR maps to a reward. Rewards unlock the next stage. This is not a side feature — it is the primary mechanism that drives student behavior.
+
+### 10.0 The Core Game Loop
+
+```
+┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
+│  ACTION  │ ──► │  REWARD  │ ──► │  UNLOCK  │ ──► │ PROGRESS │
+│          │     │          │     │          │     │          │
+│ Complete │     │ +5 pts   │     │ Next     │     │ Phase %  │
+│ module   │     │ learn    │     │ module   │     │ goes up  │
+│          │     │ category │     │ opens    │     │          │
+└──────────┘     └──────────┘     └──────────┘     └──────────┘
+     │                                                     │
+     └─────────────────────────────────────────────────────┘
+                    Loop repeats for every action
+```
+
+**Rule:** No action is unrewarded. No progress is free. Every student's journey is a traceable chain of Action → Points → Unlock → Action.
+
+### 10.1 The Action-Reward Map (Every Action = Points)
+
+Every single action a student can take on the platform has a defined point value and category. This is the **complete map**.
+
+| Action | Category | Points | Unlocks |
+|--------|----------|--------|---------|
+| Complete a module | learn | +5 | Next module in phase |
+| Pass module quiz (80%+) | learn | +3 | - |
+| Complete final module in a phase | learn | +10 bonus | Next phase (with gate check) |
+| Attend an event (RSVP + marked attended) | event | +5 | Event champion badge eligibility |
+| Submit a project | build | +5 | - |
+| Project approved by admin | build | +10 | Project appears on leaderboard |
+| Publish blog post | community | +5 | Blog goes live |
+| Complete profile (all fields) | community | +3 | Profile badge |
+| Publish DEVLOG entry (weekly) | community | +5 | Streak counter + streak badge |
+| Submit a PR (GitHub) | build | +10 | PR streak + gate eligibility |
+| Review a peer's PR | community | +5 | - |
+| Review a peer's design/code | community | +3 | - |
+| Pass Gate 1 | learn | +20 | Phase 2 unlocked |
+| Pass Gate 2 | build | +30 | Phase 3 unlocked |
+| Pass Gate 3 / Capstone | build | +50 | Certificate eligible |
+| Place in a hackathon | build | +50 | Hackathon badge |
+| Help in WhatsApp community (bot-detected) | community | 1-5 | - |
+| Mentor a peer (admin-logged) | community | +15 | Mentor badge |
+| Create a challenge | community | +5 | Challenge goes live |
+| Win a duel | build | Pool (90%) | Duelist badge |
+| Win an open challenge | build | +30 | Challenge badge |
+| Vote on a challenge | community | +1 | - |
+| Join a squad | community | +2 | Squad access |
+| Complete squad goal | community | +10 | Squad achievement |
+| Attend a pair programming session | community | +5 | - |
+| Maintain a 4-week streak | community | +5 bonus | - |
+| Maintain an 8-week streak | community | +10 bonus | Streak Master badge |
+| Maintain a 12-week streak | community | +20 bonus | - |
+| Complete intake assessment | learn | +2 | Lane assignment |
+| Add Sui wallet to profile | community | +3 | On-chain rewards enabled |
+| Get a PR merged (first time) | build | +15 | First Commit badge |
+
+**Total: 30+ actions mapped.** Every click counts.
+
+### 10.2 The Unlock System — Gated Progression
+
+Points don't just rank you on a leaderboard — they **unlock content**.
+
+| What | Requirement | Type |
+|------|-------------|------|
+| Next module in phase | Previous module completed | Sequential |
+| Phase 1 content | Gate 0 passed (intake + Phase 0 modules done) | Gate |
+| Phase 2 content | Gate 1 passed (PR + quiz 70% + 3 DEVLOG entries) | Gate |
+| Phase 3 tracks | Gate 2 passed (dApp deployed + 5 tests + PR merged) | Gate |
+| Capstone | Gate 3 passed (all Phase 3 modules done) | Gate |
+| Project submission | Level 2 (50+ points) | Level |
+| Challenge creation | Level 2 (50+ points) | Level |
+| Squad creation | Level 1 (10+ points) | Level |
+| Mentor role | Level 4 (300+ points) + Tier 3 certificate | Level + Cert |
+| Certificate Tier 1 | Gate 1 passed | Gate |
+| Certificate Tier 2 | Gate 2 passed | Gate |
+| Certificate Tier 3 | Capstone complete | Gate |
+
+**Visual:** Each module, phase, and gate shows a lock/unlock state. Locked content shows a tooltip: "Complete X to unlock."
+
+### 10.3 Real-Time Progress Display
+
+Every student sees their live game state:
+
+**Top Bar (persistent, site-wide):**
+```
+[@username]  Lvl 3 Builder  |  ⭐ 245 pts  |  🔥 4-wk streak  |  📝 6/12 modules  |  🏆 Phase 1
+```
+
+**Profile Page:**
+```
+┌─────────────────────────────────────┐
+│  🏆 Level 3: Builder                │
+│  ████████████░░░░░░  245/300 pts    │
+│                                     │
+│  📚 Current Phase: 2 — EVM Core     │
+│  ████████░░░░  4/6 modules done     │
+│  ✅ Gate 1 passed  |  ⏳ Gate 2     │
+│                                     │
+│  🎖 Badges (8/10 earned):           │
+│  [Pioneer] [FirstCommit] [TopLearner]│
+│  [StreakMaster] [EventChamp] ...    │
+│                                     │
+│  🔥 Streaks:                        │
+│  PR: 4 wks  |  DEVLOG: 8 wks       │
+│  Session: 3 wks                     │
+│                                     │
+│  🪙 Recent Activity:                │
+│  +5  Module complete: ERC-20 Token  │
+│  +10 PR merged: week-5-challenge    │
+│  +5  DEVLOG published: Week 8       │
+└─────────────────────────────────────┘
+```
+
+### 10.4 Point Economy (Enhanced)
 
 | Action | Category | Points | Trigger |
 |--------|----------|--------|---------|
