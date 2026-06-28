@@ -371,6 +371,9 @@ ALTER TABLE leaderboard_entries ADD COLUMN IF NOT EXISTS sui_entry_object_id tex
 | 7 | `/admin/cohorts/$id` | `admin/cohorts/$id.tsx` | Admin only | Low |
 | 8 | `/admin/certifications` | `admin/certifications.tsx` | Admin only | Low |
 | 9 | `/alumni` | `alumni.tsx` | Public | Low |
+| 10 | `/admin/students` | `admin/students.tsx` | Admin only | Medium |
+| 11 | `/admin/students/$userId` | `admin/students/$userId.tsx` | Admin only | Medium |
+| 12 | `/profile/progress` | `profile/progress.tsx` | Login required | Medium |
 
 ---
 
@@ -388,6 +391,9 @@ ALTER TABLE leaderboard_entries ADD COLUMN IF NOT EXISTS sui_entry_object_id tex
 | 8 | On-chain SBTs | Build now — Sui Move, non-transferable objects |
 | 9 | MVP priority order | Tracks → Modules → Intake → DEVLOG → Gates → Cohorts → SBTs → Alumni |
 | 10 | Non-technical content | Structure now (B), technical content from PDF (A), AI-draft non-technical for admin review (D) |
+| 11 | Badges as NFTs | Every badge (Top Builder, Event Champion, Pioneer, etc.) minted as non-transferable SBT on Sui |
+| 12 | Student progress management | Admin dashboard with per-student drill-down: phases, modules, gates, DEVLOG, badges, points |
+| 13 | Scalability architecture | Supabase for reads (edge-cached), Sui for immutable truth, modular service boundaries, rate-limited APIs |
 
 ---
 
@@ -410,7 +416,7 @@ ALTER TABLE leaderboard_entries ADD COLUMN IF NOT EXISTS sui_entry_object_id tex
           Writes to BOTH
 ```
 
-**Supabase handles everything.** Sui handles **two specific things**: points ledger and SBT certificates.
+**Supabase handles everything.** Sui handles **three specific things**: points ledger, badge NFTs, and SBT certificates.
 
 ### What Goes On-Chain vs Off-Chain
 
@@ -420,7 +426,8 @@ ALTER TABLE leaderboard_entries ADD COLUMN IF NOT EXISTS sui_entry_object_id tex
 | Module progress | ✅ | ❌ |
 | DEVLOG entries | ✅ | ❌ |
 | **Leaderboard points** | ✅ Fast read | ✅ **Immutable record** |
-| **Certificates (SBT)** | ✅ PDF + metadata | ✅ **Non-transferable proof** |
+| **Badges (Top Builder, Pioneer, etc.)** | ✅ Fast display | ✅ **Non-transferable NFT** |
+| **Certificates (Tier 1/2/3)** | ✅ PDF + metadata | ✅ **Non-transferable SBT** |
 | Gate checks, cohorts | ✅ | ❌ |
 
 ### Smart Contract (Sui Move)
@@ -442,19 +449,46 @@ module blockchainclub::registry {
         cohort_year: u16, portfolio_url: String
     }
 
+    // Badge NFT — one per badge type per student (10 badge types)
+    struct Badge has key {
+        id: UID, student: address,
+        badge_type: u8,     // 0=Pioneer, 1=FirstCommit, 2=TeamPlayer, etc.
+        name: String,        // "Top Builder", "Event Champion"
+        description: String, // "Outstanding contributions to projects"
+        earned_at: u64       // epoch timestamp
+    }
+
     // Admin-only capability
     struct AdminCap has key { id: UID }
 
-    // Audit event emitted on every award
+    // Audit events
     struct PointsAwarded has copy, drop {
         student: address, category: u8,
         amount: u64, timestamp: u64
     }
 
+    struct BadgeMinted has copy, drop {
+        student: address, badge_type: u8,
+        name: String, timestamp: u64
+    }
+
+    // Badge type constants
+    const BADGE_PIONEER: u8 = 0;
+    const BADGE_FIRST_COMMIT: u8 = 1;
+    const BADGE_TEAM_PLAYER: u8 = 2;
+    const BADGE_EVENT_CHAMPION: u8 = 3;
+    const BADGE_TOP_BUILDER: u8 = 4;
+    const BADGE_TOP_LEARNER: u8 = 5;
+    const BADGE_MOST_ACTIVE: u8 = 6;
+    const BADGE_COMMUNITY_STAR: u8 = 7;
+    const BADGE_GOAL_SETTER: u8 = 8;
+    const BADGE_STREAK_MASTER: u8 = 9;
+
     // Functions:
     // register_entry(student) — creates LeaderboardEntry
-    // award_points(entry, category, amount) — updates points + emits event
-    // issue_certificate(student, tier, track, cohort, url) — mints SBT
+    // award_points(entry, category, amount) — updates points + emits PointsAwarded
+    // mint_badge(student, badge_type, name, description) — mints Badge NFT + emits BadgeMinted
+    // issue_certificate(student, tier, track, cohort, url) — mints Certificate SBT
 }
 ```
 
@@ -525,35 +559,243 @@ module blockchainclub::registry {
 
 ---
 
-## 8. Files Inventory
+## 8. Student Progress Management
 
-### New Files (15)
+### Admin View: Per-Student Drill-Down
+
+**Route:** `/admin/students/$userId` — comprehensive student profile for admins.
+
+**What it shows (tabbed layout):**
+
+**Tab 1: Overview**
+- Student name, email, username, Sui address
+- Assigned cohort + lane (Foundation/Fast)
+- Current phase, current track
+- Overall progress % across all modules
+- Points breakdown (event, learn, build, community)
+
+**Tab 2: Curriculum Progress**
+- Per-track view: which tracks enrolled, phase progress per track
+- Module completion grid: all modules × completion status
+- Color-coded: grey = locked, yellow = in progress, green = completed
+- Gate check statuses per track (Gate 1/2/3) with admin notes
+- Admin actions: override gate status, manually mark modules complete
+
+**Tab 3: DEVLOG**
+- All DEVLOG entries in reverse chronological order
+- Published/draft status per entry
+- Streak counter, total entries
+- Admin can view but not edit (student-owned content)
+
+**Tab 4: Badges & Certificates**
+- All earned badges (icon, name, date earned, on-chain status)
+- All certificates issued (tier, track, SBT tx hash link)
+- Admin actions: manually award badge, issue certificate
+
+**Tab 5: Activity Log**
+- Point award history (date, category, amount, reason)
+- Login timestamps
+- Module completion timestamps
+- Gate check status changes
+
+### Student View: My Progress
+
+**Routes:**
+- `/profile` — updated with progress tab
+- `/profile/progress` — dedicated progress page
+
+**What it shows:**
+- Phase pipeline visual (5 phases, current phase highlighted)
+- Modules completed / total in current phase
+- Next module to complete
+- Gate check status (pending → passed checkmark)
+- Points earned this week
+- DEVLOG streak badge
+- Badges earned (with on-chain verification status)
+
+### API Design for Progress Queries
+
+All progress data is read from Supabase via aggregated queries:
+
 ```
-src/routes/learn/$slug.tsx                  — Track detail page
-src/routes/intake.tsx                       — Intake assessment
-src/routes/profile/devlog.tsx               — My DEVLOG
-src/routes/members/$memberId/devlog.tsx     — Public DEVLOG
-src/routes/alumni.tsx                       — Alumni directory
-src/routes/admin/cohorts.tsx                — Cohort list
-src/routes/admin/cohorts/$id.tsx            — Cohort dashboard
-src/routes/admin/gate-checks.tsx            — Gate review
-src/routes/admin/certifications.tsx         — Certificate issuance
-src/components/phase-bar.tsx                — Phase indicator
-src/components/markdown-content.tsx         — Markdown renderer
-src/lib/sui-client.ts                       — Sui blockchain client
-contracts/sui/Move.toml                     — Sui package config
-contracts/sui/sources/club_registry.move    — Sui Move contract
+GET /api/supabase/query/user_module_progress?filters={user_id: x}
+GET /api/supabase/query/gate_checks?filters={user_id: x}
+GET /api/supabase/query/devlog_entries?filters={user_id: x}
+GET /api/supabase/query/leaderboard_entries?filters={user_id: x}&single=true
+GET /api/supabase/query/user_badges?select=badges(*)&filters={user_id: x}
+GET /api/supabase/query/certifications?filters={user_id: x}
 ```
 
-### Modified Files (7)
+A single aggregation endpoint combines all into one response for fast loading:
+
 ```
-src/routes/learn/index.tsx                  — Phase bars + new links
-src/routes/profile.tsx                      — DEVLOG tab + gate status
-src/lib/api/learn.server.ts                 — New server functions
-src/lib/auto-awards.ts                      — DEVLOG + Sui triggers
-src/server.ts                               — Sui RPC endpoints
-src/stores/auth-store.ts                    — Add sui_address to profile
-.env                                        — SUI_ADMIN_PRIVATE_KEY, SUI_PACKAGE_ID
+GET /api/supabase/student-progress?userId=x
+→ { modules, gates, devlog, points, badges, certificates, cohort }
+```
+
+### Admin Student List
+
+**Route:** `/admin/students` — searchable, filterable table of all students
+
+- Columns: name, email, cohort, track, phase, progress %, gate status, points
+- Filters: by cohort, by track, by phase, by gate status
+- Search: by name, email, username
+- Sort: by any column
+- Click row → drill-down to `/admin/students/$userId`
+- Export: CSV download of filtered view
+
+---
+
+## 9. Scalability Architecture
+
+### Design Principles
+
+| Principle | Implementation |
+|-----------|---------------|
+| **Read-heavy, write-light** | Supabase handles 99% of reads via PostgREST with automatic indexing |
+| **On-chain writes are async** | Sui RPC calls are fire-and-forget from the API. User doesn't wait for block confirmation |
+| **Edge caching for public pages** | Vercel's CDN caches SSR output. Static data (track listings, modules) served from edge |
+| **Rate limiting** | Already implemented via in-memory rate limiter on auth endpoints. Extend to all API routes |
+| **Connection pooling** | Supabase pooler handles DB connections. No per-request connection overhead |
+| **Off-chain storage for media** | Supabase Storage buckets with CDN delivery for images, PDFs |
+| **Idempotent blockchain writes** | Check on-chain state before writing to Sui. Skip if already awarded (prevent double-mint) |
+
+### Traffic Estimations & Capacity Planning
+
+| Metric | Estimate (100 students) | Estimate (1,000 students) | Capacity |
+|--------|------------------------|--------------------------|----------|
+| Page views / day | ~2,000 | ~20,000 | Vercel auto-scales |
+| API calls / day | ~10,000 | ~100,000 | Supabase free tier: unlimited API calls |
+| DB read queries / day | ~50,000 | ~500,000 | PostgREST with row-level security, auto-indexed |
+| DB write queries / day | ~500 | ~5,000 | Well within Supabase limits |
+| Sui transactions / day | ~200 | ~2,000 | Sui testnet: free. Mainnet: ~$0.01/tx |
+| Storage (media + PDFs) | ~1 GB | ~10 GB | Supabase Storage: 1GB free, scales linearly |
+
+### Bottleneck Mitigation
+
+**Bottleneck 1: Leaderboard queries**
+- 50+ students × frequent polling = many reads
+- **Fix:** Cache leaderboard in Supabase with a materialized view. Refresh every 5 minutes. Students see slightly stale data but page loads instantly.
+
+**Bottleneck 2: On-chain writes during hackathons**
+- 100 students submitting projects → 100 Sui transactions in 48 hours
+- **Fix:** Batch Sui transactions where possible. Queue writes, process sequentially. Fire-and-forget — don't block the API response.
+
+**Bottleneck 3: DEVLOG reads (public profiles)**
+- External visitors viewing student DEVLOGs
+- **Fix:** Vercel ISR (Incremental Static Regeneration) for public DEVLOG pages. Revalidate every hour.
+
+**Bottleneck 4: Admin dashboard analytics**
+- 14+ parallel count queries for dashboard stats
+- **Already fixed:** parallel Promise.all() queries. Can further optimize with a nightly cron job that pre-computes stats into a `dashboard_cache` table.
+
+### Component Architecture for Scale
+
+```
+┌──────────────────────────────────────────────────────┐
+│                    CLIENT (React)                     │
+│  ┌─────────┐ ┌──────────┐ ┌──────────┐ ┌─────────┐  │
+│  │ Learn   │ │ Profile  │ │ Admin    │ │ Leader-  │  │
+│  │ Pages   │ │ Pages    │ │ Pages    │ │ board    │  │
+│  └────┬────┘ └────┬─────┘ └────┬─────┘ └────┬────┘  │
+│       │           │            │             │       │
+│       └───────────┴────────────┴─────────────┘       │
+│                        │                             │
+│                  API Layer (server.ts)                │
+│     ┌──────────┬──────────┬──────────┬──────────┐    │
+│     │ Auth     │ Supabase │  Sui RPC │ Rate     │    │
+│     │ Routes   │ Proxy    │  Client  │ Limiter  │    │
+│     └────┬─────┴────┬─────┴────┬─────┴────┬─────┘    │
+│          │          │          │          │          │
+│    ┌─────┴───┐ ┌───┴───┐ ┌───┴────┐     │          │
+│    │ Supabase│ │ JWT   │ │ Sui    │     │          │
+│    │ Auth    │ │ Utils │ │ Testnet│     │          │
+│    └─────────┘ └───────┘ └────────┘     │          │
+└──────────────────────────────────────────────────────┘
+```
+
+### Database Indexing Strategy
+
+```sql
+-- Speed up progress queries
+CREATE INDEX IF NOT EXISTS idx_user_module_progress_user 
+  ON user_module_progress(user_id, module_id);
+
+CREATE INDEX IF NOT EXISTS idx_gate_checks_user 
+  ON gate_checks(user_id, track_id);
+
+CREATE INDEX IF NOT EXISTS idx_devlog_user_week 
+  ON devlog_entries(user_id, week_number);
+
+CREATE INDEX IF NOT EXISTS idx_leaderboard_points 
+  ON leaderboard_entries(total_points DESC);
+
+CREATE INDEX IF NOT EXISTS idx_modules_track_phase 
+  ON modules(track_id, phase);
+
+-- Speed up admin student search
+CREATE INDEX IF NOT EXISTS idx_profiles_fullname 
+  ON profiles(full_name);
+CREATE INDEX IF NOT EXISTS idx_profiles_username 
+  ON profiles(username);
+CREATE INDEX IF NOT EXISTS idx_users_email 
+  ON users(email);
+```
+
+### Caching Strategy
+
+| Layer | What | TTL |
+|-------|------|-----|
+| **Vercel CDN** | SSR output for public pages (learn, events, leaderboard) | 1 hour (ISR) |
+| **Supabase** | Leaderboard materialized view | 5 min refresh |
+| **Browser** | React Query staleTime for track/module data | 5 min |
+| **API** | In-memory rate limiter counters | 15 min window |
+| **No cache** | User-specific data (progress, profile, DEVLOG) | Real-time |
+
+---
+
+## 10. Files Inventory
+
+### New Files (18)
+```
+src/routes/learn/$slug.tsx                      — Track detail page
+src/routes/intake.tsx                           — Intake assessment
+src/routes/profile/devlog.tsx                   — My DEVLOG
+src/routes/profile/progress.tsx                 — My progress dashboard
+src/routes/members/$memberId/devlog.tsx         — Public DEVLOG
+src/routes/alumni.tsx                           — Alumni directory
+src/routes/admin/cohorts.tsx                    — Cohort list
+src/routes/admin/cohorts/$id.tsx                — Cohort dashboard
+src/routes/admin/gate-checks.tsx                — Gate review
+src/routes/admin/certifications.tsx             — Certificate issuance
+src/routes/admin/students.tsx                   — Student list (searchable)
+src/routes/admin/students/$userId.tsx           — Student drill-down (5 tabs)
+src/components/phase-bar.tsx                    — Phase indicator
+src/components/markdown-content.tsx             — Markdown renderer
+src/components/progress-pipeline.tsx            — Visual phase pipeline
+src/lib/sui-client.ts                           — Sui blockchain client
+contracts/sui/Move.toml                         — Sui package config
+contracts/sui/sources/club_registry.move        — Sui Move contract
+```
+
+### Modified Files (8)
+```
+src/routes/learn/index.tsx                      — Phase bars + new links
+src/routes/profile.tsx                          — DEVLOG tab + progress tab + gate status
+src/lib/api/learn.server.ts                     — New server functions
+src/lib/auto-awards.ts                          — DEVLOG + badge mint triggers
+src/server.ts                                   — Sui RPC endpoints + cache optimization
+src/stores/auth-store.ts                        — Add sui_address to profile
+.env                                            — SUI_ADMIN_PRIVATE_KEY, SUI_PACKAGE_ID
+src/lib/supabase.ts                             — Materialized view queries for leaderboard
+```
+
+### New Database Objects (8 tables + 8 indexes + 1 materialized view)
+```
+Tables:    curriculum_tracks, intake_assessments, devlog_entries,
+           gate_checks, cohorts, certifications, sui_badge_registry
+Indexes:   8 indexes for query performance (see §9)
+View:      leaderboard_cache (materialized, 5-min refresh)
 ```
 
 ---
