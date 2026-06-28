@@ -15,9 +15,7 @@ async function getAdminKeypair() {
   return Ed25519Keypair.fromSecretKey(fromB64(key).slice(1));
 }
 
-export async function registerStudentOnChain(
-  studentAddress: string
-): Promise<{ digest: string; entryObjectId: string }> {
+export async function registerStudentOnChain(studentAddress: string): Promise<{ digest: string; entryObjectId: string }> {
   const { Transaction } = await import("@mysten/sui/transactions");
   const client = await getClient();
   const keypair = await getAdminKeypair();
@@ -55,19 +53,10 @@ export async function awardPointsOnChain(
   const tx = new Transaction();
   tx.moveCall({
     target: `${packageId}::club_registry::award_points`,
-    arguments: [
-      tx.object(capId),
-      tx.object(entryObjectId),
-      tx.pure.u8(category),
-      tx.pure.u64(amount),
-    ],
+    arguments: [tx.object(capId), tx.object(entryObjectId), tx.pure.u8(category), tx.pure.u64(amount)],
   });
 
-  const result = await client.signAndExecuteTransaction({
-    transaction: tx,
-    signer: keypair,
-  });
-
+  const result = await client.signAndExecuteTransaction({ transaction: tx, signer: keypair });
   return result.digest;
 }
 
@@ -86,20 +75,10 @@ export async function mintBadgeOnChain(
   const tx = new Transaction();
   tx.moveCall({
     target: `${packageId}::club_registry::mint_badge`,
-    arguments: [
-      tx.object(capId),
-      tx.pure.address(studentAddress),
-      tx.pure.u8(badgeType),
-      tx.pure.string(name),
-      tx.pure.string(description),
-    ],
+    arguments: [tx.object(capId), tx.pure.address(studentAddress), tx.pure.u8(badgeType), tx.pure.string(name), tx.pure.string(description)],
   });
 
-  const result = await client.signAndExecuteTransaction({
-    transaction: tx,
-    signer: keypair,
-  });
-
+  const result = await client.signAndExecuteTransaction({ transaction: tx, signer: keypair });
   return result.digest;
 }
 
@@ -119,20 +98,9 @@ export async function issueCertificateOnChain(
   const tx = new Transaction();
   tx.moveCall({
     target: `${packageId}::club_registry::issue_certificate`,
-    arguments: [
-      tx.object(capId),
-      tx.pure.address(studentAddress),
-      tx.pure.u8(tier),
-      tx.pure.string(track),
-      tx.pure.u16(cohortYear),
-      tx.pure.string(portfolioUrl),
-    ],
+    arguments: [tx.object(capId), tx.pure.address(studentAddress), tx.pure.u8(tier), tx.pure.string(track), tx.pure.u16(cohortYear), tx.pure.string(portfolioUrl)],
   });
 
-  const result = await client.signAndExecuteTransaction({
-    transaction: tx,
-    signer: keypair,
-  });
-
+  const result = await client.signAndExecuteTransaction({ transaction: tx, signer: keypair });
   return result.digest;
 }

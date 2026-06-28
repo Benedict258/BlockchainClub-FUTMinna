@@ -150,13 +150,6 @@ export async function awardPoints(
           single: true,
         });
         if (entry?.sui_entry_object_id) {
-          const { awardPointsOnChain } = await import("./sui-client");
-          await awardPointsOnChain(
-            profile.sui_address,
-            entry.sui_entry_object_id,
-            categoryNum,
-            points,
-          );
         }
       }
     }
@@ -247,13 +240,6 @@ export async function checkAndAwardBadges(userId: string): Promise<void> {
             single: true,
           });
           if (profile?.sui_address) {
-            const { mintBadgeOnChain } = await import("./sui-client");
-            await mintBadgeOnChain(
-              profile.sui_address,
-              badgeInfo.type,
-              badgeInfo.name,
-              badgeInfo.description,
-            );
           }
         } catch (err) {
           console.error("Sui badge mint failed:", err);
