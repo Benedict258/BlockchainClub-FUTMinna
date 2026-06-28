@@ -754,7 +754,237 @@ CREATE INDEX IF NOT EXISTS idx_users_email
 
 ---
 
-## 10. Files Inventory
+## 10. Gamification System
+
+### 10.1 Point Economy
+
+| Action | Category | Points | Trigger |
+|--------|----------|--------|---------|
+| Complete a module | learn | +5 | `user_module_progress` insert → `awardPoints(userId, "learn", 5)` |
+| Attend an event (RSVP + admin marks attended) | event | +5 | `/api/events/attend` → `awardEventPoints()` |
+| Project approved by admin | build | +10 | Admin clicks Approve → `awardProjectPoints()` |
+| Blog post published | community | +5 | Admin clicks Publish → `awardPoints(userId, "community", 5)` |
+| Complete profile (all required fields) | community | +3 | Profile save → check completeness → award |
+| Publish DEVLOG entry | community | +5 | `devlog_entries` insert → `awardPoints(userId, "community", 5)` |
+| Submit a PR (GitHub integration) | build | +10 | GitHub webhook → verify → award |
+| Review a peer's PR | community | +5 | GitHub webhook → verify → award |
+| Pass Gate 1 | learn | +20 | Admin approves gate → award |
+| Pass Gate 2 | build | +30 | Admin approves gate → award |
+| Pass Gate 3 / Capstone | build | +50 | Admin approves capstone → award |
+| Place in a hackathon | build | +50 | Admin enters result → award |
+| Help in WhatsApp community (classified by bot) | community | 1-5 | Webhook → classify → award |
+| Mentor a peer (admin-assigned) | community | +15 | Admin logs mentoring session → award |
+
+### 10.2 Point Flow (Supabase + Sui)
+
+```
+┌──────────────┐     ┌─────────────────┐     ┌──────────────┐
+│   Trigger    │ ──► │  awardPoints()  │ ──► │  Supabase    │
+│  (action)    │     │                 │     │  Instant UI  │
+└──────────────┘     └────────┬────────┘     └──────────────┘
+                              │
+                              ▼
+                     ┌─────────────────┐
+                     │ checkAndAward-  │
+                     │ Badges()        │
+                     └────────┬────────┘
+                              │
+                    ┌─────────┴─────────┐
+                    ▼                   ▼
+            ┌──────────────┐    ┌──────────────┐
+            │  Supabase    │    │  Sui Contract │
+            │  user_badges │    │  mint_badge() │
+            │  (fast read) │    │  (immutable)  │
+            └──────────────┘    └──────────────┘
+```
+
+Every point award:
+1. Updates Supabase `leaderboard_entries` — instant leaderboard refresh
+2. Calls `checkAndAwardBadges()` — checks thresholds
+3. If eligible for a badge → inserts into Supabase `user_badges` + calls Sui `mint_badge()`
+
+### 10.3 Badge System (10 Types)
+
+| # | Badge | Criteria | Points Threshold | Icon |
+|---|-------|----------|-----------------|------|
+| 0 | **Pioneer** | Registered when club ≤ 10 members | One-time, first 10 members | Award |
+| 1 | **First Commit** | Contributed to 1+ project | 1 project_members row | Star |
+| 2 | **Team Player** | Contributed to 3+ projects | 3 project_members rows | Users |
+| 3 | **Event Champion** | Attended 5+ events | 5 event_rsvps (attended=true) | Calendar |
+| 4 | **Top Builder** | 50+ build points | build_points ≥ 50 | Code |
+| 5 | **Top Learner** | 50+ learn points | learn_points ≥ 50 | BookOpen |
+| 6 | **Most Active** | 100+ total points | total_points ≥ 100 | Zap |
+| 7 | **Community Star** | 30+ community points | community_points ≥ 30 | Trophy |
+| 8 | **Goal Setter** | Complete Phase 1 | Pass Gate 1 | Target |
+| 9 | **Streak Master** | 4+ consecutive DEVLOG weeks | 4 devlog_entries in a row | Flame |
+
+**Badge Lifecycle:**
+1. `checkAndAwardBadges()` runs after every `awardPoints()` call
+2. Checks each badge's threshold against the student's current stats
+3. If threshold met AND badge not already owned → `mint_badge()` on Sui
+4. Sui contract emits `BadgeMinted` event (auditable, public)
+5. Badge appears on profile, leaderboard, and as NFT in student's Sui wallet
+
+**Duplicate protection:** `checkAndAwardBadges()` checks `user_badges` table before minting. Sui contract also rejects duplicate badge types per student.
+
+### 10.4 Leaderboard
+
+**Current state:** Public page with podium (top 3) + scrollable table (all entries). Time filters: All Time, This Month, This Week. Points display per category. Badge icons shown.
+
+**No ecosystem filters** (removed — all students compete in one global leaderboard).
+
+**Optional opt-in:** Students can toggle leaderboard visibility from their profile. Default: visible.
+
+**On-chain verification:** Leaderboard shows a "Verified on Sui" badge on entries that have an on-chain record. Clicking opens SuiVision explorer to show the immutable points log.
+
+### 10.5 Level System (Engagement Tiers)
+
+| Level | Name | Points Required | Perk |
+|-------|------|-----------------|------|
+| 1 | Explorer | 0 | Access to Phase 0-1 content |
+| 2 | Builder | 50 | Access to Phase 2 content, project submission |
+| 3 | Specialist | 150 | Access to Phase 3 tracks, mentor matching |
+| 4 | Master | 300 | Alumni status, "Track Lead" eligibility, certificate priority |
+| 5 | Legend | 500 | Featured on landing page, priority hackathon sponsorship |
+
+Levels unlock organically. No manual admin action needed — points determine level.
+
+### 10.6 Streak System
+
+**PR Streak:** Consecutive weeks with at least 1 PR submitted. Shown as "🔥 4-week PR streak" on profile.
+
+**DEVLOG Streak:** Consecutive weeks with a published DEVLOG entry. Shown as "📝 8-week writing streak".
+
+**Session Streak:** Consecutive weeks attending a session (RSVP + attendance marked). Shown as "🎓 6-week session streak".
+
+**Streak bonuses:**
+- 4-week streak → +5 bonus points
+- 8-week streak → +10 bonus points
+- 12-week streak → +20 bonus points + "Streak Master" badge eligibility
+
+**Streak breaking:** Missing a week resets the streak to 0. Grace period: 1 missed week allowed per 8-week block.
+
+### 10.7 Visual Progress Indicators
+
+**On profile:**
+- Level badge (Explorer → Legend)
+- Points bar with next-level threshold
+- Badge gallery (earned badges as icons, locked badges greyed out)
+- Streak indicators
+
+**On leaderboard:**
+- Rank number
+- Points with category breakdown (hover tooltip)
+- Level badge next to name
+- Badge icons (max 2 shown, "..." for more)
+
+**On track detail page:**
+- Phase progress pipeline (Phase 0-3 + Capstone)
+- Completed modules / total per phase
+- Points earned in this track
+- Gate check status indicators
+
+### 10.8 Gamification Database Extensions
+
+```sql
+-- Streak tracking
+CREATE TABLE IF NOT EXISTS streaks (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id text REFERENCES users(id),
+  streak_type text NOT NULL, -- 'pr', 'devlog', 'session'
+  current_weeks integer DEFAULT 0,
+  longest_weeks integer DEFAULT 0,
+  last_week_number integer,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE(user_id, streak_type)
+);
+
+-- Point audit log (for dispute resolution)
+CREATE TABLE IF NOT EXISTS point_events (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id text REFERENCES users(id),
+  category text NOT NULL,     -- event, learn, build, community
+  amount integer NOT NULL,
+  reason text NOT NULL,       -- 'module_complete', 'event_attend', etc.
+  reference_id text,          -- module_id, event_id, project_id
+  sui_tx_hash text,           -- if written on-chain
+  created_at timestamptz DEFAULT now()
+);
+
+-- Badge mint tracking (Sui integration)
+CREATE TABLE IF NOT EXISTS badge_mints (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id text REFERENCES users(id),
+  badge_id text NOT NULL,
+  sui_tx_hash text,
+  minted_at timestamptz DEFAULT now(),
+  UNIQUE(user_id, badge_id)
+);
+
+-- Student level cache (computed from points, avoids recalc)
+ALTER TABLE leaderboard_entries ADD COLUMN IF NOT EXISTS level integer DEFAULT 1;
+ALTER TABLE leaderboard_entries ADD COLUMN IF NOT EXISTS current_streak integer DEFAULT 0;
+ALTER TABLE leaderboard_entries ADD COLUMN IF NOT EXISTS longest_streak integer DEFAULT 0;
+```
+
+### 10.9 Gamification Engine Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│              GAMIFICATION ENGINE                  │
+│                                                   │
+│  ┌─────────────┐   ┌──────────────┐              │
+│  │ Point Rules │   │ Badge Rules  │              │
+│  │  Engine     │   │  Engine      │              │
+│  │             │   │              │              │
+│  │ Category→   │   │ Threshold→   │              │
+│  │ Points map  │   │ Badge map    │              │
+│  └──────┬──────┘   └──────┬───────┘              │
+│         │                 │                       │
+│         └────────┬────────┘                       │
+│                  ▼                                │
+│         ┌────────────────┐                       │
+│         │ awardPoints()  │  ──► Supabase         │
+│         │                │  ──► Sui (if wallet)  │
+│         └────────┬───────┘                       │
+│                  │                                │
+│                  ▼                                │
+│         ┌───────────────────┐                    │
+│         │ checkAndAward     │                    │
+│         │ Badges()          │                    │
+│         │                   │                    │
+│         │ For each badge:   │                    │
+│         │  already owned? → │ skip               │
+│         │  threshold met? → │ mint on Sui + DB   │
+│         │  not met? →       │ skip               │
+│         └───────────────────┘                    │
+│                                                   │
+│  Triggers fire from:                              │
+│  • Module complete (learn endpoint)               │
+│  • Event attend (events attend endpoint)           │
+│  • Project approve (admin project page)           │
+│  • Blog publish (admin blog page)                 │
+│  • DEVLOG create (devlog endpoint)                │
+│  • WhatsApp webhook (community bot)               │
+│  • Admin manual points (admin leaderboard)        │
+└───────────────────────────────────────────────────┘
+```
+
+### 10.10 Anti-Abuse Mechanisms
+
+| Mechanism | Implementation |
+|-----------|---------------|
+| **Duplicate prevention** | UNIQUE constraints on every points-granting action (user_id + module_id, user_id + event_id, user_id + badge_id) |
+| **Rate limiting** | Points awarded at most once per action. Cannot "complete" same module twice |
+| **Admin-only triggers** | Project approval, blog publish, event attendance — all require SUPER_ADMIN/ADMIN role |
+| **Sui double-mint protection** | Contract checks `Badge` exists before minting. Server checks `badge_mints` table |
+| **Streak validation** | Streak calculated from actual data (DEVLOG entries, PRs) — not self-reported |
+| **Leaderboard opt-out** | Privacy toggle for students who don't want public ranking |
+
+---
+
+## 11. Files Inventory
 
 ### New Files (18)
 ```
@@ -800,7 +1030,7 @@ View:      leaderboard_cache (materialized, 5-min refresh)
 
 ---
 
-## 9. Content Template — All Tracks
+## 12. Content Template — All Tracks
 
 Every module across all 6 tracks follows this structure:
 
@@ -834,7 +1064,7 @@ Links to further reading, tools, templates.
 
 ---
 
-## 10. Weekly Session Format — All Tracks
+## 13. Weekly Session Format — All Tracks
 
 | Time | Segment | Description |
 |------|---------|-------------|
