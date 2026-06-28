@@ -3,7 +3,7 @@ name = "club_registry"
 version = "0.1.0"
 
 [dependencies]
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet-v1.34.1" }
 
 [addresses]
 blockchainclub = "0x0"

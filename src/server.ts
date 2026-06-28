@@ -104,6 +104,20 @@ async function handleSupabaseApi(request: Request, pathname: string): Promise<Re
     const method = request.method;
     const body = method !== "GET" ? await request.json().catch(() => ({})) : {};
 
+    const { checkRateLimit, getClientIp } = await import("./lib/rate-limit");
+    const ip = getClientIp(request);
+    const isReadOp = pathname.includes("/query") || pathname.includes("/analytics");
+    const rateLimitConfig = isReadOp
+      ? { windowMs: 60 * 1000, maxRequests: 100, keyPrefix: "api_read" }
+      : { windowMs: 60 * 1000, maxRequests: 30, keyPrefix: "api_write" };
+    const { allowed, headers: rateLimitHeaders } = checkRateLimit(ip, rateLimitConfig);
+    if (!allowed) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded. Try again later." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...rateLimitHeaders },
+      });
+    }
+
     const authHeader = request.headers.get("Authorization");
     const isWriteOp = ["insert", "update", "delete", "rpc", "adjust-points", "settings"].some(
       (op) => pathname.includes(`/api/supabase/${op}`)
@@ -368,7 +382,7 @@ async function handleSupabaseApi(request: Request, pathname: string): Promise<Re
 
     return new Response(JSON.stringify(result), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...rateLimitHeaders },
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || "API error" }), {
@@ -380,6 +394,17 @@ async function handleSupabaseApi(request: Request, pathname: string): Promise<Re
 
 async function handleEventAttend(request: Request): Promise<Response> {
   try {
+    const { checkRateLimit, getClientIp } = await import("./lib/rate-limit");
+    const ip = getClientIp(request);
+    const rateLimitConfig = { windowMs: 60 * 1000, maxRequests: 30, keyPrefix: "api_write" };
+    const { allowed, headers: rateLimitHeaders } = checkRateLimit(ip, rateLimitConfig);
+    if (!allowed) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded. Try again later." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...rateLimitHeaders },
+      });
+    }
+
     const { supabase, query } = await import("./lib/supabase");
     const { verifyAccessToken } = await import("./lib/auth");
     const body = await request.json();
@@ -421,7 +446,7 @@ async function handleEventAttend(request: Request): Promise<Response> {
 
     return new Response(JSON.stringify({ success: true, rsvp: updatedRows?.[0] ?? null }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...rateLimitHeaders },
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || "Attendance update failed" }), {
@@ -490,6 +515,17 @@ async function handleCommunityLog(request: Request): Promise<Response> {
 
 async function handleAwards(request: Request): Promise<Response> {
   try {
+    const { checkRateLimit, getClientIp } = await import("./lib/rate-limit");
+    const ip = getClientIp(request);
+    const rateLimitConfig = { windowMs: 60 * 1000, maxRequests: 30, keyPrefix: "api_write" };
+    const { allowed, headers: rateLimitHeaders } = checkRateLimit(ip, rateLimitConfig);
+    if (!allowed) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded. Try again later." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...rateLimitHeaders },
+      });
+    }
+
     const body = await request.json();
     const { action, targetId } = body;
 
@@ -537,7 +573,7 @@ async function handleAwards(request: Request): Promise<Response> {
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...rateLimitHeaders },
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || "Award error" }), {
@@ -566,6 +602,17 @@ async function handleAuthLogout(request: Request): Promise<Response> {
 
 async function handleChallengeVote(request: Request): Promise<Response> {
   try {
+    const { checkRateLimit, getClientIp } = await import("./lib/rate-limit");
+    const ip = getClientIp(request);
+    const rateLimitConfig = { windowMs: 60 * 1000, maxRequests: 30, keyPrefix: "api_write" };
+    const { allowed, headers: rateLimitHeaders } = checkRateLimit(ip, rateLimitConfig);
+    if (!allowed) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded. Try again later." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...rateLimitHeaders },
+      });
+    }
+
     const { verifyAccessToken } = await import("./lib/auth");
     const { query, from } = await import("./lib/supabase");
 
@@ -669,7 +716,7 @@ async function handleChallengeVote(request: Request): Promise<Response> {
 
     return new Response(JSON.stringify({ success: true, weight }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...rateLimitHeaders },
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || "Vote failed" }), {
@@ -1144,6 +1191,17 @@ async function handleAvatarUpload(request: Request): Promise<Response> {
 
 async function handleProjectUpload(request: Request): Promise<Response> {
   try {
+    const { checkRateLimit, getClientIp } = await import("./lib/rate-limit");
+    const ip = getClientIp(request);
+    const rateLimitConfig = { windowMs: 60 * 1000, maxRequests: 10, keyPrefix: "upload" };
+    const { allowed, headers: rateLimitHeaders } = checkRateLimit(ip, rateLimitConfig);
+    if (!allowed) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded. Try again later." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...rateLimitHeaders },
+      });
+    }
+
     const { verifyAccessToken } = await import("./lib/auth");
     const authHeader = request.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
@@ -1192,7 +1250,7 @@ async function handleProjectUpload(request: Request): Promise<Response> {
 
     return new Response(JSON.stringify({ url: result.url, path: result.path }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...rateLimitHeaders },
     });
   } catch (error: any) {
     console.error("Project upload error:", error.message, error.stack);
@@ -1205,6 +1263,17 @@ async function handleProjectUpload(request: Request): Promise<Response> {
 
 async function handleProjectSubmit(request: Request): Promise<Response> {
   try {
+    const { checkRateLimit, getClientIp } = await import("./lib/rate-limit");
+    const ip = getClientIp(request);
+    const rateLimitConfig = { windowMs: 60 * 1000, maxRequests: 30, keyPrefix: "api_write" };
+    const { allowed, headers: rateLimitHeaders } = checkRateLimit(ip, rateLimitConfig);
+    if (!allowed) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded. Try again later." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...rateLimitHeaders },
+      });
+    }
+
     const { verifyAccessToken } = await import("./lib/auth");
     const { supabase } = await import("./lib/supabase");
 
@@ -1270,7 +1339,7 @@ async function handleProjectSubmit(request: Request): Promise<Response> {
 
     return new Response(JSON.stringify(project), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...rateLimitHeaders },
     });
   } catch (error: any) {
     console.error("Project submit error:", error.message, error.stack);
@@ -1354,6 +1423,17 @@ async function handleProfileFetch(request: Request): Promise<Response> {
 
 async function handleDevlogCreate(request: Request): Promise<Response> {
   try {
+    const { checkRateLimit, getClientIp } = await import("./lib/rate-limit");
+    const ip = getClientIp(request);
+    const rateLimitConfig = { windowMs: 60 * 1000, maxRequests: 30, keyPrefix: "api_write" };
+    const { allowed, headers: rateLimitHeaders } = checkRateLimit(ip, rateLimitConfig);
+    if (!allowed) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded. Try again later." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...rateLimitHeaders },
+      });
+    }
+
     const { verifyAccessToken } = await import("./lib/auth");
     const { supabase } = await import("./lib/supabase");
     const authHeader = request.headers.get("Authorization");
@@ -1401,7 +1481,7 @@ async function handleDevlogCreate(request: Request): Promise<Response> {
 
     return new Response(JSON.stringify(entry), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...rateLimitHeaders },
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || "Failed to create entry" }), {
@@ -1501,7 +1581,18 @@ export default {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      let final = await normalizeCatastrophicSsrResponse(response);
+      if (request.method === "GET" && final.status >= 200 && final.status < 400) {
+        const cacheHeader = getCacheHeader(url.pathname);
+        if (cacheHeader) {
+          final = new Response(final.body, {
+            status: final.status,
+            statusText: final.statusText,
+            headers: { ...Object.fromEntries(final.headers.entries()), "Cache-Control": cacheHeader },
+          });
+        }
+      }
+      return final;
     } catch (error) {
       console.error(error);
       return new Response(renderErrorPage(), {

@@ -1,6 +1,24 @@
 const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
 
+const _nativeFetch = fetch;
+
+async function fetchWithRetry(url: string, options: RequestInit, retries = 2): Promise<Response> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      const res = await _nativeFetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timeout);
+      return res;
+    } catch (err) {
+      if (i === retries) throw err;
+      await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, i)));
+    }
+  }
+  throw new Error("Max retries exceeded");
+}
+
 function baseHeaders() {
   return {
     apikey: supabaseAnonKey,
@@ -35,7 +53,7 @@ export function from(table: string) {
     },
 
     async insert(rows: any) {
-      const res = await fetch(`${supabaseUrl}/rest/v1/${table}`, {
+      const res = await fetchWithRetry(`${supabaseUrl}/rest/v1/${table}`, {
         method: 'POST',
         headers: baseHeaders(),
         body: JSON.stringify(rows),
@@ -48,7 +66,7 @@ export function from(table: string) {
     async upsert(rows: any) {
       const h = baseHeaders();
       h.Prefer = 'return=representation,resolution=merge-duplicates';
-      const res = await fetch(`${supabaseUrl}/rest/v1/${table}`, {
+      const res = await fetchWithRetry(`${supabaseUrl}/rest/v1/${table}`, {
         method: 'POST',
         headers: h,
         body: JSON.stringify(rows),
@@ -61,7 +79,7 @@ export function from(table: string) {
     async update(data: any, filters: Record<string, any>) {
       const qs = buildFilterString(filters);
       const url = `${supabaseUrl}/rest/v1/${table}?${qs}`;
-      const res = await fetch(url, {
+      const res = await fetchWithRetry(url, {
         method: 'PATCH',
         headers: baseHeaders(),
         body: JSON.stringify(data),
@@ -74,7 +92,7 @@ export function from(table: string) {
     async delete(filters: Record<string, any>) {
       const qs = buildFilterString(filters);
       const url = `${supabaseUrl}/rest/v1/${table}?${qs}`;
-      const res = await fetch(url, {
+      const res = await fetchWithRetry(url, {
         method: 'DELETE',
         headers: baseHeaders(),
       });
@@ -86,7 +104,7 @@ export function from(table: string) {
     },
 
     async rpc(fn: string, params?: Record<string, any>) {
-      const res = await fetch(`${supabaseUrl}/rest/v1/rpc/${fn}`, {
+      const res = await fetchWithRetry(`${supabaseUrl}/rest/v1/rpc/${fn}`, {
         method: 'POST',
         headers: baseHeaders(),
         body: JSON.stringify(params || {}),
@@ -156,7 +174,7 @@ export async function query(
   }
 
   try {
-    const res = await fetch(url, { headers: h });
+    const res = await fetchWithRetry(url, { headers: h });
     const json = await res.json();
 
     if (!res.ok) {
@@ -178,7 +196,7 @@ export async function query(
 }
 
 async function rpc(fn: string, params?: Record<string, any>) {
-  const res = await fetch(`${supabaseUrl}/rest/v1/rpc/${fn}`, {
+  const res = await fetchWithRetry(`${supabaseUrl}/rest/v1/rpc/${fn}`, {
     method: 'POST',
     headers: baseHeaders(),
     body: JSON.stringify(params || {}),
