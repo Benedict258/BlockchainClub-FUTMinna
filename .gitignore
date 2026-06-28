@@ -36,3 +36,6 @@ dist-ssr
 
 /src/generated/prisma
 keep-alive.sh
+contracts/sui/build/
+.sui/
+contracts/sui/Move.lock
