@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -77,7 +77,6 @@ const EXPERIENCE_LEVELS = [
 
 function ProfilePage() {
   const { user, setUser, accessToken } = useAuthStore();
-  const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -197,7 +196,6 @@ function ProfilePage() {
   }
 
   if (!user) {
-    router.navigate({ to: "/auth" });
     return null;
   }
 

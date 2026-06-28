@@ -187,7 +187,7 @@ function AdminOverview() {
                   >
                     <div>
                       <p className="text-sm font-medium">
-                        {member.profile?.fullName || 'New Member'}
+                        {member.profiles?.[0]?.full_name || member.email || 'New Member'}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {member.email}

@@ -606,7 +606,7 @@ function AdminEvents() {
           <div className="space-y-2 max-h-60 overflow-y-auto">
             {rsvpData?.event_rsvps && rsvpData.event_rsvps.length > 0 ? (
               rsvpData.event_rsvps.map((rsvp: Record<string, unknown>) => {
-                const user = rsvp.user as Record<string, unknown>;
+                const user = rsvp.users as Record<string, unknown>;
                 const profiles = (user?.profile as any[]) || [];
                 const profile = profiles[0] as Record<string, unknown> | undefined;
                 return (
@@ -628,7 +628,7 @@ function AdminEvents() {
                       checked={!!rsvp.attended}
                       onCheckedChange={(checked) =>
                         attendanceMutation.mutate({
-                          userId: (rsvp.user as Record<string, unknown>)?.id as string,
+                          userId: rsvp.user_id as string,
                           attended: checked,
                         })
                       }

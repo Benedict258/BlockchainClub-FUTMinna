@@ -4,12 +4,16 @@ import { Card } from "@/components/ui/card";
 import { Lock } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 
-export function LoginPrompt() {
+interface LoginPromptProps {
+  inline?: boolean;
+}
+
+export function LoginPrompt({ inline }: LoginPromptProps) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   if (isAuthenticated) return null;
 
   return (
-    <div className="flex items-center justify-center min-h-[70vh] px-6">
+    <div className={inline ? "flex items-center justify-center px-4 py-8" : "flex items-center justify-center min-h-[70vh] px-6"}>
       <Card className="max-w-md w-full p-8 text-center border-border">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-muted">
           <Lock className="h-7 w-7 text-muted-foreground" />

@@ -413,7 +413,7 @@ function TrackDetailPage() {
 
                               <div className="mt-6 pt-5 border-t border-border">
                                 {!isAuthenticated ? (
-                                  <LoginPrompt />
+                                  <LoginPrompt inline />
                                 ) : isCompleted ? (
                                   <div className="flex items-center gap-2 text-sm text-emerald-500">
                                     <CheckCircle2 className="h-4 w-4" />

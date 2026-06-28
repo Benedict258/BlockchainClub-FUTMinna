@@ -1,29 +1,33 @@
-import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
-import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
-import { Transaction } from "@mysten/sui/transactions";
-import { fromB64 } from "@mysten/sui/utils";
+async function getClient() {
+  const { SuiClient, getFullnodeUrl } = await import("@mysten/sui/client");
+  const network = (process.env.SUI_NETWORK || "testnet") as "testnet" | "mainnet";
+  return new SuiClient({ url: getFullnodeUrl(network) });
+}
 
-const network = (process.env.SUI_NETWORK || "testnet") as "testnet" | "mainnet";
-const client = new SuiClient({ url: getFullnodeUrl(network) });
-const packageId = process.env.SUI_PACKAGE_ID!;
-const adminCapId = process.env.SUI_ADMIN_CAP_OBJECT_ID!;
+function getPackageId(): string {
+  return process.env.SUI_PACKAGE_ID!;
+}
 
-function getAdminKeypair(): Ed25519Keypair {
+async function getAdminKeypair() {
+  const { Ed25519Keypair } = await import("@mysten/sui/keypairs/ed25519");
+  const { fromB64 } = await import("@mysten/sui/utils");
   const key = process.env.SUI_ADMIN_PRIVATE_KEY!;
   return Ed25519Keypair.fromSecretKey(fromB64(key).slice(1));
 }
 
-const MODULE = "club_registry";
-
 export async function registerStudentOnChain(
-  studentAddress: string,
+  studentAddress: string
 ): Promise<{ digest: string; entryObjectId: string }> {
-  const keypair = getAdminKeypair();
-  const tx = new Transaction();
+  const { Transaction } = await import("@mysten/sui/transactions");
+  const client = await getClient();
+  const keypair = await getAdminKeypair();
+  const packageId = getPackageId();
+  const capId = process.env.SUI_ADMIN_CAP_OBJECT_ID!;
 
+  const tx = new Transaction();
   tx.moveCall({
-    target: `${packageId}::${MODULE}::register_entry`,
-    arguments: [tx.object(adminCapId), tx.pure.address(studentAddress)],
+    target: `${packageId}::club_registry::register_entry`,
+    arguments: [tx.object(capId), tx.pure.address(studentAddress)],
   });
 
   const result = await client.signAndExecuteTransaction({
@@ -32,9 +36,7 @@ export async function registerStudentOnChain(
     options: { showEffects: true },
   });
 
-  const entryObjectId =
-    result.effects?.created?.[0]?.reference?.objectId ?? "";
-
+  const entryObjectId = result.effects?.created?.[1]?.reference?.objectId || "";
   return { digest: result.digest, entryObjectId };
 }
 
@@ -42,15 +44,19 @@ export async function awardPointsOnChain(
   studentAddress: string,
   entryObjectId: string,
   category: number,
-  amount: number,
+  amount: number
 ): Promise<string> {
-  const keypair = getAdminKeypair();
-  const tx = new Transaction();
+  const { Transaction } = await import("@mysten/sui/transactions");
+  const client = await getClient();
+  const keypair = await getAdminKeypair();
+  const packageId = getPackageId();
+  const capId = process.env.SUI_ADMIN_CAP_OBJECT_ID!;
 
+  const tx = new Transaction();
   tx.moveCall({
-    target: `${packageId}::${MODULE}::award_points`,
+    target: `${packageId}::club_registry::award_points`,
     arguments: [
-      tx.object(adminCapId),
+      tx.object(capId),
       tx.object(entryObjectId),
       tx.pure.u8(category),
       tx.pure.u64(amount),
@@ -69,19 +75,23 @@ export async function mintBadgeOnChain(
   studentAddress: string,
   badgeType: number,
   name: string,
-  description: string,
+  description: string
 ): Promise<string> {
-  const keypair = getAdminKeypair();
-  const tx = new Transaction();
+  const { Transaction } = await import("@mysten/sui/transactions");
+  const client = await getClient();
+  const keypair = await getAdminKeypair();
+  const packageId = getPackageId();
+  const capId = process.env.SUI_ADMIN_CAP_OBJECT_ID!;
 
+  const tx = new Transaction();
   tx.moveCall({
-    target: `${packageId}::${MODULE}::mint_badge`,
+    target: `${packageId}::club_registry::mint_badge`,
     arguments: [
-      tx.object(adminCapId),
+      tx.object(capId),
       tx.pure.address(studentAddress),
       tx.pure.u8(badgeType),
-      tx.pure.vector("u8", new TextEncoder().encode(name)),
-      tx.pure.vector("u8", new TextEncoder().encode(description)),
+      tx.pure.string(name),
+      tx.pure.string(description),
     ],
   });
 
@@ -98,20 +108,24 @@ export async function issueCertificateOnChain(
   tier: number,
   track: string,
   cohortYear: number,
-  portfolioUrl: string,
+  portfolioUrl: string
 ): Promise<string> {
-  const keypair = getAdminKeypair();
-  const tx = new Transaction();
+  const { Transaction } = await import("@mysten/sui/transactions");
+  const client = await getClient();
+  const keypair = await getAdminKeypair();
+  const packageId = getPackageId();
+  const capId = process.env.SUI_ADMIN_CAP_OBJECT_ID!;
 
+  const tx = new Transaction();
   tx.moveCall({
-    target: `${packageId}::${MODULE}::issue_certificate`,
+    target: `${packageId}::club_registry::issue_certificate`,
     arguments: [
-      tx.object(adminCapId),
+      tx.object(capId),
       tx.pure.address(studentAddress),
       tx.pure.u8(tier),
-      tx.pure.vector("u8", new TextEncoder().encode(track)),
+      tx.pure.string(track),
       tx.pure.u16(cohortYear),
-      tx.pure.vector("u8", new TextEncoder().encode(portfolioUrl)),
+      tx.pure.string(portfolioUrl),
     ],
   });
 

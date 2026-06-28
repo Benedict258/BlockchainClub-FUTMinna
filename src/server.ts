@@ -317,15 +317,19 @@ async function handleSupabaseApi(request: Request, pathname: string): Promise<Re
         const payload = token ? verifyAccessToken(token) : null;
 
         if (!payload) {
-          result = { error: "Unauthorized" };
-          break;
+          return new Response(JSON.stringify({ error: "Unauthorized" }), {
+            status: 401,
+            headers: { "Content-Type": "application/json" },
+          });
         }
 
         const { moduleId, points } = body;
 
         if (!moduleId) {
-          result = { error: "moduleId is required" };
-          break;
+          return new Response(JSON.stringify({ error: "moduleId is required" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          });
         }
 
         const progressResult = await completeModule(payload.userId, moduleId, points);
@@ -477,14 +481,16 @@ async function handleCommunityLog(request: Request): Promise<Response> {
     }
 
     const body = await request.json();
-    const { userId, activityType, description, points } = body;
+    const { activityType, description, points } = body;
 
-    if (!userId || !activityType || !description || points === undefined) {
-      return new Response(JSON.stringify({ error: "userId, activityType, description, and points are required" }), {
+    if (!activityType || !description || points === undefined) {
+      return new Response(JSON.stringify({ error: "activityType, description, and points are required" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
+
+    const userId = payload.userId;
 
     const { awardPoints } = await import("./lib/auto-awards");
     const now = new Date().toISOString();

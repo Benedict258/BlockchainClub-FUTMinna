@@ -170,7 +170,7 @@ export async function query(
     h.Prefer = preferParts.join(", ");
   }
   if (opts.range) {
-    h.Range = `${opts.range[0]}-${opts.range[1]}`;
+    (h as any).Range = `${opts.range[0]}-${opts.range[1]}`;
   }
 
   try {

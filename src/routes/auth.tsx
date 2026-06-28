@@ -65,14 +65,19 @@ function SignInPage() {
       const result = await res.json();
       if (!res.ok) {
         const msg = result.error || "Login failed";
-        form.setError("identifier", { message: msg });
-        form.setError("password", { message: msg });
+        if (msg.toLowerCase().includes("password")) {
+          form.setError("password", { message: msg });
+        } else if (msg.toLowerCase().includes("email") || msg.toLowerCase().includes("username")) {
+          form.setError("identifier", { message: msg });
+        } else {
+          form.setError("root", { message: msg });
+        }
         throw new Error(msg);
       }
       authLogin(result.user, result.accessToken);
       toast.success("Welcome back!");
       setTimeout(() => {
-        window.location.href = "/";
+        router.navigate({ to: "/" });
       }, 300);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Login failed");
@@ -95,7 +100,7 @@ function SignInPage() {
                 <p className="text-sm text-muted-foreground mt-1">Sign in to your account</p>
               </div>
               <Form {...form}>
-                <form method="post" onSubmit={(e) => { e.preventDefault(); form.handleSubmit(onSubmit)(e); }} className="space-y-4">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <FormField
                     control={form.control}
                     name="identifier"
