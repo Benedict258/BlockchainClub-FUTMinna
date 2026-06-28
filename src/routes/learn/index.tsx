@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { PhaseBar } from "@/components/phase-bar";
 import {
   BookOpen,
   ArrowRight,
@@ -18,6 +19,7 @@ import {
   GraduationCap,
   Layers,
   CheckCircle2,
+  Filter,
 } from "lucide-react";
 import { getTracks, getResources } from "@/lib/api/learn.server";
 import { useAuthStore } from "@/stores/auth-store";
@@ -28,6 +30,34 @@ type EcosystemFilter =
   | "SUI_MOVE"
   | "APTOS_MOVE"
   | "SOLANA_RUST";
+
+type CategoryFilter =
+  | "All"
+  | "Technical"
+  | "Design"
+  | "Marketing"
+  | "Community"
+  | "Content"
+  | "Research";
+
+const CATEGORIES: CategoryFilter[] = [
+  "All",
+  "Technical",
+  "Design",
+  "Marketing",
+  "Community",
+  "Content",
+  "Research",
+];
+
+const CATEGORY_BADGE_COLORS: Record<string, string> = {
+  Technical: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  Design: "bg-pink-500/10 text-pink-400 border-pink-500/20",
+  Marketing: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+  Community: "bg-green-500/10 text-green-400 border-green-500/20",
+  Content: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+  Research: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
+};
 
 const ECOSYSTEM_LABELS: Record<string, string> = {
   EVM: "EVM / Solidity",
@@ -103,6 +133,9 @@ function LearnSkeleton() {
 function LearnPage() {
   const [ecosystemFilter, setEcosystemFilter] =
     useState<EcosystemFilter>("all");
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("All");
+  const [resourceEcosystemFilter, setResourceEcosystemFilter] =
+    useState<EcosystemFilter>("all");
   const [resourceType, setResourceType] = useState<string>("all");
   const { isAuthenticated } = useAuthStore();
 
@@ -115,12 +148,14 @@ function LearnPage() {
   });
 
   const { data: resources, isLoading: resourcesLoading } = useQuery({
-    queryKey: ["resources", ecosystemFilter, resourceType],
+    queryKey: ["resources", resourceEcosystemFilter, resourceType],
     queryFn: () =>
       fetchResources({
         data: {
           ecosystem:
-            ecosystemFilter === "all" ? undefined : ecosystemFilter,
+            resourceEcosystemFilter === "all"
+              ? undefined
+              : resourceEcosystemFilter,
           type: resourceType === "all" ? undefined : resourceType,
         },
       }),
@@ -128,6 +163,16 @@ function LearnPage() {
 
   const trackList = tracks ?? [];
   const resourceList = resources ?? [];
+
+  const filteredTracks = useMemo(() => {
+    return trackList.filter((track: any) => {
+      const ecosystemMatch =
+        ecosystemFilter === "all" || track.ecosystem === ecosystemFilter;
+      const categoryMatch =
+        categoryFilter === "All" || track.category === categoryFilter;
+      return ecosystemMatch && categoryMatch;
+    });
+  }, [trackList, ecosystemFilter, categoryFilter]);
 
   return (
     <div className="bg-background">
@@ -193,25 +238,55 @@ function LearnPage() {
 
       {/* TRACKS */}
       <section className="mx-auto max-w-[1400px] px-6 py-16">
-        <div className="flex items-end justify-between mb-8">
+        <div className="flex flex-col gap-4 mb-8">
           <h2 className="text-headline-lg">Learning Tracks</h2>
+
+          {/* Ecosystem Tabs */}
+          <Tabs
+            value={ecosystemFilter}
+            onValueChange={(v) => setEcosystemFilter(v as EcosystemFilter)}
+          >
+            <TabsList>
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="EVM">EVM</TabsTrigger>
+              <TabsTrigger value="SUI_MOVE">Sui</TabsTrigger>
+              <TabsTrigger value="SOLANA_RUST">Solana</TabsTrigger>
+              <TabsTrigger value="APTOS_MOVE">Aptos</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {/* Category Filter Buttons */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+            {CATEGORIES.map((cat) => (
+              <Button
+                key={cat}
+                variant={categoryFilter === cat ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCategoryFilter(cat)}
+                className="text-xs h-7 px-2.5"
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
         </div>
 
         {tracksLoading ? (
           <LearnSkeleton />
-        ) : trackList.length === 0 ? (
+        ) : filteredTracks.length === 0 ? (
           <div className="text-center py-16">
             <BookOpen className="mx-auto h-12 w-12 text-muted-foreground/40" />
             <p className="mt-4 text-lg text-muted-foreground">
-              No tracks available yet.
+              No tracks found for this filter
             </p>
             <p className="mt-2 text-sm text-muted-foreground/60">
-              Content is being prepared. Check back soon!
+              Try adjusting your ecosystem or category selection.
             </p>
           </div>
         ) : (
           <div className="grid gap-5 md:grid-cols-2">
-            {trackList.map((track) => (
+            {filteredTracks.map((track: any) => (
               <Card
                 key={track.id}
                 className="group relative overflow-hidden border-border bg-card p-0 transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm"
@@ -222,27 +297,45 @@ function LearnPage() {
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-surface-high text-lg">
                       {ECOSYSTEM_ICONS[track.ecosystem] || "●"}
                     </span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] ${CATEGORY_BADGE_COLORS[track.category] || ""}`}
+                      >
+                        {track.category || "Technical"}
+                      </Badge>
                       <Badge
                         variant="outline"
                         className={`text-[10px] ${DIFFICULTY_COLORS[track.difficulty] || ""}`}
                       >
                         {track.difficulty}
                       </Badge>
-                      <Badge variant="secondary" className="text-[10px]">
-                        {track._count?.modules ?? 0} modules
-                      </Badge>
                     </div>
                   </div>
                   <h3 className="mt-4 text-headline-md">{track.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {ECOSYSTEM_LABELS[track.ecosystem] || track.ecosystem}
-                  </p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">
+                      {ECOSYSTEM_LABELS[track.ecosystem] || track.ecosystem}
+                    </span>
+                    <Badge variant="secondary" className="text-[10px]">
+                      {track._count?.modules ?? 0} modules
+                    </Badge>
+                  </div>
                   {track.description && (
                     <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-2">
                       {track.description}
                     </p>
                   )}
+
+                  {/* Phase Bar */}
+                  <div className="mt-4">
+                    <PhaseBar
+                      phaseCount={track.phase_count || 5}
+                      modulesPerPhase={track.modulesPerPhase || []}
+                      size="sm"
+                    />
+                  </div>
+
                   <div className="mt-4">
                     <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
                       <span>Progress</span>
@@ -255,7 +348,7 @@ function LearnPage() {
                     variant="outline"
                     className="mt-5 w-full font-semibold tracking-wide text-xs group-hover:border-primary/40"
                   >
-                    <Link to="/learn">
+                    <Link to="/learn/$slug" params={{ slug: track.slug }}>
                       Start Learning{" "}
                       <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                     </Link>
@@ -273,8 +366,8 @@ function LearnPage() {
           <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
             <h2 className="text-headline-lg">Resources Library</h2>
             <Tabs
-              value={ecosystemFilter}
-              onValueChange={(v) => setEcosystemFilter(v as EcosystemFilter)}
+              value={resourceEcosystemFilter}
+              onValueChange={(v) => setResourceEcosystemFilter(v as EcosystemFilter)}
             >
               <TabsList className="bg-background/50">
                 <TabsTrigger value="all">All</TabsTrigger>

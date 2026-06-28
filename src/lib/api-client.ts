@@ -180,3 +180,14 @@ export async function apiLogout(refreshToken: string) {
   });
   return res.json();
 }
+
+export async function apiChallengeVote(challengeId: string, participantId: string) {
+  const res = await fetch("/api/challenges/vote", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify({ challengeId, participantId }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || "Vote failed");
+  return json;
+}

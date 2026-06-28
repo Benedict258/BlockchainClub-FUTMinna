@@ -1,5 +1,95 @@
 import { query, from } from "./supabase";
 
+const CATEGORY_NUM: Record<string, number> = {
+  event: 0,
+  learn: 1,
+  build: 2,
+  community: 3,
+};
+
+const BADGE_ONCHAIN_MAP: Record<string, { type: number; name: string; description: string }> = {
+  pioneer: {
+    type: 0,
+    name: "Pioneer",
+    description: "One of the founding members",
+  },
+  "top-builder": {
+    type: 1,
+    name: "Top Builder",
+    description: "Outstanding contributions to projects",
+  },
+  "top-learner": {
+    type: 2,
+    name: "Top Learner",
+    description: "Completed multiple learning tracks",
+  },
+  "most-active": {
+    type: 3,
+    name: "Most Active",
+    description: "Most active community member",
+  },
+  "community-star": {
+    type: 4,
+    name: "Community Star",
+    description: "Outstanding community engagement",
+  },
+  "event-champion": {
+    type: 5,
+    name: "Event Champion",
+    description: "Participated in 5+ events",
+  },
+  "first-commit": {
+    type: 6,
+    name: "First Commit",
+    description: "Made their first project contribution",
+  },
+  "team-player": {
+    type: 7,
+    name: "Team Player",
+    description: "Collaborated on 3+ projects",
+  },
+  duelist: {
+    type: 8,
+    name: "Duelist",
+    description: "Won 5 Code Duels",
+  },
+  gladiator: {
+    type: 9,
+    name: "Gladiator",
+    description: "Won 10 Code Duels",
+  },
+  challenger: {
+    type: 10,
+    name: "Challenger",
+    description: "Created 5 public challenges",
+  },
+  "speed-demon": {
+    type: 11,
+    name: "Speed Demon",
+    description: "Won 3 Speed Sprints",
+  },
+  "ctf-hunter": {
+    type: 12,
+    name: "CTF Hunter",
+    description: "Captured 10 flags in CTFs",
+  },
+  "crowd-favorite": {
+    type: 13,
+    name: "Crowd Favorite",
+    description: "Won 3 community-voted challenges",
+  },
+  "high-roller": {
+    type: 14,
+    name: "High Roller",
+    description: "Earned 100+ points from wagers",
+  },
+  versatile: {
+    type: 15,
+    name: "Versatile",
+    description: "Won challenges in 3 different categories",
+  },
+};
+
 const POINTS = {
   PROJECT_APPROVED: 10,
   EVENT_ATTENDED: 5,
@@ -43,6 +133,35 @@ export async function awardPoints(
       build_points: category === "build" ? points : 0,
       community_points: category === "community" ? points : 0,
     });
+  }
+
+  try {
+    const categoryNum = CATEGORY_NUM[category];
+    if (categoryNum !== undefined) {
+      const { data: profile } = await query("profiles", {
+        select: "sui_address",
+        filters: { user_id: userId },
+        single: true,
+      });
+      if (profile?.sui_address) {
+        const { data: entry } = await query("leaderboard_entries", {
+          select: "sui_entry_object_id",
+          filters: { user_id: userId },
+          single: true,
+        });
+        if (entry?.sui_entry_object_id) {
+          const { awardPointsOnChain } = await import("./sui-client");
+          await awardPointsOnChain(
+            profile.sui_address,
+            entry.sui_entry_object_id,
+            categoryNum,
+            points,
+          );
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Sui point award failed:", err);
   }
 
   await checkAndAwardBadges(userId);
@@ -118,6 +237,28 @@ export async function checkAndAwardBadges(userId: string): Promise<void> {
         badge_id: badgeId,
         granted_at: new Date().toISOString(),
       });
+
+      const badgeInfo = BADGE_ONCHAIN_MAP[badgeId];
+      if (badgeInfo) {
+        try {
+          const { data: profile } = await query("profiles", {
+            select: "sui_address",
+            filters: { user_id: userId },
+            single: true,
+          });
+          if (profile?.sui_address) {
+            const { mintBadgeOnChain } = await import("./sui-client");
+            await mintBadgeOnChain(
+              profile.sui_address,
+              badgeInfo.type,
+              badgeInfo.name,
+              badgeInfo.description,
+            );
+          }
+        } catch (err) {
+          console.error("Sui badge mint failed:", err);
+        }
+      }
     } catch {
       // ignore duplicate badge errors
     }
@@ -148,4 +289,20 @@ export async function awardEventPoints(eventId: string): Promise<void> {
   for (const rsvp of rsvps) {
     await awardPoints(rsvp.user_id as string, "event", POINTS.EVENT_ATTENDED);
   }
+}
+
+export async function awardChallengeWinPoints(userId: string, stakePoints: number): Promise<void> {
+  const winnings = Math.floor(stakePoints * 0.9);
+  if (winnings > 0) {
+    await awardPoints(userId, "community", winnings);
+  }
+}
+
+export async function awardChallengeParticipation(userId: string): Promise<void> {
+  await awardPoints(userId, "community", 2);
+}
+
+export async function checkChallengeBadges(userId: string): Promise<void> {
+  const { checkAndAwardChallengeBadges } = await import("./challenges");
+  await checkAndAwardChallengeBadges(userId);
 }

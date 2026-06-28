@@ -14,6 +14,7 @@ import {
   Award,
   BookOpen,
   Briefcase,
+  Notebook,
 } from "lucide-react";
 import { getMemberById } from "@/lib/api/members.server";
 
@@ -32,7 +33,7 @@ const LEVEL_LABELS: Record<string, string> = {
   L600: "Level 600",
 };
 
-export const Route = createFileRoute("/members/$memberId")({
+export const Route = createFileRoute("/members/$memberId/")({
   head: () => ({
     meta: [
       { title: "Member Profile | BlockchainClub FUTMinna" },
@@ -185,7 +186,7 @@ function MemberProfilePage() {
           )}
         </div>
 
-        <Card className="border-border bg-card">
+        <Card className="border-border bg-card mb-6">
           <CardContent className="p-6">
             <h2 className="text-headline-sm mb-3 flex items-center gap-2">
               <ExternalLink className="h-4 w-4 text-primary" />
@@ -232,6 +233,23 @@ function MemberProfilePage() {
                 <p className="text-sm text-muted-foreground/60">No links added yet.</p>
               )}
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border bg-card">
+          <CardContent className="p-6">
+            <h2 className="text-headline-sm mb-3 flex items-center gap-2">
+              <Notebook className="h-4 w-4 text-primary" />
+              DEVLOG
+            </h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              View this member's weekly development log.
+            </p>
+            <Button asChild variant="outline">
+              <Link to="/members/$memberId/devlog" params={{ memberId }}>
+                View DEVLOG
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </div>

@@ -493,7 +493,7 @@ async function handleAwards(request: Request): Promise<Response> {
     const body = await request.json();
     const { action, targetId } = body;
 
-    const { awardProjectPoints, awardEventPoints, awardPoints, checkAndAwardBadges } = await import("./lib/auto-awards");
+    const { awardProjectPoints, awardEventPoints, awardPoints, checkAndAwardBadges, awardChallengeWinPoints, awardChallengeParticipation, checkChallengeBadges } = await import("./lib/auto-awards");
     const { query } = await import("./lib/supabase");
 
     switch (action) {
@@ -502,6 +502,17 @@ async function handleAwards(request: Request): Promise<Response> {
         break;
       case "event-attended":
         await awardEventPoints(targetId);
+        break;
+      case "challenge-win": {
+        const stakePoints = body.stakePoints || 0;
+        await awardChallengeWinPoints(targetId, stakePoints);
+        break;
+      }
+      case "challenge-participation":
+        await awardChallengeParticipation(targetId);
+        break;
+      case "challenge-check-badges":
+        await checkChallengeBadges(targetId);
         break;
       case "blog-published": {
         const { data: post } = await query("blog_posts", {
@@ -548,6 +559,121 @@ async function handleAuthLogout(request: Request): Promise<Response> {
   } catch {
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleChallengeVote(request: Request): Promise<Response> {
+  try {
+    const { verifyAccessToken } = await import("./lib/auth");
+    const { query, from } = await import("./lib/supabase");
+
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const token = authHeader.slice(7);
+    const payload = verifyAccessToken(token);
+    if (!payload) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const body = await request.json();
+    const { challengeId, participantId } = body;
+
+    if (!challengeId || !participantId) {
+      return new Response(
+        JSON.stringify({ error: "challengeId and participantId are required" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const { data: entry } = await query("leaderboard_entries", {
+      select: "total_points",
+      filters: { user_id: payload.userId },
+      single: true,
+    });
+    const weight = entry
+      ? Math.max(1, Math.floor((entry.total_points as number) / 50) + 1)
+      : 1;
+
+    const { error: voteError } = await from("challenge_votes").insert({
+      challenge_id: challengeId,
+      voter_id: payload.userId,
+      participant_id: participantId,
+      weight,
+      created_at: new Date().toISOString(),
+    });
+
+    if (voteError) {
+      if ((voteError.message || "").includes("duplicate") || voteError.code === 409) {
+        return new Response(
+          JSON.stringify({ error: "You have already voted in this challenge" }),
+          {
+            status: 409,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      }
+      throw new Error(voteError.message || "Vote failed");
+    }
+
+    const { data: challenge } = await query("challenges", {
+      select: "id, deadline, status",
+      filters: { id: challengeId },
+      single: true,
+    });
+
+    if (challenge && challenge.status !== "completed" && challenge.deadline) {
+      const now = new Date();
+      const deadline = new Date(challenge.deadline as string);
+      if (now >= deadline) {
+        const { data: allVotes } = await query("challenge_votes", {
+          select: "participant_id, weight",
+          filters: { challenge_id: challengeId },
+        });
+
+        const tally = new Map<string, number>();
+        for (const vote of allVotes || []) {
+          const pid = vote.participant_id as string;
+          tally.set(pid, (tally.get(pid) || 0) + (vote.weight as number));
+        }
+
+        let winnerId = "";
+        let maxWeight = 0;
+        for (const [pid, w] of tally) {
+          if (w > maxWeight) {
+            maxWeight = w;
+            winnerId = pid;
+          }
+        }
+
+        if (winnerId) {
+          const { distributeWinnings, checkAndAwardChallengeBadges } =
+            await import("./lib/challenges");
+          await distributeWinnings(challengeId, winnerId);
+          await checkAndAwardChallengeBadges(winnerId);
+        }
+      }
+    }
+
+    return new Response(JSON.stringify({ success: true, weight }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message || "Vote failed" }), {
+      status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
@@ -1226,6 +1352,86 @@ async function handleProfileFetch(request: Request): Promise<Response> {
   }
 }
 
+async function handleDevlogCreate(request: Request): Promise<Response> {
+  try {
+    const { verifyAccessToken } = await import("./lib/auth");
+    const { supabase } = await import("./lib/supabase");
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const token = authHeader.slice(7);
+    const payload = verifyAccessToken(token);
+    if (!payload) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const body = await request.json();
+    const { error, data } = await supabase.from("devlog_entries").insert({
+      user_id: payload.userId,
+      week_number: body.week_number,
+      content: body.content,
+      is_published: body.is_published !== false,
+    });
+
+    if (error) {
+      if (error.message?.includes("duplicate") || error.code === 409) {
+        return new Response(JSON.stringify({ error: "Entry already exists for this week" }), {
+          status: 409,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ error: error.message || "Insert failed" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const entry = Array.isArray(data) ? data[0] : data;
+    try {
+      const { awardPoints } = await import("./lib/auto-awards");
+      await awardPoints(payload.userId, "community", 5);
+    } catch {}
+
+    return new Response(JSON.stringify(entry), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message || "Failed to create entry" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+const cacheRules: Record<string, string> = {
+  "^/$": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+  "^/events$": "public, max-age=300, s-maxage=300",
+  "^/events/.+": "public, max-age=300, s-maxage=300",
+  "^/learn$": "public, max-age=600, s-maxage=600",
+  "^/learn/.+": "public, max-age=600, s-maxage=600",
+  "^/leaderboard$": "public, s-maxage=300",
+  "^/projects$": "public, max-age=300, s-maxage=300",
+  "^/projects/.+": "public, max-age=300, s-maxage=300",
+  "^/alumni$": "public, max-age=3600, s-maxage=3600",
+  "^/blog$": "public, max-age=600, s-maxage=600",
+  "^/blog/.+": "public, max-age=600, s-maxage=600",
+};
+
+function getCacheHeader(pathname: string): string | null {
+  for (const [pattern, header] of Object.entries(cacheRules)) {
+    if (new RegExp(pattern).test(pathname)) return header;
+  }
+  return null;
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     const url = new URL(request.url);
@@ -1284,6 +1490,12 @@ export default {
   }
   if (url.pathname === "/api/events/attend" && request.method === "POST") {
     return handleEventAttend(request);
+  }
+  if (url.pathname === "/api/challenges/vote" && request.method === "POST") {
+    return handleChallengeVote(request);
+  }
+  if (url.pathname === "/api/devlog" && request.method === "POST") {
+    return handleDevlogCreate(request);
   }
 
     try {

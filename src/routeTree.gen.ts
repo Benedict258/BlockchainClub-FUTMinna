@@ -9,46 +9,73 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SquadsRouteImport } from './routes/squads'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as PairRouteImport } from './routes/pair'
 import { Route as OpportunitiesRouteImport } from './routes/opportunities'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as JoinRouteImport } from './routes/join'
+import { Route as IntakeRouteImport } from './routes/intake'
+import { Route as HackathonsRouteImport } from './routes/hackathons'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ArenaRouteImport } from './routes/arena'
+import { Route as AlumniRouteImport } from './routes/alumni'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as LearnIndexRouteImport } from './routes/learn/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as SquadsSquadIdRouteImport } from './routes/squads/$squadId'
 import { Route as ProjectsSubmitRouteImport } from './routes/projects/submit'
 import { Route as ProjectsProjectIdRouteImport } from './routes/projects/$projectId'
-import { Route as MembersMemberIdRouteImport } from './routes/members/$memberId'
+import { Route as ProfileDevlogRouteImport } from './routes/profile/devlog'
 import { Route as LearnResearchRouteImport } from './routes/learn/research'
 import { Route as LearnMarketingRouteImport } from './routes/learn/marketing'
 import { Route as LearnDesignRouteImport } from './routes/learn/design'
 import { Route as LearnContentCreationRouteImport } from './routes/learn/content-creation'
 import { Route as LearnCommunityManagementRouteImport } from './routes/learn/community-management'
+import { Route as LearnSlugRouteImport } from './routes/learn/$slug'
+import { Route as HackathonsTeamIdRouteImport } from './routes/hackathons/$teamId'
 import { Route as EventsRequestRouteImport } from './routes/events/request'
 import { Route as EventsEventIdRouteImport } from './routes/events/$eventId'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as AuthVerifyRouteImport } from './routes/auth/verify'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
+import { Route as ArenaCreateRouteImport } from './routes/arena/create'
+import { Route as ArenaChallengeIdRouteImport } from './routes/arena/$challengeId'
+import { Route as AdminStudentsRouteImport } from './routes/admin/students'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
+import { Route as AdminReviewsRouteImport } from './routes/admin/reviews'
 import { Route as AdminProjectsRouteImport } from './routes/admin/projects'
 import { Route as AdminPartnersRouteImport } from './routes/admin/partners'
 import { Route as AdminOpportunitiesRouteImport } from './routes/admin/opportunities'
 import { Route as AdminMembersRouteImport } from './routes/admin/members'
 import { Route as AdminLearnRouteImport } from './routes/admin/learn'
 import { Route as AdminLeaderboardRouteImport } from './routes/admin/leaderboard'
+import { Route as AdminGateChecksRouteImport } from './routes/admin/gate-checks'
 import { Route as AdminEventsRouteImport } from './routes/admin/events'
+import { Route as AdminCohortsRouteImport } from './routes/admin/cohorts'
+import { Route as AdminChallengesRouteImport } from './routes/admin/challenges'
+import { Route as AdminCertificationsRouteImport } from './routes/admin/certifications'
 import { Route as AdminBlogRouteImport } from './routes/admin/blog'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
+import { Route as MembersMemberIdIndexRouteImport } from './routes/members/$memberId/index'
+import { Route as MembersMemberIdDevlogRouteImport } from './routes/members/$memberId/devlog'
+import { Route as AdminStudentsUserIdRouteImport } from './routes/admin/students/$userId'
+import { Route as AdminCohortsIdRouteImport } from './routes/admin/cohorts/$id'
 
+const SquadsRoute = SquadsRouteImport.update({
+  id: '/squads',
+  path: '/squads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
@@ -62,6 +89,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const PartnersRoute = PartnersRouteImport.update({
   id: '/partners',
   path: '/partners',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PairRoute = PairRouteImport.update({
+  id: '/pair',
+  path: '/pair',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OpportunitiesRoute = OpportunitiesRouteImport.update({
@@ -84,6 +116,16 @@ const JoinRoute = JoinRouteImport.update({
   path: '/join',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IntakeRoute = IntakeRouteImport.update({
+  id: '/intake',
+  path: '/intake',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HackathonsRoute = HackathonsRouteImport.update({
+  id: '/hackathons',
+  path: '/hackathons',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
@@ -97,6 +139,16 @@ const BlogRoute = BlogRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArenaRoute = ArenaRouteImport.update({
+  id: '/arena',
+  path: '/arena',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniRoute = AlumniRouteImport.update({
+  id: '/alumni',
+  path: '/alumni',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -114,6 +166,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProfileRoute,
+} as any)
 const LearnIndexRoute = LearnIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -123,6 +180,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const SquadsSquadIdRoute = SquadsSquadIdRouteImport.update({
+  id: '/$squadId',
+  path: '/$squadId',
+  getParentRoute: () => SquadsRoute,
 } as any)
 const ProjectsSubmitRoute = ProjectsSubmitRouteImport.update({
   id: '/submit',
@@ -134,10 +196,10 @@ const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
   path: '/$projectId',
   getParentRoute: () => ProjectsRoute,
 } as any)
-const MembersMemberIdRoute = MembersMemberIdRouteImport.update({
-  id: '/members/$memberId',
-  path: '/members/$memberId',
-  getParentRoute: () => rootRouteImport,
+const ProfileDevlogRoute = ProfileDevlogRouteImport.update({
+  id: '/devlog',
+  path: '/devlog',
+  getParentRoute: () => ProfileRoute,
 } as any)
 const LearnResearchRoute = LearnResearchRouteImport.update({
   id: '/research',
@@ -165,6 +227,16 @@ const LearnCommunityManagementRoute =
     path: '/community-management',
     getParentRoute: () => LearnRoute,
   } as any)
+const LearnSlugRoute = LearnSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => LearnRoute,
+} as any)
+const HackathonsTeamIdRoute = HackathonsTeamIdRouteImport.update({
+  id: '/$teamId',
+  path: '/$teamId',
+  getParentRoute: () => HackathonsRoute,
+} as any)
 const EventsRequestRoute = EventsRequestRouteImport.update({
   id: '/request',
   path: '/request',
@@ -195,9 +267,29 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => AuthRoute,
 } as any)
+const ArenaCreateRoute = ArenaCreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => ArenaRoute,
+} as any)
+const ArenaChallengeIdRoute = ArenaChallengeIdRouteImport.update({
+  id: '/$challengeId',
+  path: '/$challengeId',
+  getParentRoute: () => ArenaRoute,
+} as any)
+const AdminStudentsRoute = AdminStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminProjectsRoute = AdminProjectsRouteImport.update({
@@ -230,9 +322,29 @@ const AdminLeaderboardRoute = AdminLeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminGateChecksRoute = AdminGateChecksRouteImport.update({
+  id: '/gate-checks',
+  path: '/gate-checks',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminEventsRoute = AdminEventsRouteImport.update({
   id: '/events',
   path: '/events',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCohortsRoute = AdminCohortsRouteImport.update({
+  id: '/cohorts',
+  path: '/cohorts',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminChallengesRoute = AdminChallengesRouteImport.update({
+  id: '/challenges',
+  path: '/challenges',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCertificationsRoute = AdminCertificationsRouteImport.update({
+  id: '/certifications',
+  path: '/certifications',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminBlogRoute = AdminBlogRouteImport.update({
@@ -245,128 +357,213 @@ const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AdminRoute,
 } as any)
+const MembersMemberIdIndexRoute = MembersMemberIdIndexRouteImport.update({
+  id: '/members/$memberId/',
+  path: '/members/$memberId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembersMemberIdDevlogRoute = MembersMemberIdDevlogRouteImport.update({
+  id: '/members/$memberId/devlog',
+  path: '/members/$memberId/devlog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminStudentsUserIdRoute = AdminStudentsUserIdRouteImport.update({
+  id: '/$userId',
+  path: '/$userId',
+  getParentRoute: () => AdminStudentsRoute,
+} as any)
+const AdminCohortsIdRoute = AdminCohortsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminCohortsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
+  '/alumni': typeof AlumniRoute
+  '/arena': typeof ArenaRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/events': typeof EventsRouteWithChildren
+  '/hackathons': typeof HackathonsRouteWithChildren
+  '/intake': typeof IntakeRoute
   '/join': typeof JoinRoute
   '/leaderboard': typeof LeaderboardRoute
   '/learn': typeof LearnRouteWithChildren
   '/opportunities': typeof OpportunitiesRoute
+  '/pair': typeof PairRoute
   '/partners': typeof PartnersRoute
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/squads': typeof SquadsRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/blog': typeof AdminBlogRoute
+  '/admin/certifications': typeof AdminCertificationsRoute
+  '/admin/challenges': typeof AdminChallengesRoute
+  '/admin/cohorts': typeof AdminCohortsRouteWithChildren
   '/admin/events': typeof AdminEventsRoute
+  '/admin/gate-checks': typeof AdminGateChecksRoute
   '/admin/leaderboard': typeof AdminLeaderboardRoute
   '/admin/learn': typeof AdminLearnRoute
   '/admin/members': typeof AdminMembersRoute
   '/admin/opportunities': typeof AdminOpportunitiesRoute
   '/admin/partners': typeof AdminPartnersRoute
   '/admin/projects': typeof AdminProjectsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRouteWithChildren
+  '/arena/$challengeId': typeof ArenaChallengeIdRoute
+  '/arena/create': typeof ArenaCreateRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify': typeof AuthVerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/events/request': typeof EventsRequestRoute
+  '/hackathons/$teamId': typeof HackathonsTeamIdRoute
+  '/learn/$slug': typeof LearnSlugRoute
   '/learn/community-management': typeof LearnCommunityManagementRoute
   '/learn/content-creation': typeof LearnContentCreationRoute
   '/learn/design': typeof LearnDesignRoute
   '/learn/marketing': typeof LearnMarketingRoute
   '/learn/research': typeof LearnResearchRoute
-  '/members/$memberId': typeof MembersMemberIdRoute
+  '/profile/devlog': typeof ProfileDevlogRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/projects/submit': typeof ProjectsSubmitRoute
+  '/squads/$squadId': typeof SquadsSquadIdRoute
   '/admin/': typeof AdminIndexRoute
   '/learn/': typeof LearnIndexRoute
+  '/profile/': typeof ProfileIndexRoute
+  '/admin/cohorts/$id': typeof AdminCohortsIdRoute
+  '/admin/students/$userId': typeof AdminStudentsUserIdRoute
+  '/members/$memberId/devlog': typeof MembersMemberIdDevlogRoute
+  '/members/$memberId/': typeof MembersMemberIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/alumni': typeof AlumniRoute
+  '/arena': typeof ArenaRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/events': typeof EventsRouteWithChildren
+  '/hackathons': typeof HackathonsRouteWithChildren
+  '/intake': typeof IntakeRoute
   '/join': typeof JoinRoute
   '/leaderboard': typeof LeaderboardRoute
   '/opportunities': typeof OpportunitiesRoute
+  '/pair': typeof PairRoute
   '/partners': typeof PartnersRoute
-  '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
+  '/squads': typeof SquadsRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/blog': typeof AdminBlogRoute
+  '/admin/certifications': typeof AdminCertificationsRoute
+  '/admin/challenges': typeof AdminChallengesRoute
+  '/admin/cohorts': typeof AdminCohortsRouteWithChildren
   '/admin/events': typeof AdminEventsRoute
+  '/admin/gate-checks': typeof AdminGateChecksRoute
   '/admin/leaderboard': typeof AdminLeaderboardRoute
   '/admin/learn': typeof AdminLearnRoute
   '/admin/members': typeof AdminMembersRoute
   '/admin/opportunities': typeof AdminOpportunitiesRoute
   '/admin/partners': typeof AdminPartnersRoute
   '/admin/projects': typeof AdminProjectsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRouteWithChildren
+  '/arena/$challengeId': typeof ArenaChallengeIdRoute
+  '/arena/create': typeof ArenaCreateRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify': typeof AuthVerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/events/request': typeof EventsRequestRoute
+  '/hackathons/$teamId': typeof HackathonsTeamIdRoute
+  '/learn/$slug': typeof LearnSlugRoute
   '/learn/community-management': typeof LearnCommunityManagementRoute
   '/learn/content-creation': typeof LearnContentCreationRoute
   '/learn/design': typeof LearnDesignRoute
   '/learn/marketing': typeof LearnMarketingRoute
   '/learn/research': typeof LearnResearchRoute
-  '/members/$memberId': typeof MembersMemberIdRoute
+  '/profile/devlog': typeof ProfileDevlogRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/projects/submit': typeof ProjectsSubmitRoute
+  '/squads/$squadId': typeof SquadsSquadIdRoute
   '/admin': typeof AdminIndexRoute
   '/learn': typeof LearnIndexRoute
+  '/profile': typeof ProfileIndexRoute
+  '/admin/cohorts/$id': typeof AdminCohortsIdRoute
+  '/admin/students/$userId': typeof AdminStudentsUserIdRoute
+  '/members/$memberId/devlog': typeof MembersMemberIdDevlogRoute
+  '/members/$memberId': typeof MembersMemberIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
+  '/alumni': typeof AlumniRoute
+  '/arena': typeof ArenaRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/events': typeof EventsRouteWithChildren
+  '/hackathons': typeof HackathonsRouteWithChildren
+  '/intake': typeof IntakeRoute
   '/join': typeof JoinRoute
   '/leaderboard': typeof LeaderboardRoute
   '/learn': typeof LearnRouteWithChildren
   '/opportunities': typeof OpportunitiesRoute
+  '/pair': typeof PairRoute
   '/partners': typeof PartnersRoute
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/squads': typeof SquadsRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/blog': typeof AdminBlogRoute
+  '/admin/certifications': typeof AdminCertificationsRoute
+  '/admin/challenges': typeof AdminChallengesRoute
+  '/admin/cohorts': typeof AdminCohortsRouteWithChildren
   '/admin/events': typeof AdminEventsRoute
+  '/admin/gate-checks': typeof AdminGateChecksRoute
   '/admin/leaderboard': typeof AdminLeaderboardRoute
   '/admin/learn': typeof AdminLearnRoute
   '/admin/members': typeof AdminMembersRoute
   '/admin/opportunities': typeof AdminOpportunitiesRoute
   '/admin/partners': typeof AdminPartnersRoute
   '/admin/projects': typeof AdminProjectsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRouteWithChildren
+  '/arena/$challengeId': typeof ArenaChallengeIdRoute
+  '/arena/create': typeof ArenaCreateRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify': typeof AuthVerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/events/request': typeof EventsRequestRoute
+  '/hackathons/$teamId': typeof HackathonsTeamIdRoute
+  '/learn/$slug': typeof LearnSlugRoute
   '/learn/community-management': typeof LearnCommunityManagementRoute
   '/learn/content-creation': typeof LearnContentCreationRoute
   '/learn/design': typeof LearnDesignRoute
   '/learn/marketing': typeof LearnMarketingRoute
   '/learn/research': typeof LearnResearchRoute
-  '/members/$memberId': typeof MembersMemberIdRoute
+  '/profile/devlog': typeof ProfileDevlogRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/projects/submit': typeof ProjectsSubmitRoute
+  '/squads/$squadId': typeof SquadsSquadIdRoute
   '/admin/': typeof AdminIndexRoute
   '/learn/': typeof LearnIndexRoute
+  '/profile/': typeof ProfileIndexRoute
+  '/admin/cohorts/$id': typeof AdminCohortsIdRoute
+  '/admin/students/$userId': typeof AdminStudentsUserIdRoute
+  '/members/$memberId/devlog': typeof MembersMemberIdDevlogRoute
+  '/members/$memberId/': typeof MembersMemberIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -374,143 +571,222 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/alumni'
+    | '/arena'
     | '/auth'
     | '/blog'
     | '/events'
+    | '/hackathons'
+    | '/intake'
     | '/join'
     | '/leaderboard'
     | '/learn'
     | '/opportunities'
+    | '/pair'
     | '/partners'
     | '/profile'
     | '/projects'
+    | '/squads'
     | '/admin/analytics'
     | '/admin/blog'
+    | '/admin/certifications'
+    | '/admin/challenges'
+    | '/admin/cohorts'
     | '/admin/events'
+    | '/admin/gate-checks'
     | '/admin/leaderboard'
     | '/admin/learn'
     | '/admin/members'
     | '/admin/opportunities'
     | '/admin/partners'
     | '/admin/projects'
+    | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/students'
+    | '/arena/$challengeId'
+    | '/arena/create'
     | '/auth/forgot-password'
     | '/auth/reset-password'
     | '/auth/verify'
     | '/blog/$slug'
     | '/events/$eventId'
     | '/events/request'
+    | '/hackathons/$teamId'
+    | '/learn/$slug'
     | '/learn/community-management'
     | '/learn/content-creation'
     | '/learn/design'
     | '/learn/marketing'
     | '/learn/research'
-    | '/members/$memberId'
+    | '/profile/devlog'
     | '/projects/$projectId'
     | '/projects/submit'
+    | '/squads/$squadId'
     | '/admin/'
     | '/learn/'
+    | '/profile/'
+    | '/admin/cohorts/$id'
+    | '/admin/students/$userId'
+    | '/members/$memberId/devlog'
+    | '/members/$memberId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/alumni'
+    | '/arena'
     | '/auth'
     | '/blog'
     | '/events'
+    | '/hackathons'
+    | '/intake'
     | '/join'
     | '/leaderboard'
     | '/opportunities'
+    | '/pair'
     | '/partners'
-    | '/profile'
     | '/projects'
+    | '/squads'
     | '/admin/analytics'
     | '/admin/blog'
+    | '/admin/certifications'
+    | '/admin/challenges'
+    | '/admin/cohorts'
     | '/admin/events'
+    | '/admin/gate-checks'
     | '/admin/leaderboard'
     | '/admin/learn'
     | '/admin/members'
     | '/admin/opportunities'
     | '/admin/partners'
     | '/admin/projects'
+    | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/students'
+    | '/arena/$challengeId'
+    | '/arena/create'
     | '/auth/forgot-password'
     | '/auth/reset-password'
     | '/auth/verify'
     | '/blog/$slug'
     | '/events/$eventId'
     | '/events/request'
+    | '/hackathons/$teamId'
+    | '/learn/$slug'
     | '/learn/community-management'
     | '/learn/content-creation'
     | '/learn/design'
     | '/learn/marketing'
     | '/learn/research'
-    | '/members/$memberId'
+    | '/profile/devlog'
     | '/projects/$projectId'
     | '/projects/submit'
+    | '/squads/$squadId'
     | '/admin'
     | '/learn'
+    | '/profile'
+    | '/admin/cohorts/$id'
+    | '/admin/students/$userId'
+    | '/members/$memberId/devlog'
+    | '/members/$memberId'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/admin'
+    | '/alumni'
+    | '/arena'
     | '/auth'
     | '/blog'
     | '/events'
+    | '/hackathons'
+    | '/intake'
     | '/join'
     | '/leaderboard'
     | '/learn'
     | '/opportunities'
+    | '/pair'
     | '/partners'
     | '/profile'
     | '/projects'
+    | '/squads'
     | '/admin/analytics'
     | '/admin/blog'
+    | '/admin/certifications'
+    | '/admin/challenges'
+    | '/admin/cohorts'
     | '/admin/events'
+    | '/admin/gate-checks'
     | '/admin/leaderboard'
     | '/admin/learn'
     | '/admin/members'
     | '/admin/opportunities'
     | '/admin/partners'
     | '/admin/projects'
+    | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/students'
+    | '/arena/$challengeId'
+    | '/arena/create'
     | '/auth/forgot-password'
     | '/auth/reset-password'
     | '/auth/verify'
     | '/blog/$slug'
     | '/events/$eventId'
     | '/events/request'
+    | '/hackathons/$teamId'
+    | '/learn/$slug'
     | '/learn/community-management'
     | '/learn/content-creation'
     | '/learn/design'
     | '/learn/marketing'
     | '/learn/research'
-    | '/members/$memberId'
+    | '/profile/devlog'
     | '/projects/$projectId'
     | '/projects/submit'
+    | '/squads/$squadId'
     | '/admin/'
     | '/learn/'
+    | '/profile/'
+    | '/admin/cohorts/$id'
+    | '/admin/students/$userId'
+    | '/members/$memberId/devlog'
+    | '/members/$memberId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AlumniRoute: typeof AlumniRoute
+  ArenaRoute: typeof ArenaRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   BlogRoute: typeof BlogRouteWithChildren
   EventsRoute: typeof EventsRouteWithChildren
+  HackathonsRoute: typeof HackathonsRouteWithChildren
+  IntakeRoute: typeof IntakeRoute
   JoinRoute: typeof JoinRoute
   LeaderboardRoute: typeof LeaderboardRoute
   LearnRoute: typeof LearnRouteWithChildren
   OpportunitiesRoute: typeof OpportunitiesRoute
+  PairRoute: typeof PairRoute
   PartnersRoute: typeof PartnersRoute
-  ProfileRoute: typeof ProfileRoute
+  ProfileRoute: typeof ProfileRouteWithChildren
   ProjectsRoute: typeof ProjectsRouteWithChildren
-  MembersMemberIdRoute: typeof MembersMemberIdRoute
+  SquadsRoute: typeof SquadsRouteWithChildren
+  MembersMemberIdDevlogRoute: typeof MembersMemberIdDevlogRoute
+  MembersMemberIdIndexRoute: typeof MembersMemberIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/squads': {
+      id: '/squads'
+      path: '/squads'
+      fullPath: '/squads'
+      preLoaderRoute: typeof SquadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects': {
       id: '/projects'
       path: '/projects'
@@ -530,6 +806,13 @@ declare module '@tanstack/react-router' {
       path: '/partners'
       fullPath: '/partners'
       preLoaderRoute: typeof PartnersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pair': {
+      id: '/pair'
+      path: '/pair'
+      fullPath: '/pair'
+      preLoaderRoute: typeof PairRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/opportunities': {
@@ -560,6 +843,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JoinRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/intake': {
+      id: '/intake'
+      path: '/intake'
+      fullPath: '/intake'
+      preLoaderRoute: typeof IntakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hackathons': {
+      id: '/hackathons'
+      path: '/hackathons'
+      fullPath: '/hackathons'
+      preLoaderRoute: typeof HackathonsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/events': {
       id: '/events'
       path: '/events'
@@ -579,6 +876,20 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/arena': {
+      id: '/arena'
+      path: '/arena'
+      fullPath: '/arena'
+      preLoaderRoute: typeof ArenaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni': {
+      id: '/alumni'
+      path: '/alumni'
+      fullPath: '/alumni'
+      preLoaderRoute: typeof AlumniRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -602,6 +913,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/': {
+      id: '/profile/'
+      path: '/'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/learn/': {
       id: '/learn/'
       path: '/'
@@ -615,6 +933,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/squads/$squadId': {
+      id: '/squads/$squadId'
+      path: '/$squadId'
+      fullPath: '/squads/$squadId'
+      preLoaderRoute: typeof SquadsSquadIdRouteImport
+      parentRoute: typeof SquadsRoute
     }
     '/projects/submit': {
       id: '/projects/submit'
@@ -630,12 +955,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsProjectIdRouteImport
       parentRoute: typeof ProjectsRoute
     }
-    '/members/$memberId': {
-      id: '/members/$memberId'
-      path: '/members/$memberId'
-      fullPath: '/members/$memberId'
-      preLoaderRoute: typeof MembersMemberIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/profile/devlog': {
+      id: '/profile/devlog'
+      path: '/devlog'
+      fullPath: '/profile/devlog'
+      preLoaderRoute: typeof ProfileDevlogRouteImport
+      parentRoute: typeof ProfileRoute
     }
     '/learn/research': {
       id: '/learn/research'
@@ -671,6 +996,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/learn/community-management'
       preLoaderRoute: typeof LearnCommunityManagementRouteImport
       parentRoute: typeof LearnRoute
+    }
+    '/learn/$slug': {
+      id: '/learn/$slug'
+      path: '/$slug'
+      fullPath: '/learn/$slug'
+      preLoaderRoute: typeof LearnSlugRouteImport
+      parentRoute: typeof LearnRoute
+    }
+    '/hackathons/$teamId': {
+      id: '/hackathons/$teamId'
+      path: '/$teamId'
+      fullPath: '/hackathons/$teamId'
+      preLoaderRoute: typeof HackathonsTeamIdRouteImport
+      parentRoute: typeof HackathonsRoute
     }
     '/events/request': {
       id: '/events/request'
@@ -714,11 +1053,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/arena/create': {
+      id: '/arena/create'
+      path: '/create'
+      fullPath: '/arena/create'
+      preLoaderRoute: typeof ArenaCreateRouteImport
+      parentRoute: typeof ArenaRoute
+    }
+    '/arena/$challengeId': {
+      id: '/arena/$challengeId'
+      path: '/$challengeId'
+      fullPath: '/arena/$challengeId'
+      preLoaderRoute: typeof ArenaChallengeIdRouteImport
+      parentRoute: typeof ArenaRoute
+    }
+    '/admin/students': {
+      id: '/admin/students'
+      path: '/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AdminStudentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/settings': {
       id: '/admin/settings'
       path: '/settings'
       fullPath: '/admin/settings'
       preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reviews': {
+      id: '/admin/reviews'
+      path: '/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/projects': {
@@ -763,11 +1130,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLeaderboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/gate-checks': {
+      id: '/admin/gate-checks'
+      path: '/gate-checks'
+      fullPath: '/admin/gate-checks'
+      preLoaderRoute: typeof AdminGateChecksRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/events': {
       id: '/admin/events'
       path: '/events'
       fullPath: '/admin/events'
       preLoaderRoute: typeof AdminEventsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cohorts': {
+      id: '/admin/cohorts'
+      path: '/cohorts'
+      fullPath: '/admin/cohorts'
+      preLoaderRoute: typeof AdminCohortsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/challenges': {
+      id: '/admin/challenges'
+      path: '/challenges'
+      fullPath: '/admin/challenges'
+      preLoaderRoute: typeof AdminChallengesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/certifications': {
+      id: '/admin/certifications'
+      path: '/certifications'
+      fullPath: '/admin/certifications'
+      preLoaderRoute: typeof AdminCertificationsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/blog': {
@@ -784,38 +1179,114 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/members/$memberId/': {
+      id: '/members/$memberId/'
+      path: '/members/$memberId'
+      fullPath: '/members/$memberId/'
+      preLoaderRoute: typeof MembersMemberIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/members/$memberId/devlog': {
+      id: '/members/$memberId/devlog'
+      path: '/members/$memberId/devlog'
+      fullPath: '/members/$memberId/devlog'
+      preLoaderRoute: typeof MembersMemberIdDevlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/students/$userId': {
+      id: '/admin/students/$userId'
+      path: '/$userId'
+      fullPath: '/admin/students/$userId'
+      preLoaderRoute: typeof AdminStudentsUserIdRouteImport
+      parentRoute: typeof AdminStudentsRoute
+    }
+    '/admin/cohorts/$id': {
+      id: '/admin/cohorts/$id'
+      path: '/$id'
+      fullPath: '/admin/cohorts/$id'
+      preLoaderRoute: typeof AdminCohortsIdRouteImport
+      parentRoute: typeof AdminCohortsRoute
+    }
   }
 }
+
+interface AdminCohortsRouteChildren {
+  AdminCohortsIdRoute: typeof AdminCohortsIdRoute
+}
+
+const AdminCohortsRouteChildren: AdminCohortsRouteChildren = {
+  AdminCohortsIdRoute: AdminCohortsIdRoute,
+}
+
+const AdminCohortsRouteWithChildren = AdminCohortsRoute._addFileChildren(
+  AdminCohortsRouteChildren,
+)
+
+interface AdminStudentsRouteChildren {
+  AdminStudentsUserIdRoute: typeof AdminStudentsUserIdRoute
+}
+
+const AdminStudentsRouteChildren: AdminStudentsRouteChildren = {
+  AdminStudentsUserIdRoute: AdminStudentsUserIdRoute,
+}
+
+const AdminStudentsRouteWithChildren = AdminStudentsRoute._addFileChildren(
+  AdminStudentsRouteChildren,
+)
 
 interface AdminRouteChildren {
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminBlogRoute: typeof AdminBlogRoute
+  AdminCertificationsRoute: typeof AdminCertificationsRoute
+  AdminChallengesRoute: typeof AdminChallengesRoute
+  AdminCohortsRoute: typeof AdminCohortsRouteWithChildren
   AdminEventsRoute: typeof AdminEventsRoute
+  AdminGateChecksRoute: typeof AdminGateChecksRoute
   AdminLeaderboardRoute: typeof AdminLeaderboardRoute
   AdminLearnRoute: typeof AdminLearnRoute
   AdminMembersRoute: typeof AdminMembersRoute
   AdminOpportunitiesRoute: typeof AdminOpportunitiesRoute
   AdminPartnersRoute: typeof AdminPartnersRoute
   AdminProjectsRoute: typeof AdminProjectsRoute
+  AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminStudentsRoute: typeof AdminStudentsRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminBlogRoute: AdminBlogRoute,
+  AdminCertificationsRoute: AdminCertificationsRoute,
+  AdminChallengesRoute: AdminChallengesRoute,
+  AdminCohortsRoute: AdminCohortsRouteWithChildren,
   AdminEventsRoute: AdminEventsRoute,
+  AdminGateChecksRoute: AdminGateChecksRoute,
   AdminLeaderboardRoute: AdminLeaderboardRoute,
   AdminLearnRoute: AdminLearnRoute,
   AdminMembersRoute: AdminMembersRoute,
   AdminOpportunitiesRoute: AdminOpportunitiesRoute,
   AdminPartnersRoute: AdminPartnersRoute,
   AdminProjectsRoute: AdminProjectsRoute,
+  AdminReviewsRoute: AdminReviewsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
+  AdminStudentsRoute: AdminStudentsRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface ArenaRouteChildren {
+  ArenaChallengeIdRoute: typeof ArenaChallengeIdRoute
+  ArenaCreateRoute: typeof ArenaCreateRoute
+}
+
+const ArenaRouteChildren: ArenaRouteChildren = {
+  ArenaChallengeIdRoute: ArenaChallengeIdRoute,
+  ArenaCreateRoute: ArenaCreateRoute,
+}
+
+const ArenaRouteWithChildren = ArenaRoute._addFileChildren(ArenaRouteChildren)
 
 interface AuthRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
@@ -854,7 +1325,20 @@ const EventsRouteChildren: EventsRouteChildren = {
 const EventsRouteWithChildren =
   EventsRoute._addFileChildren(EventsRouteChildren)
 
+interface HackathonsRouteChildren {
+  HackathonsTeamIdRoute: typeof HackathonsTeamIdRoute
+}
+
+const HackathonsRouteChildren: HackathonsRouteChildren = {
+  HackathonsTeamIdRoute: HackathonsTeamIdRoute,
+}
+
+const HackathonsRouteWithChildren = HackathonsRoute._addFileChildren(
+  HackathonsRouteChildren,
+)
+
 interface LearnRouteChildren {
+  LearnSlugRoute: typeof LearnSlugRoute
   LearnCommunityManagementRoute: typeof LearnCommunityManagementRoute
   LearnContentCreationRoute: typeof LearnContentCreationRoute
   LearnDesignRoute: typeof LearnDesignRoute
@@ -864,6 +1348,7 @@ interface LearnRouteChildren {
 }
 
 const LearnRouteChildren: LearnRouteChildren = {
+  LearnSlugRoute: LearnSlugRoute,
   LearnCommunityManagementRoute: LearnCommunityManagementRoute,
   LearnContentCreationRoute: LearnContentCreationRoute,
   LearnDesignRoute: LearnDesignRoute,
@@ -873,6 +1358,19 @@ const LearnRouteChildren: LearnRouteChildren = {
 }
 
 const LearnRouteWithChildren = LearnRoute._addFileChildren(LearnRouteChildren)
+
+interface ProfileRouteChildren {
+  ProfileDevlogRoute: typeof ProfileDevlogRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
+}
+
+const ProfileRouteChildren: ProfileRouteChildren = {
+  ProfileDevlogRoute: ProfileDevlogRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
+}
+
+const ProfileRouteWithChildren =
+  ProfileRoute._addFileChildren(ProfileRouteChildren)
 
 interface ProjectsRouteChildren {
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
@@ -888,21 +1386,39 @@ const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
   ProjectsRouteChildren,
 )
 
+interface SquadsRouteChildren {
+  SquadsSquadIdRoute: typeof SquadsSquadIdRoute
+}
+
+const SquadsRouteChildren: SquadsRouteChildren = {
+  SquadsSquadIdRoute: SquadsSquadIdRoute,
+}
+
+const SquadsRouteWithChildren =
+  SquadsRoute._addFileChildren(SquadsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
+  AlumniRoute: AlumniRoute,
+  ArenaRoute: ArenaRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
   EventsRoute: EventsRouteWithChildren,
+  HackathonsRoute: HackathonsRouteWithChildren,
+  IntakeRoute: IntakeRoute,
   JoinRoute: JoinRoute,
   LeaderboardRoute: LeaderboardRoute,
   LearnRoute: LearnRouteWithChildren,
   OpportunitiesRoute: OpportunitiesRoute,
+  PairRoute: PairRoute,
   PartnersRoute: PartnersRoute,
-  ProfileRoute: ProfileRoute,
+  ProfileRoute: ProfileRouteWithChildren,
   ProjectsRoute: ProjectsRouteWithChildren,
-  MembersMemberIdRoute: MembersMemberIdRoute,
+  SquadsRoute: SquadsRouteWithChildren,
+  MembersMemberIdDevlogRoute: MembersMemberIdDevlogRoute,
+  MembersMemberIdIndexRoute: MembersMemberIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -2,6 +2,39 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { supabase, query } from '@/lib/supabase';
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/[\s_]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function inferCategory(title: string, ecosystem: string): string {
+  const t = title.toLowerCase();
+  if (t.includes("design")) return "Design";
+  if (t.includes("market")) return "Marketing";
+  if (t.includes("community")) return "Community";
+  if (t.includes("content")) return "Content";
+  if (t.includes("research")) return "Research";
+  return "Technical";
+}
+
+const DEFAULT_PHASE_COUNT = 5;
+
+function computeModulesPerPhase(modules: { order: number }[], phaseCount: number): number[] {
+  const counts: number[] = new Array(phaseCount).fill(0);
+  if (modules.length === 0) return counts;
+  const sorted = [...modules].sort((a, b) => a.order - b.order);
+  const perPhase = Math.max(1, Math.ceil(sorted.length / phaseCount));
+  for (let i = 0; i < sorted.length; i++) {
+    const phaseIdx = Math.min(Math.floor(i / perPhase), phaseCount - 1);
+    counts[phaseIdx]++;
+  }
+  return counts;
+}
+
 export const getTracks = createServerFn({ method: 'GET' })
   .inputValidator(
     z.object({
@@ -15,18 +48,26 @@ export const getTracks = createServerFn({ method: 'GET' })
     if (data.difficulty) filters.difficulty = data.difficulty;
 
     const { data: tracks, error } = await query('tracks', {
-      select: '*, modules(id)',
+      select: '*, modules(id,order)',
       filters,
       order: { column: 'order', ascending: true },
     });
 
     if (error) throw error;
 
-    return (tracks || []).map((track: any) => ({
-      ...track,
-      _count: { modules: track.modules?.length || 0 },
-      modules: undefined,
-    }));
+    return (tracks || []).map((track: any) => {
+      const phaseCount = track.phase_count || DEFAULT_PHASE_COUNT;
+      const modulesPerPhase = computeModulesPerPhase(track.modules || [], phaseCount);
+      return {
+        ...track,
+        slug: track.slug || slugify(track.title),
+        category: track.category || inferCategory(track.title, track.ecosystem),
+        phase_count: phaseCount,
+        modulesPerPhase,
+        _count: { modules: track.modules?.length || 0 },
+        modules: undefined,
+      };
+    });
   });
 
 export const getTrackById = createServerFn({ method: 'GET' })
@@ -462,6 +503,67 @@ export const addResource = createServerFn({ method: 'POST' })
     if (error) throw error;
 
     return resource?.[0];
+  });
+
+export const getTrackBySlug = createServerFn({ method: 'GET' })
+  .inputValidator(z.object({ slug: z.string() }))
+  .handler(async ({ data }) => {
+    const { data: tracks, error } = await query('tracks', {
+      select: '*, modules(id, title, description, content, phase, order, is_published)',
+      filters: { is_published: true },
+    });
+
+    if (error) throw error;
+
+    function slugify(text: string) {
+      return text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    const track = (tracks || []).find((t: any) => slugify(t.title) === data.slug);
+
+    if (!track) throw new Error('Track not found');
+
+    const allModules = (track.modules || []).filter((m: any) => m.is_published);
+    allModules.sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
+
+    const phases: Record<number, any[]> = { 0: [], 1: [], 2: [], 3: [], 4: [] };
+    const PHASE_NAMES: Record<number, string> = {
+      0: 'Foundation',
+      1: 'Core Concepts',
+      2: 'Advanced',
+      3: 'Mastery',
+      4: 'Capstone',
+    };
+
+    for (const mod of allModules) {
+      const existingPhase = typeof mod.phase === 'number' ? mod.phase : null;
+      const computedPhase = allModules.length > 0
+        ? Math.min(4, Math.floor(((mod.order ?? 0) - 1) / Math.ceil(allModules.length / 5)))
+        : 0;
+      const p = existingPhase !== null ? Math.max(0, Math.min(4, existingPhase)) : Math.max(0, computedPhase);
+      phases[p].push(mod);
+    }
+
+    return {
+      id: track.id,
+      title: track.title,
+      description: track.description,
+      ecosystem: track.ecosystem,
+      difficulty: track.difficulty,
+      icon_url: track.icon_url,
+      category: track.category,
+      slug: slugify(track.title),
+      phases: Object.entries(phases).map(([phaseIdx, modules]) => ({
+        phase: Number(phaseIdx),
+        name: PHASE_NAMES[Number(phaseIdx)] || `Phase ${phaseIdx}`,
+        modules,
+        moduleCount: modules.length,
+      })),
+      totalModules: allModules.length,
+    };
   });
 
 export const deleteResource = createServerFn({ method: 'POST' })
