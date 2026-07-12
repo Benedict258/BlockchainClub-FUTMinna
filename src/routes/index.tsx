@@ -7,19 +7,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight, BookOpen, Code as Code2, Users, Briefcase, ShieldCheck, Cpu } from "lucide-react";
 import researchLab from "@/assets/research-lab.jpg";
 import eventHackathon from "@/assets/event-hackathon.jpg";
-import eventGovernance from "@/assets/event-governance.jpg";
-import chip from "@/assets/chip.jpg";
-import eventNode from "@/assets/event-node.jpg";
+import slide1 from "@/assets/slide1.jpg";
+import slide2 from "@/assets/slide2.jpg";
 import { getEvents } from "@/lib/api/events.server";
 import { getProjects } from "@/lib/api/projects.server";
 import { getBlogPosts } from "@/lib/api/blog.server";
 
 const heroImages = [
-  { src: researchLab, alt: "Students researching blockchain technology" },
-  { src: eventHackathon, alt: "Community hackathon event" },
-  { src: eventGovernance, alt: "DAO governance meeting" },
-  { src: chip, alt: "Blockchain chip technology" },
-  { src: eventNode, alt: "Node event and workshop" },
+  { src: slide1, alt: "Blockchain Club FUTMinna" },
+  { src: slide2, alt: "Blockchain Club FUTMinna" },
 ];
 
 function ImageCarousel() {
@@ -42,7 +38,7 @@ function ImageCarousel() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16/10" }}>
         {heroImages.map((img, i) => (
           <img
             key={i}
