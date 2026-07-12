@@ -250,9 +250,30 @@ function Home() {
           </div>
         )}
 
-        {/* PAST EVENT - Onboarding */}
-        <div className="mt-8">
-          <h3 className="text-label-bold text-outline mb-4">PAST EVENT</h3>
+        {/* PAST EVENTS */}
+        <div className="mt-8 space-y-4">
+          <h3 className="text-label-bold text-outline mb-4">PAST EVENTS</h3>
+          <div className="overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm">
+            <div className="grid md:grid-cols-[280px_1fr]">
+              <div className="aspect-[4/3] md:aspect-auto bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
+                <img
+                  src="/vibe-coding.jpg"
+                  alt="AI Vibe-Coding Workshop"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col justify-between">
+                <div>
+                  <Badge variant="secondary" className="text-xs mb-2">WORKSHOP</Badge>
+                  <h3 className="text-headline-md">AI Vibe-Coding Workshop</h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    An online session on vibe-coding with AI, featuring Noah AI. Held on 11th July 2026.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm">
             <div className="grid md:grid-cols-[280px_1fr]">
               <div className="aspect-[4/3] md:aspect-auto bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
