@@ -10,7 +10,6 @@ import researchLab from "@/assets/research-lab.jpg";
 import eventHackathon from "@/assets/event-hackathon.jpg";
 import slide1 from "@/assets/slide1.jpg";
 import slide2 from "@/assets/slide2.jpg";
-import { getEvents } from "@/lib/api/events.server";
 import { getProjects } from "@/lib/api/projects.server";
 import { getBlogPosts } from "@/lib/api/blog.server";
 
@@ -78,15 +77,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const fetchEvents = useServerFn(getEvents);
   const fetchProjects = useServerFn(getProjects);
   const fetchPosts = useServerFn(getBlogPosts);
-
-  const { data: eventsData } = useQuery({
-    queryKey: ["home-events"],
-    queryFn: () => fetchEvents({ data: { page: 1, limit: 3, filter: "all" } }),
-    suspense: true,
-  });
 
   const { data: projectsData } = useQuery({
     queryKey: ["home-projects"],
@@ -99,7 +91,6 @@ function Home() {
     queryFn: () => fetchPosts({ data: { page: 1, limit: 3 } }),
   });
 
-  const events = eventsData?.events ?? [];
   const projects = projectsData?.projects ?? [];
   const posts = postsData?.posts ?? [];
 
@@ -135,7 +126,6 @@ function Home() {
           <div className="grid grid-cols-2 divide-x divide-border md:grid-cols-4">
             {[
               { v: projectsData?.total ? `${projectsData.total}+` : "20+", l: "BUIDL Projects" },
-              { v: eventsData?.total ? `${eventsData.total}+` : "12+", l: "Events Hosted" },
               { v: postsData?.total ? `${postsData.total}+` : "5+", l: "Blog Posts" },
               { v: "12", l: "Protocol Partners" },
             ].map((s) => (
@@ -205,56 +195,10 @@ function Home() {
         </div>
       </section>
 
-      {/* UPCOMING DEPLOYMENTS */}
+      {/* PAST EVENTS */}
       <section className="mx-auto max-w-[1400px] px-6 py-16">
-        <div className="flex items-end justify-between mb-8">
-          <h2 className="text-headline-lg">UPCOMING<br />DEPLOYMENTS</h2>
-          <Link
-            to="/events"
-            className="text-sm font-semibold text-on-surface-variant hover:text-primary inline-flex items-center gap-1.5 transition-colors"
-          >
-            View All <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-        {events.length === 0 ? (
-          <div className="text-center py-12 border border-dashed border-border rounded-lg">
-            <p className="text-muted-foreground">No upcoming events. Check back soon!</p>
-          </div>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-3">
-            {events.slice(0, 3).map((event: any) => (
-              <Link
-                key={event.id}
-                to="/events/$eventId"
-                params={{ eventId: event.id }}
-                className="group overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm"
-              >
-                <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
-                  {event.coverImage ? (
-                    <img
-                      src={event.coverImage}
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <span className="text-4xl text-primary/30">📅</span>
-                  )}
-                </div>
-                <div className="p-5">
-                  <p className="text-label-bold text-outline">
-                    {new Date(event.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                  </p>
-                  <h3 className="mt-2 text-headline-md group-hover:text-primary transition-colors">{event.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">{event.description || ""}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-
-        {/* PAST EVENTS */}
-        <div className="mt-8 space-y-4">
-          <h3 className="text-label-bold text-outline mb-4">PAST EVENTS</h3>
+        <div className="space-y-4">
+          <h3 className="text-headline-lg">PAST EVENTS</h3>
           <div className="overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm">
             <div className="grid md:grid-cols-[280px_1fr]">
               <div className="aspect-[4/3] md:aspect-auto bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
