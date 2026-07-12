@@ -3,8 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRight, BookOpen, Code as Code2, Users, Briefcase, ShieldCheck, Cpu } from "lucide-react";
+import { ArrowRight, BookOpen, Code as Code2, Users, Briefcase, ShieldCheck, Cpu, Download } from "lucide-react";
 import researchLab from "@/assets/research-lab.jpg";
 import eventHackathon from "@/assets/event-hackathon.jpg";
 import slide1 from "@/assets/slide1.jpg";
@@ -248,6 +249,39 @@ function Home() {
             ))}
           </div>
         )}
+
+        {/* PAST EVENT - Onboarding */}
+        <div className="mt-8">
+          <h3 className="text-label-bold text-outline mb-4">PAST EVENT</h3>
+          <div className="overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm">
+            <div className="grid md:grid-cols-[280px_1fr]">
+              <div className="aspect-[4/3] md:aspect-auto bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
+                <img
+                  src="/onboard.png"
+                  alt="Blockchain Club Onboarding"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col justify-between">
+                <div>
+                  <Badge variant="secondary" className="text-xs mb-2">ONBOARDING</Badge>
+                  <h3 className="text-headline-md">Blockchain Onboarding Session</h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    Welcome session for new members — covered club structure, roadmap, and getting started with Web3 development.
+                  </p>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <a href="/ONCHAIN FUTMINNA.pdf" download className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-high px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-low transition-colors">
+                    <Download className="h-3.5 w-3.5" /> Download PDF
+                  </a>
+                  <a href="/blockchain Onboarding.pptx" download className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-high px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-low transition-colors">
+                    <Download className="h-3.5 w-3.5" /> Download PPTX
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* SHIPPED PROTOCOLS */}
