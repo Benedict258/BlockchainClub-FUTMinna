@@ -39,3 +39,5 @@ keep-alive.sh
 contracts/sui/build/
 .sui/
 contracts/sui/Move.lock
+contracts/sui/build/
+contracts/sui/Move.lock
