@@ -329,17 +329,6 @@ function Home() {
         </div>
       </section>
 
-      {/* PARTNERS STRIP */}
-      <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-around gap-6 px-6 py-8">
-          {["ETHEREUM FOUNDATION", "SUI FOUNDATION", "STARKNET", "SOLANA FOUNDATION"].map((p) => (
-            <span key={p} className="text-label-bold text-muted-foreground hover:text-foreground transition-colors cursor-default">
-              {p}
-            </span>
-          ))}
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="mx-auto max-w-[1400px] px-6 py-16">
         <div className="relative overflow-hidden rounded-xl border border-border bg-surface-low p-8 md:p-12 text-center">
