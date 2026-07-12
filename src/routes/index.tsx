@@ -89,7 +89,8 @@ function Home() {
 
   const { data: projectsData } = useQuery({
     queryKey: ["home-projects"],
-    queryFn: () => fetchProjects({ data: { page: 1, limit: 4 } }),
+    queryFn: () => fetchProjects({ data: { page: 1, limit: 3, featured: true } }),
+    suspense: true,
   });
 
   const { data: postsData } = useQuery({
@@ -311,44 +312,30 @@ function Home() {
           <h2 className="text-headline-lg">SHIPPED PROTOCOLS</h2>
           <p className="mt-2 text-muted-foreground">High-impact projects developed by our student body.</p>
           <div className="mt-8 grid gap-5 md:grid-cols-2">
+            {projects.slice(0, 3).map((project: any, i: number) => (
+              <Link
+                key={project.id}
+                to="/projects/$projectId"
+                params={{ projectId: project.id }}
+                className={`group relative block rounded-lg border border-border bg-card ${i === 0 ? 'p-6' : 'p-5'} transition-all hover:border-primary/50 hover:shadow-sm overflow-hidden`}
+              >
+                <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top rounded-r" />
+                <span className="text-label-bold text-primary bg-primary/8 border border-primary/20 rounded px-2 py-0.5">{project.ecosystem || 'PROJECT'}</span>
+                <p className={`${i === 0 ? 'mt-4 text-headline-md' : 'mt-3 text-headline-md'}`}>{project.name}</p>
+                <p className={`${i === 0 ? 'mt-2 text-sm' : 'mt-1 text-sm'} text-muted-foreground leading-relaxed`}>{project.headline || project.description}</p>
+                {i === 0 && (
+                  <div className="mt-8 flex items-center gap-1.5 text-sm font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    View Project <ArrowRight className="h-4 w-4" />
+                  </div>
+                )}
+              </Link>
+            ))}
             <Link
               to="/projects"
-              className="group relative block rounded-lg border border-border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-sm overflow-hidden"
+              className="flex items-center justify-center rounded-lg border border-dashed border-border bg-transparent p-5 text-label-bold text-muted-foreground hover:border-primary hover:text-primary transition-colors"
             >
-              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top rounded-r" />
-              <span className="text-label-bold text-primary bg-primary/8 border border-primary/20 rounded px-2 py-0.5">DEFI</span>
-              <p className="mt-4 text-headline-md">Ayorithm</p>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">Trustless, on-chain rotational savings protocol built on Solana.</p>
-              <div className="mt-8 flex items-center gap-1.5 text-sm font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                View Project <ArrowRight className="h-4 w-4" />
-              </div>
+              SUBMIT YOUR PROJECT →
             </Link>
-            <div className="grid gap-5">
-              <Link
-                to="/projects"
-                className="group relative block rounded-lg border border-border bg-card p-5 transition-all hover:border-primary/50 hover:shadow-sm overflow-hidden"
-              >
-                <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top rounded-r" />
-                <span className="text-label-bold text-outline bg-surface-high border border-border rounded px-2 py-0.5">SECURITY</span>
-                <p className="mt-3 text-headline-md">VoiceGuard</p>
-                <p className="mt-1 text-sm text-muted-foreground">Voice-first security layer for Web3 that combats blind signing scams.</p>
-              </Link>
-              <Link
-                to="/projects"
-                className="group relative block rounded-lg border border-border bg-card p-5 transition-all hover:border-primary/50 hover:shadow-sm overflow-hidden"
-              >
-                <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top rounded-r" />
-                <span className="text-label-bold text-outline bg-surface-high border border-border rounded px-2 py-0.5">PAYMENTS</span>
-                <p className="mt-3 text-headline-md">Stripe3</p>
-                <p className="mt-1 text-sm text-muted-foreground">x402 payment gateway on Solana for digital asset monetization.</p>
-              </Link>
-              <Link
-                to="/projects"
-                className="flex items-center justify-center rounded-lg border border-dashed border-border bg-transparent p-5 text-label-bold text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-              >
-                SUBMIT YOUR PROJECT →
-              </Link>
-            </div>
           </div>
         </div>
       </section>
