@@ -84,7 +84,8 @@ function Home() {
 
   const { data: eventsData } = useQuery({
     queryKey: ["home-events"],
-    queryFn: () => fetchEvents({ data: { page: 1, limit: 3, filter: "upcoming" } }),
+    queryFn: () => fetchEvents({ data: { page: 1, limit: 3, filter: "all" } }),
+    suspense: true,
   });
 
   const { data: projectsData } = useQuery({
