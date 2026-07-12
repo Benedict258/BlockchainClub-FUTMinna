@@ -100,7 +100,7 @@ function Home() {
       <section className="border-b border-border">
          <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
-            Onchain Generation
+            Blockchain Club FUTMinna
           </span>
           <h1 className="mt-6 text-display-lg md:text-[64px] md:leading-[68px] tracking-tight">
             FUTMinna's Home for<br />

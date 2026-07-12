@@ -47,7 +47,7 @@ export function SiteFooter() {
 
         <div className="mt-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-border pt-6">
           <span className="text-xs text-muted-foreground">
-            © 2026 Blockchain Club FUTMinna. Built for the Onchain Generation.
+            © 2026 Blockchain Club FUTMinna. All rights reserved.
           </span>
           <span className="font-mono text-[10px] tracking-widest uppercase text-outline">
             Decentralize · Build · Inhabit
