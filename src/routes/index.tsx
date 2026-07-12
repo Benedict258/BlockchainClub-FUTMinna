@@ -123,13 +123,13 @@ function Home() {
       {/* STATS */}
       <section className="border-b border-border bg-surface-low">
         <div className="mx-auto max-w-[1400px] px-6 py-8 md:py-10">
-          <div className="grid grid-cols-2 divide-x divide-border md:grid-cols-4">
+          <div className="flex justify-center gap-16 md:gap-24">
             {[
-              { v: projectsData?.total ? `${projectsData.total}+` : "20+", l: "BUIDL Projects" },
+              { v: projectsData?.total ? `${projectsData.total}+` : "3+", l: "BUIDL Projects" },
               { v: postsData?.total ? `${postsData.total}+` : "5+", l: "Blog Posts" },
               { v: "12", l: "Protocol Partners" },
             ].map((s) => (
-              <div key={s.l} className="text-center px-6 py-4">
+              <div key={s.l} className="text-center">
                 <div className="text-display-md text-foreground">{s.v}</div>
                 <div className="mt-2 text-label-bold text-outline">{s.l}</div>
               </div>
