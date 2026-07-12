@@ -180,7 +180,7 @@ function EventsPage() {
                   >
                     <div className="grid md:grid-cols-2">
                       <div className="aspect-[16/10] md:aspect-auto bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                        {event.coverImage ? (
+                        {event.cover_image ? (
                           <img
                             src={event.cover_image}
                             alt={event.title}
@@ -270,7 +270,7 @@ function EventsPage() {
                   className="group rounded-lg border border-border bg-card overflow-hidden transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm"
                 >
                   <div className="aspect-[16/9] bg-gradient-to-br from-surface-high to-surface-low flex items-center justify-center overflow-hidden">
-                    {event.coverImage ? (
+                    {event.cover_image ? (
                       <img
                         src={event.cover_image}
                         alt={event.title}
