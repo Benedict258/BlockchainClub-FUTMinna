@@ -262,8 +262,8 @@ function Home() {
             >
               <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top rounded-r" />
               <span className="text-label-bold text-primary bg-primary/8 border border-primary/20 rounded px-2 py-0.5">DEFI</span>
-              <p className="mt-4 text-headline-md">FutSwap DEX</p>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">A decentralized exchange optimized for low-bandwidth environments, enabling student-to-student peer trading.</p>
+              <p className="mt-4 text-headline-md">Ayorithm</p>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">Trustless, on-chain rotational savings protocol built on Solana.</p>
               <div className="mt-8 flex items-center gap-1.5 text-sm font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                 View Project <ArrowRight className="h-4 w-4" />
               </div>
@@ -274,18 +274,18 @@ function Home() {
                 className="group relative block rounded-lg border border-border bg-card p-5 transition-all hover:border-primary/50 hover:shadow-sm overflow-hidden"
               >
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top rounded-r" />
-                <span className="text-label-bold text-outline bg-surface-high border border-border rounded px-2 py-0.5">IDENTITY</span>
-                <p className="mt-3 text-headline-md">UniID Protocol</p>
-                <p className="mt-1 text-sm text-muted-foreground">Self-sovereign identity for academic credential verification.</p>
+                <span className="text-label-bold text-outline bg-surface-high border border-border rounded px-2 py-0.5">SECURITY</span>
+                <p className="mt-3 text-headline-md">VoiceGuard</p>
+                <p className="mt-1 text-sm text-muted-foreground">Voice-first security layer for Web3 that combats blind signing scams.</p>
               </Link>
               <Link
                 to="/projects"
                 className="group relative block rounded-lg border border-border bg-card p-5 transition-all hover:border-primary/50 hover:shadow-sm overflow-hidden"
               >
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top rounded-r" />
-                <span className="text-label-bold text-outline bg-surface-high border border-border rounded px-2 py-0.5">DAO</span>
-                <p className="mt-3 text-headline-md">ClubGov</p>
-                <p className="mt-1 text-sm text-muted-foreground">On-chain treasury management for the club.</p>
+                <span className="text-label-bold text-outline bg-surface-high border border-border rounded px-2 py-0.5">PAYMENTS</span>
+                <p className="mt-3 text-headline-md">Stripe3</p>
+                <p className="mt-1 text-sm text-muted-foreground">x402 payment gateway on Solana for digital asset monetization.</p>
               </Link>
               <Link
                 to="/projects"
