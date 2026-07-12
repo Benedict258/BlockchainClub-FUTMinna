@@ -1,13 +1,72 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight, BookOpen, Code as Code2, Users, Briefcase, ShieldCheck, Cpu } from "lucide-react";
 import researchLab from "@/assets/research-lab.jpg";
+import eventHackathon from "@/assets/event-hackathon.jpg";
+import eventGovernance from "@/assets/event-governance.jpg";
+import chip from "@/assets/chip.jpg";
+import eventNode from "@/assets/event-node.jpg";
 import { getEvents } from "@/lib/api/events.server";
 import { getProjects } from "@/lib/api/projects.server";
 import { getBlogPosts } from "@/lib/api/blog.server";
+
+const heroImages = [
+  { src: researchLab, alt: "Students researching blockchain technology" },
+  { src: eventHackathon, alt: "Community hackathon event" },
+  { src: eventGovernance, alt: "DAO governance meeting" },
+  { src: chip, alt: "Blockchain chip technology" },
+  { src: eventNode, alt: "Node event and workshop" },
+];
+
+function ImageCarousel() {
+  const [current, setCurrent] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const next = useCallback(() => {
+    setCurrent((c) => (c + 1) % heroImages.length);
+  }, []);
+
+  useEffect(() => {
+    if (isHovered) return;
+    const interval = setInterval(next, 5000);
+    return () => clearInterval(interval);
+  }, [isHovered, next]);
+
+  return (
+    <div
+      className="overflow-hidden rounded-lg border border-border bg-card"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="relative aspect-[4/3] overflow-hidden">
+        {heroImages.map((img, i) => (
+          <img
+            key={i}
+            src={img.src}
+            alt={img.alt}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+            style={{ opacity: i === current ? 1 : 0 }}
+          />
+        ))}
+      </div>
+      <div className="bg-surface-low px-5 py-3 flex items-center justify-center gap-2">
+        {heroImages.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={`h-2 rounded-full transition-all duration-300 ${
+              i === current ? "w-6 bg-primary" : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -92,19 +151,7 @@ function Home() {
 
       {/* ROOTED IN RESEARCH */}
       <section className="mx-auto max-w-[1400px] px-6 py-16 grid gap-12 lg:grid-cols-2 lg:items-center">
-        <div className="overflow-hidden rounded-lg border border-border bg-card">
-          <img
-            src={researchLab}
-            alt="Students researching at FUTMinna"
-            width={1280}
-            height={896}
-            className="w-full h-auto"
-          />
-          <div className="bg-surface-low px-5 py-3.5 border-t border-border flex items-center justify-between">
-            <p className="text-label-bold text-foreground">Est. 2021</p>
-            <p className="text-xs text-muted-foreground">Northern Nigeria's Web3 Hub</p>
-          </div>
-        </div>
+        <ImageCarousel />
         <div>
           <h2 className="text-headline-lg">ROOTED IN RESEARCH,<br />DRIVEN BY CODE</h2>
           <p className="mt-5 text-muted-foreground leading-relaxed">
