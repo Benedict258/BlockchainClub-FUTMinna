@@ -107,6 +107,7 @@ function EventsPage() {
           filter: filter === "all" ? "all" : filter,
         },
       }),
+    suspense: true,
   });
 
   const events = data?.events ?? [];
