@@ -195,6 +195,11 @@ function Home() {
         </div>
       </section>
 
+      {/* UPCOMING DEPLOYMENTS */}
+      <section className="mx-auto max-w-[1400px] px-6 py-16">
+        <h2 className="text-headline-lg">UPCOMING<br />DEPLOYMENTS</h2>
+      </section>
+
       {/* PAST EVENTS */}
       <section className="mx-auto max-w-[1400px] px-6 py-16">
         <div className="space-y-4">
