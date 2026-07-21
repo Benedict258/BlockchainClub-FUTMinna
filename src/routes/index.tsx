@@ -119,9 +119,11 @@ function Home() {
             The premier hub for blockchain innovation, decentralized development, and academic excellence in West Africa. Empowering the next wave of protocol engineers.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <Button asChild size="lg" className="font-semibold tracking-wide">
-              <Link to="/join">Join the Community</Link>
-            </Button>
+            <a href="https://chat.whatsapp.com/IZBSVUSyxayE0nTqO71HRt" target="_blank" rel="noopener noreferrer">
+              <Button size="lg" className="font-semibold tracking-wide" asChild>
+                <span>Join the Community</span>
+              </Button>
+            </a>
             <Button asChild size="lg" variant="outline" className="font-semibold tracking-wide">
               <Link to="/learn">Explore Learn</Link>
             </Button>
@@ -330,34 +332,46 @@ function Home() {
         </div>
       </section>
 
-      {/* LEARNING TRACKS PREVIEW */}
+      {/* COMMUNITY LINKS */}
       <section className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
-        <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
-          <h2 className="text-headline-lg">LEARNING TRACKS</h2>
-          <div className="flex gap-2">
-            <span className="rounded-md border border-border bg-surface-low px-3 py-1 text-label-bold text-outline">BEGINNER</span>
-            <span className="rounded-md border border-border bg-surface-low px-3 py-1 text-label-bold text-outline">ADVANCED</span>
-          </div>
-        </div>
-        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-          {[
-            { code: "EVM", name: "Ethereum & L2s" },
-            { code: "SUI", name: "Move Ecosystem" },
-            { code: "SOL", name: "Solana Performance" },
-            { code: "APT", name: "Aptos Network" },
-          ].map((t) => (
-            <Link
-              key={t.code}
-              to="/learn"
-              className="group rounded-lg border border-border bg-card p-6 hover:border-primary transition-all hover:shadow-sm hover:-translate-y-0.5"
-            >
-              <div className="font-mono text-3xl font-bold text-muted-foreground/40 group-hover:text-primary transition-colors tracking-tight">
-                {t.code}
-              </div>
-              <p className="mt-6 text-label-bold text-foreground">{t.name}</p>
-              <p className="mt-1 text-xs text-muted-foreground">Smart contract development track.</p>
-            </Link>
-          ))}
+        <h2 className="text-headline-lg text-center">CONNECT WITH US</h2>
+        <div className="mt-8 grid gap-4 grid-cols-2 lg:grid-cols-4">
+          <a
+            href="https://discord.gg/blockchainclub"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group rounded-lg border border-border bg-card p-6 hover:border-primary transition-all hover:shadow-sm hover:-translate-y-0.5 text-center"
+          >
+            <span className="text-3xl">💬</span>
+            <p className="mt-4 text-label-bold text-foreground group-hover:text-primary transition-colors">Enter the Discord</p>
+            <p className="mt-1 text-xs text-muted-foreground">Join discussions and get help.</p>
+          </a>
+          <a
+            href="https://chat.whatsapp.com/IZBSVUSyxayE0nTqO71HRt"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group rounded-lg border border-border bg-card p-6 hover:border-primary transition-all hover:shadow-sm hover:-translate-y-0.5 text-center"
+          >
+            <span className="text-3xl">📱</span>
+            <p className="mt-4 text-label-bold text-foreground group-hover:text-primary transition-colors">Join the Community</p>
+            <p className="mt-1 text-xs text-muted-foreground">Connect on WhatsApp.</p>
+          </a>
+          <Link
+            to="/join"
+            className="group rounded-lg border border-border bg-card p-6 hover:border-primary transition-all hover:shadow-sm hover:-translate-y-0.5 text-center"
+          >
+            <span className="text-3xl">🎓</span>
+            <p className="mt-4 text-label-bold text-foreground group-hover:text-primary transition-colors">Apply for Fellowship</p>
+            <p className="mt-1 text-xs text-muted-foreground">Join the cohort programme.</p>
+          </Link>
+          <Link
+            to="/learn"
+            className="group rounded-lg border border-border bg-card p-6 hover:border-primary transition-all hover:shadow-sm hover:-translate-y-0.5 text-center"
+          >
+            <span className="text-3xl">📚</span>
+            <p className="mt-4 text-label-bold text-foreground group-hover:text-primary transition-colors">Explore Learn</p>
+            <p className="mt-1 text-xs text-muted-foreground">Browse the curriculum.</p>
+          </Link>
         </div>
       </section>
 

@@ -336,11 +336,11 @@ function LeaderboardPage() {
           Earn points by attending events, completing learning tracks, shipping projects, and
           contributing to the community.
         </p>
-        <Button asChild size="lg" className="mt-8 font-semibold tracking-wide">
-          <Link to="/join">
+        <a href="https://chat.whatsapp.com/IZBSVUSyxayE0nTqO71HRt" target="_blank" rel="noopener noreferrer">
+          <Button size="lg" className="mt-8 font-semibold tracking-wide">
             Join the Community <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
+          </Button>
+        </a>
       </section>
     </div>
   );
