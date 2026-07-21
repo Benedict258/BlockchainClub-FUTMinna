@@ -183,15 +183,15 @@ function EventsPage() {
                 {featuredEvents.slice(0, 1).map((event) => (
                   <article
                     key={event.id}
-                    className="group relative rounded-xl border border-border bg-card overflow-hidden transition-all hover:border-primary/40 hover:shadow-lg"
+                    className="group relative rounded-xl border border-border bg-card transition-all hover:border-primary/40 hover:shadow-lg"
                   >
                     <div className="grid md:grid-cols-2">
-                      <div className="aspect-[16/10] md:aspect-auto bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                      <div className="bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                         {event.cover_image ? (
                           <img
                             src={event.cover_image}
                             alt={event.title}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                           />
                         ) : (
                           <Calendar className="h-16 w-16 text-primary/30" />
@@ -274,15 +274,15 @@ function EventsPage() {
               {(filter === "past" ? events : regularEvents).map((event) => (
                 <article
                   key={event.id}
-                  className="group rounded-lg border border-border bg-card overflow-hidden transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm"
+                  className="group rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm"
                 >
-                  <div className="aspect-[16/9] bg-gradient-to-br from-surface-high to-surface-low flex items-center justify-center overflow-hidden">
-                    {event.cover_image ? (
-                      <img
-                        src={event.cover_image}
-                        alt={event.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
+                  <div className="bg-gradient-to-br from-surface-high to-surface-low flex items-center justify-center">
+                        {event.cover_image ? (
+                          <img
+                            src={event.cover_image}
+                            alt={event.title}
+                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                          />
                     ) : (
                       <Calendar className="h-10 w-10 text-muted-foreground/30" />
                     )}
