@@ -126,7 +126,7 @@ function ProjectsPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-12 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             PROJECTS
           </span>
@@ -144,7 +144,7 @@ function ProjectsPage() {
 
       {/* STATS */}
       <section className="border-b border-border bg-surface-low">
-        <div className="mx-auto max-w-[1400px] px-6 py-6">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-4 md:py-6">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="flex items-center justify-center gap-3">
               <Code className="h-5 w-5 text-primary" />
@@ -193,7 +193,7 @@ function ProjectsPage() {
       </section>
 
       {/* FILTER + GRID */}
-      <section className="mx-auto max-w-[1400px] px-6 py-16">
+      <section className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <h2 className="text-headline-lg">All Projects</h2>
           <Tabs
@@ -237,7 +237,7 @@ function ProjectsPage() {
                     className="group relative overflow-hidden border-border bg-card p-0"
                   >
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
-                    <div className="p-8 flex gap-6">
+                    <div className="p-5 md:p-8 flex gap-4 md:gap-6">
                       {project.logo_url && (
                         <img src={project.logo_url} alt={project.name} className="h-16 w-16 rounded-xl object-cover shrink-0 bg-surface-high" />
                       )}
@@ -525,7 +525,7 @@ function ProjectsPage() {
 
       {/* CTA */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1400px] px-6 py-16 text-center">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16 text-center">
           <Rocket className="mx-auto h-10 w-10 text-primary" />
           <h2 className="mt-6 text-headline-lg">
             Built Something?

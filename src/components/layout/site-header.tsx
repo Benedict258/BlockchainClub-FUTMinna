@@ -85,8 +85,8 @@ export function SiteHeader() {
           to="/"
           className="flex items-center gap-2.5 shrink-0"
         >
-          <img src="/lightlogo.png" alt="BlockchainClub FUTMinna" className="h-30 w-auto dark:hidden" />
-          <img src="/darklogo.png" alt="BlockchainClub FUTMinna" className="h-30 w-auto hidden dark:block" />
+          <img src="/lightlogo.png" alt="BlockchainClub FUTMinna" className="h-8 md:h-10 w-auto dark:hidden" />
+          <img src="/darklogo.png" alt="BlockchainClub FUTMinna" className="h-8 md:h-10 w-auto hidden dark:block" />
         </Link>
 
         {/* Desktop nav */}

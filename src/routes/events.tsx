@@ -129,7 +129,7 @@ function EventsPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-12 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             EVENTS
           </span>
@@ -146,7 +146,7 @@ function EventsPage() {
 
       {/* FILTER TABS */}
       <section className="border-b border-border bg-surface-low">
-        <div className="mx-auto max-w-[1400px] px-6 py-4">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-4">
           <Tabs
             value={filter}
             onValueChange={(v) => setFilter(v as EventFilter)}
@@ -161,7 +161,7 @@ function EventsPage() {
       </section>
 
       {/* EVENTS GRID */}
-      <section className="mx-auto max-w-[1400px] px-6 py-16">
+      <section className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
         {isLoading ? (
           <EventsSkeleton />
         ) : events.length === 0 ? (
@@ -186,7 +186,7 @@ function EventsPage() {
                     className="group relative rounded-xl border border-border bg-card transition-all hover:border-primary/40 hover:shadow-lg"
                   >
                     <div className="grid md:grid-cols-2">
-                      <div className="bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                      <div className="aspect-video md:aspect-auto bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                         {event.cover_image ? (
                           <img
                             src={event.cover_image}
@@ -197,7 +197,7 @@ function EventsPage() {
                           <Calendar className="h-16 w-16 text-primary/30" />
                         )}
                       </div>
-                      <div className="p-8 flex flex-col justify-center">
+                      <div className="p-5 md:p-8 flex flex-col justify-center">
                         <div className="flex items-center gap-2">
                           <Badge
                             variant="outline"
@@ -349,7 +349,7 @@ function EventsPage() {
 
       {/* CTA */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1400px] px-6 py-16 text-center">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16 text-center">
           <div className="mx-auto max-w-xl">
             <Lightbulb className="mx-auto h-10 w-10 text-primary" />
             <h2 className="mt-6 text-headline-lg">Have an Event Idea?</h2>

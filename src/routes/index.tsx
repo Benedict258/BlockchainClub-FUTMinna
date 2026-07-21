@@ -107,7 +107,7 @@ function Home() {
     <div className="bg-background">
       {/* HERO */}
       <section className="border-b border-border">
-         <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
+         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-12 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             Blockchain Club FUTMinna
           </span>
@@ -131,8 +131,8 @@ function Home() {
 
       {/* STATS */}
       <section className="border-b border-border bg-surface-low">
-        <div className="mx-auto max-w-[1400px] px-6 py-8 md:py-10">
-          <div className="flex justify-center gap-16 md:gap-24">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-6 md:py-10">
+          <div className="flex justify-center gap-6 md:gap-20">
             {[
               { v: projectsData?.total ? `${projectsData.total}+` : "3+", l: "BUIDL Projects" },
               { v: postsData?.total ? `${postsData.total}+` : "5+", l: "Blog Posts" },
@@ -148,7 +148,7 @@ function Home() {
       </section>
 
       {/* ROOTED IN RESEARCH */}
-      <section className="mx-auto max-w-[1400px] px-6 py-16 grid gap-12 lg:grid-cols-2 lg:items-center">
+      <section className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16 grid gap-12 lg:grid-cols-2 lg:items-center">
         <ImageCarousel />
         <div>
           <h2 className="text-headline-lg">ROOTED IN RESEARCH,<br />DRIVEN BY CODE</h2>
@@ -180,7 +180,7 @@ function Home() {
 
       {/* CORE PILLARS */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1400px] px-6 py-16">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
           <div className="text-center">
             <h2 className="text-headline-lg">CORE PILLARS</h2>
             <p className="mt-3 text-muted-foreground">How we accelerate the Web3 adoption curve within the university ecosystem.</p>
@@ -205,7 +205,7 @@ function Home() {
       </section>
 
       {/* UPCOMING DEPLOYMENTS */}
-      <section className="mx-auto max-w-[1400px] px-6 py-16">
+      <section className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
         <h2 className="text-headline-lg">UPCOMING<br />DEPLOYMENTS</h2>
         {events.length > 0 && (
           <div className="mt-8 grid gap-5 md:grid-cols-3">
@@ -241,7 +241,7 @@ function Home() {
       </section>
 
       {/* PAST EVENTS */}
-      <section className="mx-auto max-w-[1400px] px-6 py-16">
+      <section className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
         <div className="space-y-4">
           <h3 className="text-headline-lg">PAST EVENTS</h3>
           <div className="overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm">
@@ -298,7 +298,7 @@ function Home() {
 
       {/* SHIPPED PROTOCOLS */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1400px] px-6 py-16">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
           <h2 className="text-headline-lg">SHIPPED PROTOCOLS</h2>
           <p className="mt-2 text-muted-foreground">High-impact projects developed by our student body.</p>
           <div className="mt-8 grid gap-5 md:grid-cols-2">
@@ -331,7 +331,7 @@ function Home() {
       </section>
 
       {/* LEARNING TRACKS PREVIEW */}
-      <section className="mx-auto max-w-[1400px] px-6 py-16">
+      <section className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
         <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
           <h2 className="text-headline-lg">LEARNING TRACKS</h2>
           <div className="flex gap-2">
@@ -362,8 +362,8 @@ function Home() {
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-[1400px] px-6 py-16">
-        <div className="relative overflow-hidden rounded-xl border border-border bg-surface-low p-8 md:p-12 text-center">
+      <section className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
+        <div className="relative overflow-hidden rounded-xl border border-border bg-surface-low p-6 md:p-12 text-center">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
           <h2 className="text-headline-lg">READY TO BUILD THE<br />PERMITTED FUTURE?</h2>
           <p className="mt-4 text-muted-foreground">Join 500+ builders at the forefront of the decentralized revolution.</p>

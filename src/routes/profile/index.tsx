@@ -379,14 +379,14 @@ function ProfilePage() {
                     return (
                       <button
                         key={review.id}
-                        className="w-full flex items-center justify-between rounded-lg border px-3 py-2 text-sm hover:bg-muted/50 transition-colors cursor-pointer text-left"
+                        className="w-full flex items-center gap-2 rounded-lg border px-3 py-2 text-sm hover:bg-muted/50 transition-colors cursor-pointer text-left"
                         onClick={() => openReviewModal(review.id, review.feedback, review.suggestions, review.positives)}
                       >
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-4 w-4 text-yellow-500" />
-                          <span>Review submission by {reviewee?.full_name || "Unknown"}</span>
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <FileText className="h-4 w-4 text-yellow-500 shrink-0" />
+                          <span className="truncate">Review submission by {reviewee?.full_name || "Unknown"}</span>
                         </div>
-                        <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                        <Badge className="shrink-0 bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
                           Needs Review
                         </Badge>
                       </button>
@@ -405,11 +405,11 @@ function ProfilePage() {
                           key={review.id}
                           className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm"
                         >
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                            <span>Under review by {reviewer?.full_name || "Unknown"}</span>
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+                            <span className="truncate">Under review by {reviewer?.full_name || "Unknown"}</span>
                           </div>
-                          <Badge variant="outline">Pending</Badge>
+                          <Badge variant="outline" className="shrink-0">Pending</Badge>
                         </div>
                       )
                     })}
@@ -425,11 +425,11 @@ function ProfilePage() {
                           key={review.id}
                           className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm"
                         >
-                          <div className="flex items-center gap-2">
-                            <MessageSquare className="h-4 w-4 text-green-500" />
-                            <span>Reviewed by {reviewer?.full_name || "Unknown"}</span>
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <MessageSquare className="h-4 w-4 text-green-500 shrink-0" />
+                            <span className="truncate">Reviewed by {reviewer?.full_name || "Unknown"}</span>
                           </div>
-                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                          <Badge className="shrink-0 bg-green-500/20 text-green-400 border-green-500/30">
                             Completed
                           </Badge>
                         </div>

@@ -178,7 +178,7 @@ function LearnPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1400px] px-6 py-16 md:py-24 text-center">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-12 md:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-3 py-1 text-label-bold text-primary">
             LEARN
           </span>
@@ -197,7 +197,7 @@ function LearnPage() {
 
       {/* STATS BAR */}
       <section className="border-b border-border bg-surface-low">
-        <div className="mx-auto max-w-[1400px] px-6 py-6">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-4 md:py-6">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="flex items-center justify-center gap-3">
               <Layers className="h-5 w-5 text-primary" />
@@ -237,7 +237,7 @@ function LearnPage() {
       </section>
 
       {/* TRACKS */}
-      <section className="mx-auto max-w-[1400px] px-6 py-16">
+      <section className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
         <div className="flex flex-col gap-4 mb-8">
           <h2 className="text-headline-lg">Learning Tracks</h2>
 
@@ -362,7 +362,7 @@ function LearnPage() {
 
       {/* RESOURCES */}
       <section className="border-y border-border bg-surface-low">
-        <div className="mx-auto max-w-[1400px] px-6 py-16">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
             <h2 className="text-headline-lg">Resources Library</h2>
             <Tabs
@@ -448,8 +448,8 @@ function LearnPage() {
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-[1400px] px-6 py-16">
-        <div className="relative overflow-hidden rounded-xl border border-border bg-surface-low p-10 md:p-14 text-center">
+      <section className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 md:py-16">
+        <div className="relative overflow-hidden rounded-xl border border-border bg-surface-low p-6 md:p-14 text-center">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
           <CheckCircle2 className="mx-auto h-10 w-10 text-primary" />
           <h2 className="mt-6 text-headline-lg">
