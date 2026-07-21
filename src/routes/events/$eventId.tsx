@@ -251,11 +251,19 @@ function EventDetailPage() {
 
             {!isPast && (
               <>
-                {!user || !accessToken ? (
+                {event.virtual_link && (
+                  <a href={event.virtual_link} target="_blank" rel="noopener noreferrer" className="w-full">
+                    <Button className="w-full" size="lg">
+                      RSVP Now
+                    </Button>
+                  </a>
+                )}
+                {!event.virtual_link && !user && (
                   <Button asChild className="w-full" size="lg" variant="outline">
                     <Link to="/auth">Login to RSVP</Link>
                   </Button>
-                ) : (
+                )}
+                {!event.virtual_link && user && accessToken && (
                   <Button
                     className="w-full"
                     size="lg"
