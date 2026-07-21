@@ -12,6 +12,7 @@ import slide1 from "@/assets/slide1.jpg";
 import slide2 from "@/assets/slide2.jpg";
 import { getProjects } from "@/lib/api/projects.server";
 import { getBlogPosts } from "@/lib/api/blog.server";
+import { getEvents } from "@/lib/api/events.server";
 
 const heroImages = [
   { src: slide1, alt: "Blockchain Club FUTMinna" },
@@ -79,10 +80,17 @@ export const Route = createFileRoute("/")({
 function Home() {
   const fetchProjects = useServerFn(getProjects);
   const fetchPosts = useServerFn(getBlogPosts);
+  const fetchEvents = useServerFn(getEvents);
 
   const { data: projectsData } = useQuery({
     queryKey: ["home-projects"],
     queryFn: () => fetchProjects({ data: { page: 1, limit: 3, featured: true } }),
+    suspense: true,
+  });
+
+  const { data: eventsData } = useQuery({
+    queryKey: ["home-events"],
+    queryFn: () => fetchEvents({ data: { page: 1, limit: 3, filter: "upcoming" } }),
     suspense: true,
   });
 
@@ -91,6 +99,7 @@ function Home() {
     queryFn: () => fetchPosts({ data: { page: 1, limit: 3 } }),
   });
 
+  const events = eventsData?.events ?? [];
   const projects = projectsData?.projects ?? [];
   const posts = postsData?.posts ?? [];
 
@@ -198,6 +207,37 @@ function Home() {
       {/* UPCOMING DEPLOYMENTS */}
       <section className="mx-auto max-w-[1400px] px-6 py-16">
         <h2 className="text-headline-lg">UPCOMING<br />DEPLOYMENTS</h2>
+        {events.length > 0 && (
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {events.slice(0, 3).map((event: any) => (
+              <Link
+                key={event.id}
+                to="/events/$eventId"
+                params={{ eventId: event.id }}
+                className="group overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm"
+              >
+                <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
+                  {event.cover_image ? (
+                    <img
+                      src={event.cover_image}
+                      alt={event.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <span className="text-4xl text-primary/30">📅</span>
+                  )}
+                </div>
+                <div className="p-5">
+                  <p className="text-label-bold text-outline">
+                    {new Date(event.start_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </p>
+                  <h3 className="mt-2 text-headline-md group-hover:text-primary transition-colors">{event.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">{event.description || ""}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* PAST EVENTS */}
