@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useMatchRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
@@ -93,6 +93,9 @@ function EventsSkeleton() {
 }
 
 function EventsPage() {
+  const matchRoute = useMatchRoute();
+  const isIndex = !matchRoute({ to: "/events/$eventId" }) && !matchRoute({ to: "/events/request" });
+
   const [filter, setFilter] = useState<EventFilter>("all");
 
   const fetchEvents = useServerFn(getEvents);
@@ -117,6 +120,10 @@ function EventsPage() {
   const regularEvents = events.filter(
     (e: any) => !e.is_featured
   );
+
+  if (!isIndex) {
+    return <Outlet />;
+  }
 
   return (
     <div className="bg-background">

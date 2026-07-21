@@ -2,7 +2,7 @@ module.exports = {
   apps: [{
     name: "blockchainclub",
     script: "node_modules/vite/bin/vite.js",
-    args: "--host 0.0.0.0 --port 5178",
+    args: "--host 0.0.0.0 --port 5179",
     cwd: "/home/ubuntu/Workspace/BlockchainClub-FUTMinna",
     env: {
       NODE_OPTIONS: "--max-old-space-size=4096"
