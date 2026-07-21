@@ -87,6 +87,7 @@ function EventDetailPage() {
   } = useQuery({
     queryKey: ["event", eventId],
     queryFn: () => fetchEvent({ data: { id: eventId } }),
+    suspense: true,
   });
 
   const rsvpMutation = useMutation({
