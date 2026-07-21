@@ -384,8 +384,9 @@ async function handleSupabaseApi(request: Request, pathname: string): Promise<Re
         return new Response(JSON.stringify({ error: "Unknown operation: " + op }), { status: 400 });
     }
 
+    const statusCode = result?.error ? 400 : 200;
     return new Response(JSON.stringify(result), {
-      status: 200,
+      status: statusCode,
       headers: { "Content-Type": "application/json", ...rateLimitHeaders },
     });
   } catch (error: any) {

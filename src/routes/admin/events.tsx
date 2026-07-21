@@ -184,6 +184,7 @@ function AdminEvents() {
   const createMutation = useMutation({
     mutationFn: () =>
       apiInsert('events', {
+        id: crypto.randomUUID(),
         title: form.title,
         description: form.description || undefined,
         type: form.type as EventType,
@@ -194,6 +195,9 @@ function AdminEvents() {
         end_date: new Date(form.endDate).toISOString(),
         cover_image: form.coverImage || undefined,
         is_published: form.isPublished,
+        is_featured: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-events'] });
@@ -217,6 +221,7 @@ function AdminEvents() {
         end_date: new Date(form.endDate).toISOString(),
         cover_image: form.coverImage || undefined,
         is_published: form.isPublished,
+        updated_at: new Date().toISOString(),
       }, { id: editItem?.id as string }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-events'] });
